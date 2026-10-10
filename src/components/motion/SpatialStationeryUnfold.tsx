@@ -12,280 +12,279 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * SpatialStationeryUnfold (Phase 7 Spatial Composition Reset):
- * Authentic editorial stationery still life inspired by Japanese and Dark Academia letter sets.
+ * SpatialStationeryUnfold (Phase 8 Cinematic Stationery Experience):
+ * An authentic scroll-driven physical letter unfolding sequence.
  *
- * Visual Rules:
- * 1. Single dominant handmade cotton paper sheet with organic deckled edges (no nested cards).
- * 2. Real transparent botanical specimen with natural anatomy and contact shadow.
- * 3. Vintage coffee ticket tucked naturally beneath the lower-left edge.
- * 4. Spacious, unobstructed editorial typography directly on the cotton paper.
- * 5. Completely unencumbered CTA with generous negative space.
+ * Sequence:
+ * 1. Approach: Compact, imperfectly folded cream cotton stationery rests on a quiet surface.
+ *    Meaningful details (vintage coffee ticket and pressed botanical specimen) are already present.
+ * 2. First Movement: Outer top paper flap lifts upward along its fold crease.
+ * 3. Unfold: Bottom flap unrolls downward; crease shadows flatten naturally into a single deckled sheet.
+ * 4. Letter Reveal: Real HTML editorial quotation and milestones reveal via ink opacity.
+ * 5. Resolution: Entire paper settles gently; clean, unencumbered CTA resolves below.
  */
 export function SpatialStationeryUnfold() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const paperSheetRef = useRef<HTMLDivElement | null>(null);
-  const botanicalRef = useRef<HTMLDivElement | null>(null);
-  const ticketRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const letterWrapperRef = useRef<HTMLDivElement | null>(null);
+  const topFlapRef = useRef<HTMLDivElement | null>(null);
+  const bottomFlapRef = useRef<HTMLDivElement | null>(null);
+  const creaseShadowTopRef = useRef<HTMLDivElement | null>(null);
+  const creaseShadowBottomRef = useRef<HTMLDivElement | null>(null);
+  const letterTextRef = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!sectionRef.current) return;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set([paperSheetRef.current, botanicalRef.current, ticketRef.current, ctaRef.current], {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-        });
+        gsap.set(topFlapRef.current, { rotateX: 0, opacity: 0 });
+        gsap.set(bottomFlapRef.current, { rotateX: 0, opacity: 0 });
+        gsap.set([creaseShadowTopRef.current, creaseShadowBottomRef.current], { opacity: 0 });
+        gsap.set(letterTextRef.current, { opacity: 1 });
+        gsap.set(ctaRef.current, { opacity: 1, y: 0 });
         return;
       }
 
-      // Physical settle of the stationery still life as user scrolls into view
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          end: "top 25%",
-          scrub: 0.8,
-        },
+      // Initial resting posture: compact folded trifold envelope shape
+      gsap.set(topFlapRef.current, {
+        rotateX: -140,
+        transformOrigin: "top center",
+        transformStyle: "preserve-3d",
       });
 
-      // Initial resting state in space
-      gsap.set(paperSheetRef.current, {
-        opacity: 0.9,
-        y: 25,
-        rotate: -1,
-        scale: 0.97,
+      gsap.set(bottomFlapRef.current, {
+        rotateX: 140,
+        transformOrigin: "bottom center",
+        transformStyle: "preserve-3d",
       });
 
-      gsap.set(botanicalRef.current, {
+      gsap.set([creaseShadowTopRef.current, creaseShadowBottomRef.current], {
+        opacity: 0.6,
+      });
+
+      gsap.set(letterTextRef.current, {
         opacity: 0,
-        y: -18,
-        x: -12,
-        rotate: -15,
-        scale: 0.92,
-      });
-
-      gsap.set(ticketRef.current, {
-        opacity: 0,
-        y: 18,
-        rotate: 9,
-        scale: 0.94,
       });
 
       gsap.set(ctaRef.current, {
-        opacity: 0.7,
+        opacity: 0,
         y: 12,
       });
 
-      // Choreographed arrival
-      tl.to(paperSheetRef.current, {
-        opacity: 1,
-        y: 0,
-        rotate: -0.5,
-        scale: 1,
-        duration: 1,
-        ease: "power2.out",
-      })
-      .to(botanicalRef.current, {
-        opacity: 1,
-        y: 0,
-        x: 0,
-        rotate: -8,
-        scale: 1,
-        duration: 0.8,
-        ease: "power2.out",
-      }, "-=0.6")
-      .to(ticketRef.current, {
-        opacity: 1,
-        y: 0,
-        rotate: 5,
-        scale: 1,
-        duration: 0.7,
-        ease: "power2.out",
-      }, "-=0.5")
-      .to(ctaRef.current, {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power1.out",
-      }, "-=0.4");
-    }, containerRef);
+      // Master Pinned Scroll Timeline via GSAP ScrollTrigger
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: "top top",
+          end: "+=120%",
+          pin: true,
+          scrub: 0.7,
+        },
+      });
+
+      // 1. Approach & First Movement: Top flap lifts (0.10 -> 0.40)
+      tl.to(
+        topFlapRef.current,
+        {
+          rotateX: 0,
+          opacity: 0.1,
+          ease: "power2.inOut",
+          duration: 0.35,
+        },
+        0.1
+      )
+      .to(
+        creaseShadowTopRef.current,
+        {
+          opacity: 0,
+          ease: "power1.out",
+          duration: 0.25,
+        },
+        0.2
+      )
+      // 2. Unfold: Bottom flap unfolds downward (0.35 -> 0.65)
+      .to(
+        bottomFlapRef.current,
+        {
+          rotateX: 0,
+          opacity: 0.1,
+          ease: "power2.inOut",
+          duration: 0.35,
+        },
+        0.35
+      )
+      .to(
+        creaseShadowBottomRef.current,
+        {
+          opacity: 0,
+          ease: "power1.out",
+          duration: 0.25,
+        },
+        0.45
+      )
+      // 3. Creases flatten & live text reveals (0.50 -> 0.80)
+      .to(
+        letterTextRef.current,
+        {
+          opacity: 1,
+          ease: "power1.inOut",
+          duration: 0.3,
+        },
+        0.55
+      )
+      // 4. CTA resolves cleanly below settled letter (0.75 -> 1.0)
+      .to(
+        ctaRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          ease: "power2.out",
+          duration: 0.25,
+        },
+        0.75
+      );
+    }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div
-      ref={containerRef}
+    <section
+      ref={sectionRef}
       id="how-it-works"
       data-testid="little-things-scene"
-      className="relative w-full min-h-[100dvh] flex flex-col items-center justify-center bg-transparent text-[#240412] px-4 sm:px-6 pt-12 sm:pt-16 pb-12 sm:pb-16 overflow-hidden"
+      className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between items-center bg-transparent text-[#240412] pt-24 sm:pt-28 pb-6 sm:pb-8 px-4 select-none overflow-hidden"
     >
-      {/* Restrained peripheral botanical framing at empty margins */}
-      <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.35} />
+      <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
 
-      <div className="w-full max-w-4xl mx-auto flex flex-col items-center text-center relative z-10">
-        {/* Editorial Eyebrow & Headline */}
-        <div className="mb-4 sm:mb-6 space-y-1.5 max-w-xl mx-auto relative">
-          <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-[#7A1D45] font-semibold drop-shadow-[0_1px_4px_rgba(255,245,248,0.4)]">
-            The Unsealing · Physical Keepsakes
-          </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-normal text-[#1A0311] tracking-tight leading-tight drop-shadow-[0_1px_10px_rgba(255,245,248,0.5)]">
-            Made from little things.
-          </h2>
-          <p className="text-xs sm:text-base text-[#36091E] font-normal leading-relaxed drop-shadow-[0_1px_8px_rgba(255,245,248,0.5)]">
-            A pressed petal, a fold of deckled cotton, a ticket kept from a rainy Tuesday. Love is built from details only they would notice.
-          </p>
+      {/* Editorial Header with ample room beneath fixed navigation */}
+      <div className="text-center max-w-xl mx-auto space-y-1 relative z-10">
+        <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-[#7A1D45] font-semibold drop-shadow-[0_1px_4px_rgba(255,245,248,0.4)]">
+          The Unsealing · Physical Keepsakes
+        </p>
+        <h2 className="text-2xl sm:text-4xl font-serif font-normal text-[#1A0311] tracking-tight leading-tight drop-shadow-[0_1px_10px_rgba(255,245,248,0.5)]">
+          Made from little things.
+        </h2>
+        <p className="text-xs sm:text-sm text-[#36091E] font-normal leading-relaxed drop-shadow-[0_1px_8px_rgba(255,245,248,0.5)] max-w-md mx-auto">
+          A pressed petal, a fold of deckled cotton, a ticket kept from a rainy Tuesday.
+        </p>
+      </div>
+
+      {/* PHYSICAL STATIONERY: One cohesive sheet unfolding naturally */}
+      <div
+        ref={letterWrapperRef}
+        className="relative w-full max-w-[320px] sm:max-w-[360px] my-auto flex justify-center [perspective:1400px] will-change-transform z-20"
+      >
+        {/* Pressed Dried Flower pinned naturally to upper left */}
+        <div
+          className="absolute -top-5 -left-4 sm:-top-6 sm:-left-5 w-14 sm:w-16 h-20 sm:h-24 z-40 pointer-events-none drop-shadow-[0_4px_12px_rgba(60,15,30,0.2)] opacity-90"
+          aria-hidden="true"
+        >
+          <Image
+            src="/assets/stationery/pressed_botanical.png"
+            alt="Pressed dried flower"
+            fill
+            sizes="64px"
+            className="object-contain"
+            priority
+            unoptimized
+          />
         </div>
 
-        {/* ============================================================== */}
-        {/* THE STATIONERY STILL LIFE (ONE SINGLE AUTHENTIC PAPER SHEET)    */}
-        {/* ============================================================== */}
-        <div className="relative w-full max-w-[400px] sm:max-w-[440px] md:max-w-[480px] my-2 flex justify-center [perspective:1200px]">
-          
-          {/* AUTHENTIC PRESSED BOTANICAL SPECIMEN: Restrained herbarium specimen pinned naturally onto paper corner */}
-          <div
-            ref={botanicalRef}
-            className="absolute -top-7 -left-5 sm:-top-9 sm:-left-7 w-20 sm:w-24 h-28 sm:h-36 z-30 pointer-events-none select-none drop-shadow-[0_8px_16px_rgba(60,15,30,0.22)] will-change-transform opacity-90"
-            aria-hidden="true"
-          >
-            <div className="relative w-full h-full">
-              <Image
-                src="/assets/stationery/pressed_botanical.png"
-                alt="Authentic pressed botanical specimen"
-                fill
-                sizes="(max-width: 640px) 80px, 104px"
-                className="object-contain"
-                priority
-                unoptimized
-              />
-            </div>
-          </div>
-
-          {/* VINTAGE COFFEE TICKET STUB: Tucked under bottom-left deckled edge */}
-          <div
-            ref={ticketRef}
-            className="absolute -bottom-5 -left-4 sm:-bottom-6 sm:-left-6 z-25 pointer-events-none select-none will-change-transform"
-            aria-hidden="true"
-          >
-            <div className="relative w-28 sm:w-36 py-2 px-3 bg-[#FAF3E8] rounded-xs border border-amber-900/30 shadow-[0_12px_24px_-4px_rgba(40,10,20,0.28)] backdrop-blur-xs">
-              {/* Notched ticket punch cuts on sides */}
-              <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#FAF3E8] border-r border-amber-900/30" />
-              <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#FAF3E8] border-l border-amber-900/30" />
-              
-              <div className="flex flex-col text-left pl-1">
-                <span className="text-[7px] sm:text-[8px] font-mono uppercase tracking-[0.22em] text-[#7A1D45] font-semibold">
-                  FIRST COFFEE
-                </span>
-                <span className="font-serif italic text-xs sm:text-sm text-[#1C0412] font-semibold tracking-tight -mt-0.5">
-                  10.14
-                </span>
-                <div className="flex items-center justify-between mt-0.5 pt-0.5 border-t border-amber-900/20 text-[6.5px] sm:text-[7.5px] font-mono tracking-widest text-[#843657]/80">
-                  <span>ADMIT ONE</span>
-                  <span>№ 0214</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* THE SINGLE HERO HANDMADE DECKLED COTTON PAPER SHEET */}
-          <div
-            ref={paperSheetRef}
-            className="relative w-full aspect-[520/704] p-7 sm:p-10 md:p-11 text-[#1C0412] will-change-transform text-left flex flex-col justify-between drop-shadow-[0_28px_60px_rgba(70,15,35,0.25)]"
-          >
-            {/* The authentic deckled cotton paper background substrate */}
-            <div className="absolute inset-0 z-0 pointer-events-none select-none">
-              <Image
-                src="/assets/stationery/deckled_paper.png"
-                alt="Handmade deckled paper sheet"
-                fill
-                sizes="(max-width: 640px) 420px, 500px"
-                className="object-fill"
-                priority
-                unoptimized
-              />
-            </div>
-
-            {/* Real HTML Editorial Content Layer resting naturally on the cotton paper */}
-            <div className="relative z-10 flex flex-col justify-between h-full pt-4 sm:pt-6 pb-2">
-              {/* 1. Atelier colophon */}
-              <div className="flex items-center justify-between text-[9px] sm:text-[10px] font-sans tracking-[0.24em] text-[#843657]/75 font-medium uppercase select-none pb-4 border-b border-[#7A1D45]/15">
-                <span>VALENTINO ATELIER</span>
-                <span className="font-mono tracking-wider text-[8px] sm:text-[9px] text-[#A25072]/70">ARCHIVE № 0214</span>
-              </div>
-
-              {/* 2. Dominant, unobstructed letterpress quotation */}
-              <div className="py-5 sm:py-7">
-                <p className="text-base sm:text-lg md:text-[20px] font-serif text-[#1C0412] leading-[1.7] tracking-tight drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                  <span className="font-normal">“I kept the ticket from that rainy afternoon.</span>{" "}
-                  <span className="italic font-normal text-[#2A051A]">Some moments don&apos;t ask for grand announcements</span>{" "}
-                  <span className="font-normal">— they just quietly stay forever.”</span>
-                </p>
-                <p className="mt-4 sm:mt-5 text-right">
-                  <span className="font-serif italic text-xs sm:text-sm text-[#7A1D45] tracking-wide inline-block transform -rotate-1 select-none font-normal">
-                    — for you, always
-                  </span>
-                </p>
-              </div>
-
-              {/* 3. Quiet milestone inscription across bottom */}
-              <div className="pt-4 border-t border-[#7A1D45]/15 flex items-center justify-around text-left gap-2 text-[10px] sm:text-xs select-none">
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#881337]/60" />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#7A1D45] font-sans font-semibold">10.14</span>
-                    <span className="font-serif italic text-[#1E0412] font-medium text-[11px] sm:text-[12px]">First Coffee</span>
-                  </div>
-                </div>
-
-                <span className="text-[#881337]/30 text-xs select-none">·</span>
-
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#881337]/60" />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#7A1D45] font-sans font-semibold">12.24</span>
-                    <span className="font-serif italic text-[#1E0412] font-medium text-[11px] sm:text-[12px]">Midnight Rain</span>
-                  </div>
-                </div>
-
-                <span className="text-[#881337]/30 text-xs select-none">·</span>
-
-                <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#881337]/60" />
-                  <div className="flex flex-col">
-                    <span className="text-[8px] sm:text-[9px] uppercase tracking-wider text-[#7A1D45] font-sans font-semibold">02.14</span>
-                    <span className="font-serif italic text-[#1E0412] font-medium text-[11px] sm:text-[12px]">The Vow</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        {/* Vintage Coffee Ticket tucked naturally into lower left */}
+        <div
+          className="absolute -bottom-3 -left-3 sm:-bottom-4 sm:-left-4 z-35 pointer-events-none transform rotate-[-5deg] drop-shadow-[0_8px_16px_rgba(40,10,20,0.25)]"
+          aria-hidden="true"
+        >
+          <div className="w-24 sm:w-28 py-1 px-2.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-left">
+            <span className="text-[6.5px] sm:text-[7.5px] font-mono uppercase tracking-widest text-[#7A1D45] font-semibold block">
+              FIRST COFFEE
+            </span>
+            <span className="font-serif italic text-[11px] sm:text-xs text-[#1C0412] font-semibold leading-none block mt-0.5">
+              Rainy Tuesday
+            </span>
           </div>
         </div>
 
-        {/* ============================================================== */}
-        {/* EDITORIAL ACTION LINK: Clearly separated in calm negative space */}
-        {/* ============================================================== */}
-        <div ref={ctaRef} className="mt-6 sm:mt-8 flex flex-col items-center gap-1.5 will-change-transform z-20">
-          <Link
-            href="/create"
-            className="group inline-flex items-center gap-2.5 text-base sm:text-lg font-serif font-medium text-[#1A0311] hover:text-[#9F1239] transition-colors drop-shadow-[0_1px_4px_rgba(255,245,248,0.5)]"
+        {/* THE HERO DECKLED COTTON SHEET */}
+        <div className="relative w-full aspect-[340/460] bg-[#FAF6EE] shadow-[0_20px_50px_rgba(70,15,35,0.2),0_4px_16px_rgba(0,0,0,0.06)] border border-[#E8DFC8] rounded-[2px] p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
+          {/* Subtle paper grain texture */}
+          <div className="absolute inset-0 opacity-20 pointer-events-none bg-[radial-gradient(#78350F_1px,transparent_1px)] [background-size:10px_10px]" />
+
+          {/* DYNAMIC FOLDING PANELS FOR SEQUENTIAL UNFOLD */}
+          {/* Top Flap */}
+          <div
+            ref={topFlapRef}
+            className="absolute inset-x-0 top-0 h-1/3 bg-[#F4EDE0] border-b border-amber-900/20 z-30 shadow-md will-change-transform"
+          />
+
+          {/* Bottom Flap */}
+          <div
+            ref={bottomFlapRef}
+            className="absolute inset-x-0 bottom-0 h-1/3 bg-[#F4EDE0] border-t border-amber-900/20 z-30 shadow-md will-change-transform"
+          />
+
+          {/* Crease line shadows */}
+          <div
+            ref={creaseShadowTopRef}
+            className="absolute inset-x-0 top-1/3 h-1.5 bg-gradient-to-b from-stone-800/20 to-transparent z-25 pointer-events-none"
+          />
+          <div
+            ref={creaseShadowBottomRef}
+            className="absolute inset-x-0 bottom-1/3 h-1.5 bg-gradient-to-t from-stone-800/20 to-transparent z-25 pointer-events-none"
+          />
+
+          {/* REAL HTML EDITORIAL CONTENT LAYER: Emerges as paper opens */}
+          <div
+            ref={letterTextRef}
+            className="relative z-20 flex-1 flex flex-col justify-between text-left will-change-transform pt-2"
           >
-            <span className="underline decoration-rose-500 underline-offset-6 group-hover:decoration-rose-700 transition-all font-semibold">
-              Make yours
-            </span>
-            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 font-sans text-sm">
-              →
-            </span>
-          </Link>
-          <p className="text-xs sm:text-[13px] text-[#36091E] font-medium drop-shadow-[0_1px_6px_rgba(255,245,248,0.7)]">
-            No design experience required. Takes about five minutes.
-          </p>
+            {/* Header Colophon */}
+            <div className="flex items-center justify-between border-b border-rose-950/15 pb-2">
+              <span className="text-[9px] font-mono uppercase tracking-widest text-[#7A1D45]/80 font-semibold">
+                Atelier Valentino
+              </span>
+              <span className="text-[9px] font-mono text-[#58152E]/70 uppercase tracking-widest">
+                № 01 · Cotton
+              </span>
+            </div>
+
+            {/* The Main Authored Demonstration Letter */}
+            <div className="my-auto py-3 space-y-2">
+              <p className="font-serif italic text-sm sm:text-base text-[#1C0412] leading-relaxed font-normal">
+                “You are the quiet place my thoughts return to when everything else is loud.”
+              </p>
+              <p className="font-serif italic text-xs text-[#58152E]/80 leading-relaxed">
+                Some words don&apos;t need an audience. They only need one person to understand them.
+              </p>
+            </div>
+
+            {/* Footer Colophon */}
+            <div className="pt-2 border-t border-rose-950/15 flex items-center justify-between text-[9px] font-mono text-[#7A1D45]/70 uppercase tracking-wider">
+              <span>Deckled Cotton</span>
+              <span>Keep forever</span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* RESOLUTION CTA: Positioned cleanly below stationery */}
+      <div
+        ref={ctaRef}
+        className="text-center z-20 pt-2 will-change-transform"
+      >
+        <Link
+          href="/create"
+          className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-serif text-[#FAF5EE] bg-[#1A0512] hover:bg-[#2A091E] border border-[#3E0A28]/40 shadow-[0_4px_16px_rgba(26,5,18,0.25)] hover:shadow-[0_6px_22px_rgba(26,5,18,0.35)] transition-all duration-300"
+        >
+          <span>Make yours</span>
+          <span className="inline-block transition-transform duration-300 group-hover:translate-x-1 text-[#F3A5BC]">
+            →
+          </span>
+        </Link>
+      </div>
+    </section>
   );
 }

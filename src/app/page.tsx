@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section
         id="moments"
-        className="w-full bg-transparent text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
+        className="w-full bg-[#12040D] text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
       >
         <SpatialDiscoveredObjects />
       </section>
@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section
         id="create"
-        className="w-full bg-transparent text-[#240412] relative z-20 z-content py-20 sm:py-28 px-6 overflow-hidden"
+        className="w-full bg-gradient-to-b from-[#1c0514] via-[#2d061f]/30 to-transparent text-[#240412] relative z-20 z-content py-20 sm:py-28 px-6 overflow-hidden"
       >
         {/* Asymmetric Scroll-Aware Botanical Frame at Empty Viewport Edges */}
         <FinaleBotanicalFrame />
