@@ -30,6 +30,7 @@ export function SpatialStationeryUnfold() {
   const creaseLinesRef = useRef<HTMLDivElement | null>(null);
   const letterTextRef = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
+  const ticketRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -42,6 +43,7 @@ export function SpatialStationeryUnfold() {
         gsap.set(creaseLinesRef.current, { opacity: 0.15 });
         gsap.set(letterTextRef.current, { opacity: 1 });
         gsap.set(ctaRef.current, { opacity: 1, y: 0 });
+        gsap.set(ticketRef.current, { x: 0, y: 0, opacity: 1 });
         return;
       }
 
@@ -51,6 +53,14 @@ export function SpatialStationeryUnfold() {
         scale: 0.95,
         rotate: -1,
         y: 0,
+      });
+
+      // Ticket tucked beneath lower-left edge of casually folded sheet
+      gsap.set(ticketRef.current, {
+        x: 34,
+        y: -78,
+        rotate: -3,
+        opacity: 1,
       });
 
       gsap.set(unfoldedSheetRef.current, {
@@ -92,6 +102,18 @@ export function SpatialStationeryUnfold() {
           duration: 0.22,
         },
         0.04
+      )
+      // 1b. Ticket glides smoothly with expanding lower-left deckled edge
+      .to(
+        ticketRef.current,
+        {
+          x: 0,
+          y: 0,
+          rotate: -4,
+          ease: "power2.out",
+          duration: 0.28,
+        },
+        0.06
       )
       // 2. Unfolded sheet expands & takes stage (0.10 -> 0.36)
       .to(
@@ -169,9 +191,10 @@ export function SpatialStationeryUnfold() {
         ref={letterWrapperRef}
         className="relative w-full max-w-[320px] sm:max-w-[350px] my-auto flex justify-center [perspective:1400px] will-change-transform z-20"
       >
-        {/* Vintage Coffee Ticket tucked naturally into lower left */}
+        {/* Vintage Coffee Ticket tucked naturally beneath lower-left deckled edge */}
         <div
-          className="absolute -bottom-2 -left-2 sm:-bottom-3 sm:-left-3 z-40 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_6px_14px_rgba(40,10,20,0.25)]"
+          ref={ticketRef}
+          className="absolute -bottom-1 -left-1 sm:bottom-0 sm:-left-2 z-10 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_4px_10px_rgba(40,10,20,0.22)] will-change-transform"
           aria-hidden="true"
         >
           <div className="w-24 sm:w-28 py-1 px-2.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-left">
@@ -184,77 +207,80 @@ export function SpatialStationeryUnfold() {
           </div>
         </div>
 
-        {/* 1. INITIAL STATE: Real Folded Deckled Cotton Sheet (Transparent Cutout) */}
+        {/* 1. INITIAL STATE: Naturally Crumpled, Casually Folded Cotton Sheet */}
         <div
           ref={foldedLetterRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[230px] sm:w-[250px] aspect-[465/685] drop-shadow-[0_16px_32px_rgba(50,10,25,0.25)] will-change-transform z-30 pointer-events-none"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] sm:w-[265px] aspect-[766/936] drop-shadow-[0_12px_24px_rgba(40,8,20,0.18)] will-change-transform z-30 pointer-events-none"
         >
           <Image
-            src="/assets/stationery/cotton_paper_folded.png"
-            alt="Folded deckled cotton stationery with natural creases"
+            src="/assets/stationery/cotton_paper_folded_casual.png"
+            alt="Naturally crumpled and casually folded deckled cotton stationery"
             fill
-            sizes="250px"
+            sizes="270px"
             className="object-contain object-center"
             priority
           />
         </div>
 
-        {/* 2. UNFOLDED HERO DECKLED COTTON SHEET (Same Physical Sheet Opened) */}
+        {/* 2. UNFOLDED HERO DECKLED COTTON SHEET (One Substantially Continuous Sheet) */}
         <div
           ref={unfoldedSheetRef}
-          className="relative w-full aspect-[674/976] drop-shadow-[0_22px_45px_rgba(50,10,25,0.26)] px-7 py-8 sm:px-8 sm:py-9 flex flex-col justify-between will-change-transform"
+          className="relative z-20 w-full aspect-[540/724] drop-shadow-[0_22px_45px_rgba(50,10,25,0.26)] px-7 py-8 sm:px-8 sm:py-10 flex flex-col justify-between will-change-transform"
         >
-          {/* Authentic Deckled Paper Background (No rectangular box, organic edges) */}
+          {/* Authentic Continuous Deckled Cotton Paper (No panel cuts, organic ragged edges) */}
           <div className="absolute inset-0 -z-10 pointer-events-none">
             <Image
-              src="/assets/stationery/cotton_paper_unfolded.png"
-              alt="Handmade deckled edge cotton paper with soft natural creases"
+              src="/assets/stationery/deckled_paper.png"
+              alt="Handmade deckled edge cotton paper with continuous natural texture"
               fill
-              sizes="350px"
+              sizes="360px"
               className="object-contain object-center"
               priority
             />
           </div>
 
-          {/* Natural Horizontal Fold Crease Accent */}
+          {/* Faint Natural Fold Memory (Subtle, relaxing as paper settles) */}
           <div
             ref={creaseLinesRef}
-            className="absolute inset-x-6 top-1/3 bottom-1/3 pointer-events-none z-10 will-change-transform"
+            className="absolute inset-x-8 top-1/3 bottom-1/3 pointer-events-none z-10 will-change-transform opacity-15"
             aria-hidden="true"
           >
-            <div className="h-0.5 bg-gradient-to-r from-transparent via-amber-950/15 to-transparent" />
-            <div className="absolute bottom-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-amber-950/15 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-amber-950/10 to-transparent" />
+            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-950/10 to-transparent" />
           </div>
 
-          {/* REAL LIVE HTML EDITORIAL CONTENT: Printed into deckled cotton fibers */}
+          {/* REAL LIVE HTML EDITORIAL CONTENT: Rebalanced across full paper height */}
           <div
             ref={letterTextRef}
             className="relative z-20 flex-1 flex flex-col justify-between text-left will-change-transform pt-1"
           >
             {/* Header Colophon */}
-            <div className="flex items-center justify-between border-b border-rose-950/25 pb-2">
-              <span className="text-[9px] font-mono uppercase tracking-widest text-[#7A1D45] font-bold">
+            <div className="flex items-center justify-between border-b border-rose-950/20 pb-2.5">
+              <span className="text-[9.5px] font-mono uppercase tracking-widest text-[#7A1D45] font-bold">
                 Atelier Valentino
               </span>
-              <span className="text-[9px] font-mono text-[#58152E] uppercase tracking-widest font-semibold">
-                № 01 · Cotton
+              <span className="text-[9.5px] font-mono text-[#58152E] uppercase tracking-widest font-semibold">
+                № 01 · Deckled Cotton
               </span>
             </div>
 
-            {/* The Main Authored Demonstration Letter */}
-            <div className="my-auto py-3 space-y-2">
-              <p className="font-serif italic text-sm sm:text-base text-[#1A0311] leading-relaxed font-bold">
+            {/* The Main Authored Demonstration Letter - Intentionally Distributed */}
+            <div className="my-auto py-4 sm:py-6 space-y-3">
+              <p className="font-serif italic text-base sm:text-lg text-[#1A0311] leading-relaxed font-bold drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
                 “You are the quiet place my thoughts return to when everything else is loud.”
               </p>
-              <p className="font-serif italic text-xs text-[#3D0A1E] leading-relaxed font-medium">
+              <p className="font-serif italic text-xs sm:text-sm text-[#3D0A1E] leading-relaxed font-medium">
                 Some words don&apos;t need an audience. They only need one person to understand them.
+              </p>
+              <p className="text-[10px] font-mono text-[#7A1D45]/80 uppercase tracking-widest pt-1">
+                Folded by hand · Kept close
               </p>
             </div>
 
             {/* Footer Colophon */}
-            <div className="pt-2 border-t border-rose-950/25 flex items-center justify-between text-[9px] font-mono text-[#7A1D45] uppercase tracking-wider font-semibold">
-              <span>Deckled Cotton</span>
-              <span>Keep forever</span>
+            <div className="pt-2.5 border-t border-rose-950/20 flex items-center justify-between text-[9px] font-mono text-[#7A1D45] uppercase tracking-wider font-semibold">
+              <span>Pure Cotton Rag</span>
+              <span>Keep Forever</span>
             </div>
           </div>
         </div>
