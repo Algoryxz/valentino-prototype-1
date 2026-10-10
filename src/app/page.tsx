@@ -20,7 +20,7 @@ import { FinaleBotanicalFrame } from "@/components/motion/FinaleBotanicalFrame";
  */
 export default function HomePage() {
   return (
-    <main className="relative min-h-[100dvh] flex flex-col items-center justify-start bg-transparent text-[#1A0311] overflow-x-hidden selection:bg-rose-500/20 selection:text-[#1A0311]">
+    <main className="relative min-h-[100dvh] flex flex-col items-center justify-start bg-transparent text-[#1A0311] overflow-x-clip selection:bg-rose-500/20 selection:text-[#1A0311]">
       {/* ========================================================================= */}
       {/* 00 — CANONICAL GLOBAL PERSISTENT ATMOSPHERE                               */}
       {/* Pinned behind the entire public experience; morphs continuously as user    */}

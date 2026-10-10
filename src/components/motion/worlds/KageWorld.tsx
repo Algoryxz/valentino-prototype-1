@@ -19,6 +19,7 @@ if (typeof window !== "undefined") {
  * sumi calligraphy and quiet sentiment.
  */
 export function KageWorld() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const emeraldMistRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +29,7 @@ export function KageWorld() {
   const hankoRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!containerRef.current) return;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
@@ -42,7 +43,7 @@ export function KageWorld() {
         return;
       }
 
-      // Initial resting posture: Wide courtyard vista, scroll rolled
+      // Initial resting posture: Wide courtyard vista, attendant presenting rolled scroll
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
@@ -75,15 +76,14 @@ export function KageWorld() {
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current,
+          trigger: containerRef.current,
           start: "top top",
-          end: "+=120%",
-          pin: true,
-          scrub: 0.7,
+          end: "bottom bottom",
+          scrub: 0.6,
         },
       });
 
-      // 1. Advance along veranda toward the house (0.0 -> 0.5)
+      // 1. Advance toward veranda doorway & attendant handover (0.0 -> 0.45)
       tl.to(
         bgImageRef.current,
         {
@@ -115,7 +115,7 @@ export function KageWorld() {
         },
         0.05
       )
-      // 2. Unroll washi scroll downward (0.35 -> 0.75)
+      // 2. Presented scroll unrolls into foreground (0.35 -> 0.75)
       .to(
         washiBodyRef.current,
         {
@@ -144,32 +144,33 @@ export function KageWorld() {
         },
         0.55
       );
-    }, sectionRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#050d0b] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
-      aria-label="Kage cinematic world"
-    >
-      {/* CINEMATIC ENVIRONMENT PLATE: Kyoto Machiya Courtyard */}
-      <div
-        ref={bgImageRef}
-        className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
+    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+      <section
+        ref={sectionRef}
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#050d0b] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
+        aria-label="Kage cinematic world"
       >
-        <Image
-          src="/assets/environments/kage_kyoto_courtyard.jpg"
-          alt="Traditional Kyoto courtyard with timber architecture, bamboo fountain, stone water basin, and emerald mist"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-          priority={false}
-          unoptimized
-        />
-      </div>
+        {/* CINEMATIC ENVIRONMENT PLATE: Kyoto Machiya Courtyard with Attendant Handover */}
+        <div
+          ref={bgImageRef}
+          className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
+        >
+          <Image
+            src="/assets/environments/kage_attendant_handover.jpg"
+            alt="Kyoto machiya veranda where a kimono-clad attendant quietly presents a rolled washi scroll at night"
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            priority={false}
+            unoptimized
+          />
+        </div>
 
       {/* Atmospheric Dark Mist Vignette */}
       <div
@@ -211,7 +212,7 @@ export function KageWorld() {
             “For the love of quiet shadows and unspoken truths.”
           </p>
           <p className="text-xs sm:text-sm text-emerald-100/90 max-w-md font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(2,15,10,0.9)]">
-            A serene Kyoto courtyard in twilight mist. Some feelings are communicated more honestly through quiet gestures and patient silence.
+            At the veranda doorway, a quiet attendant presents a rolled washi scroll into the misty courtyard. Some feelings are communicated more honestly through quiet gestures and patient silence.
           </p>
           <div className="pt-2">
             <AtmosphericButton
@@ -280,5 +281,6 @@ export function KageWorld() {
         </span>
       </div>
     </section>
-  );
+  </div>
+);
 }

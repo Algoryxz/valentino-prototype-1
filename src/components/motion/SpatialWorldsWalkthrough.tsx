@@ -36,7 +36,7 @@ export function SpatialWorldsWalkthrough() {
       </div>
 
       {/* Sequential Cinematic Living Environments */}
-      <div className="flex flex-col w-full relative z-10">
+      <div className="w-full relative z-10">
         <CloudNineWorld />
         <MidnightRoseWorld />
         <KageWorld />
@@ -45,8 +45,8 @@ export function SpatialWorldsWalkthrough() {
         <OceanLetterWorld />
       </div>
 
-      {/* Understated Showroom Full Catalog Link */}
-      <div className="text-center py-16 px-6 relative z-10">
+      {/* Understated Showroom Full Catalog Link & Seamless Bridge to Hidden Trove */}
+      <div className="w-full text-center py-20 px-6 relative z-10 bg-gradient-to-b from-[#05111c] via-[#0b0c16] to-[#12040D]">
         <Link
           href="/templates"
           className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-mono uppercase tracking-widest bg-rose-950/40 hover:bg-rose-900/60 border border-rose-400/40 text-rose-100 hover:text-white font-medium shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5"

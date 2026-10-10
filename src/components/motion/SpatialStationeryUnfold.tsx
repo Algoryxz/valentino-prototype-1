@@ -24,6 +24,7 @@ if (typeof window !== "undefined") {
  * 5. Resolution: Entire paper settles gently; clean, unencumbered CTA resolves below.
  */
 export function SpatialStationeryUnfold() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const letterWrapperRef = useRef<HTMLDivElement | null>(null);
   const topFlapRef = useRef<HTMLDivElement | null>(null);
@@ -34,7 +35,7 @@ export function SpatialStationeryUnfold() {
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!containerRef.current) return;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
@@ -73,14 +74,13 @@ export function SpatialStationeryUnfold() {
         y: 12,
       });
 
-      // Master Pinned Scroll Timeline via GSAP ScrollTrigger
+      // Master Scroll-Driven Timeline scrubbed against dedicated scroll track
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current,
+          trigger: containerRef.current,
           start: "top top",
-          end: "+=120%",
-          pin: true,
-          scrub: 0.7,
+          end: "bottom bottom",
+          scrub: 0.6,
         },
       });
 
@@ -124,7 +124,7 @@ export function SpatialStationeryUnfold() {
         },
         0.45
       )
-      // 3. Creases flatten & live text reveals (0.50 -> 0.80)
+      // 3. Creases flatten & live text reveals (0.55 -> 0.85)
       .to(
         letterTextRef.current,
         {
@@ -134,7 +134,7 @@ export function SpatialStationeryUnfold() {
         },
         0.55
       )
-      // 4. CTA resolves cleanly below settled letter (0.75 -> 1.0)
+      // 4. CTA resolves cleanly below settled letter (0.75 -> 0.95)
       .to(
         ctaRef.current,
         {
@@ -145,18 +145,19 @@ export function SpatialStationeryUnfold() {
         },
         0.75
       );
-    }, sectionRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      id="how-it-works"
-      data-testid="little-things-scene"
-      className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between items-center bg-transparent text-[#240412] pt-24 sm:pt-28 pb-6 sm:pb-8 px-4 select-none overflow-hidden"
-    >
+    <div ref={containerRef} className="relative w-full h-[260vh] sm:h-[250vh]">
+      <section
+        ref={sectionRef}
+        id="how-it-works"
+        data-testid="little-things-scene"
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between items-center bg-transparent text-[#240412] pt-28 sm:pt-32 pb-8 sm:pb-10 px-4 select-none overflow-hidden"
+      >
       <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
 
       {/* Editorial Header with ample room beneath fixed navigation */}
@@ -286,5 +287,6 @@ export function SpatialStationeryUnfold() {
         </Link>
       </div>
     </section>
-  );
+  </div>
+);
 }

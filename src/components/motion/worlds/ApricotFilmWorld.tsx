@@ -19,6 +19,7 @@ if (typeof window !== "undefined") {
  * settles center stage to reveal the authored quotation.
  */
 export function ApricotFilmWorld() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const projectorBeamRef = useRef<HTMLDivElement | null>(null);
@@ -26,7 +27,7 @@ export function ApricotFilmWorld() {
   const letterContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!containerRef.current) return;
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const ctx = gsap.context(() => {
@@ -61,15 +62,14 @@ export function ApricotFilmWorld() {
 
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current,
+          trigger: containerRef.current,
           start: "top top",
-          end: "+=120%",
-          pin: true,
-          scrub: 0.7,
+          end: "bottom bottom",
+          scrub: 0.6,
         },
       });
 
-      // 1. Advance toward theatre stage (0.0 -> 0.5)
+      // 1. Advance toward theatre stage (0.0 -> 0.45)
       tl.to(
         bgImageRef.current,
         {
@@ -111,17 +111,18 @@ export function ApricotFilmWorld() {
         },
         0.4
       );
-    }, sectionRef);
+    }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#120702] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
-      aria-label="Apricot Film cinematic world"
-    >
+    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+      <section
+        ref={sectionRef}
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#120702] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
+        aria-label="Apricot Film cinematic world"
+      >
       {/* CINEMATIC ENVIRONMENT PLATE: 1930s Vintage Cinema Stage */}
       <div
         ref={bgImageRef}
@@ -281,5 +282,6 @@ export function ApricotFilmWorld() {
         </span>
       </div>
     </section>
-  );
+  </div>
+);
 }
