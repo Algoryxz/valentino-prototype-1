@@ -11,19 +11,18 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * WildflowerWorld (Phase 8 Cinematic Environment):
+ * WildflowerWorld (Phase 8.2 Environment-Integrated Table Journal):
  * Story: A letter grown in the garden.
- * Environment: Living English cottage garden, winding gravel path, foxgloves,
- * weathered teak table in dappled morning light.
- * Choreography: Scroll advances to the garden table; botanical journal opens to reveal
- * a deckled letter beside an authentic pressed dried flower specimen.
+ * Environment: English cottage garden path, foxgloves, weathered wooden table in morning light.
+ * Choreography: Camera approaches the weathered wooden table on the left; the botanical journal opens
+ * naturally on the table grain, revealing a deckled cotton letter and an authentic pressed dried flower.
  */
 export function WildflowerWorld() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const sunbeamsRef = useRef<HTMLDivElement | null>(null);
-  const journalGroupRef = useRef<HTMLDivElement | null>(null);
+  const journalTableRef = useRef<HTMLDivElement | null>(null);
   const journalCoverRef = useRef<HTMLDivElement | null>(null);
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
@@ -35,17 +34,17 @@ export function WildflowerWorld() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(bgImageRef.current, { scale: 1.05, y: 0 });
-        gsap.set(sunbeamsRef.current, { opacity: 0.6 });
-        gsap.set(journalGroupRef.current, { opacity: 1, scale: 1, y: 0 });
-        gsap.set(journalCoverRef.current, { rotateY: -140, opacity: 0.1 });
-        gsap.set(letterSheetRef.current, { opacity: 1, y: 0 });
+        gsap.set(bgImageRef.current, { scale: 1.1, y: "-3%" });
+        gsap.set(sunbeamsRef.current, { opacity: 0.8 });
+        gsap.set(journalTableRef.current, { opacity: 1, scale: 1, y: 0 });
+        gsap.set(journalCoverRef.current, { rotateY: -140, opacity: 0 });
+        gsap.set(letterSheetRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(specimenRef.current, { opacity: 0.95 });
         return;
       }
 
-      // Initial resting posture: Wide garden view, closed journal
+      // Initial resting posture: Wide garden view, closed journal resting on table
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
@@ -56,10 +55,10 @@ export function WildflowerWorld() {
         scale: 0.95,
       });
 
-      gsap.set(journalGroupRef.current, {
-        opacity: 0.85,
-        scale: 0.92,
-        y: 20,
+      gsap.set(journalTableRef.current, {
+        opacity: 0.9,
+        scale: 0.9,
+        y: 18,
       });
 
       gsap.set(journalCoverRef.current, {
@@ -70,11 +69,11 @@ export function WildflowerWorld() {
 
       gsap.set(letterSheetRef.current, {
         opacity: 0.4,
-        scale: 0.96,
+        scale: 0.95,
       });
 
       gsap.set(letterContentRef.current, {
-        opacity: 0.2,
+        opacity: 0,
       });
 
       gsap.set(specimenRef.current, {
@@ -91,12 +90,12 @@ export function WildflowerWorld() {
         },
       });
 
-      // 1. Advance along path toward garden table (0.0 -> 0.45)
+      // 1. Advance toward garden table (0.0 -> 0.45)
       tl.to(
         bgImageRef.current,
         {
-          scale: 1.08,
-          y: "-3%",
+          scale: 1.12,
+          y: "-3.5%",
           ease: "none",
           duration: 0.5,
         },
@@ -105,15 +104,15 @@ export function WildflowerWorld() {
       .to(
         sunbeamsRef.current,
         {
-          opacity: 0.8,
-          scale: 1.15,
+          opacity: 0.85,
+          scale: 1.2,
           ease: "power2.out",
           duration: 0.45,
         },
         0
       )
       .to(
-        journalGroupRef.current,
+        journalTableRef.current,
         {
           opacity: 1,
           scale: 1,
@@ -123,16 +122,16 @@ export function WildflowerWorld() {
         },
         0.05
       )
-      // 2. Open botanical journal cover (0.35 -> 0.70)
+      // 2. Open botanical journal cover on the wooden table (0.32 -> 0.68)
       .to(
         journalCoverRef.current,
         {
-          rotateY: -135,
-          opacity: 0.15,
+          rotateY: -130,
+          opacity: 0,
           ease: "power2.inOut",
           duration: 0.35,
         },
-        0.35
+        0.32
       )
       .to(
         letterSheetRef.current,
@@ -142,8 +141,9 @@ export function WildflowerWorld() {
           ease: "power2.out",
           duration: 0.35,
         },
-        0.42
+        0.35
       )
+      // 3. Specimen settles and letter text reveals with crisp dark ink (0.45 -> 0.82)
       .to(
         specimenRef.current,
         {
@@ -152,16 +152,16 @@ export function WildflowerWorld() {
           ease: "power1.out",
           duration: 0.3,
         },
-        0.48
+        0.45
       )
       .to(
         letterContentRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.3,
+          duration: 0.35,
         },
-        0.52
+        0.48
       );
     }, containerRef);
 
@@ -215,10 +215,77 @@ export function WildflowerWorld() {
         </span>
       </div>
 
-      {/* MAIN CINEMATIC STAGE: Garden Table & Botanical Journal Reveal */}
+      {/* MAIN CINEMATIC STAGE: Garden Table (Left) & Narrative (Right) */}
       <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
-        {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-6 space-y-4 text-left">
+        {/* Left Column: Physical Botanical Journal Resting DIRECTLY on the Weathered Table */}
+        <div
+          ref={journalTableRef}
+          className="lg:col-span-6 flex justify-center lg:justify-start will-change-transform [perspective:1000px] order-2 lg:order-1"
+        >
+          <div className="relative w-72 sm:w-88 select-none drop-shadow-[0_24px_50px_rgba(0,0,0,0.85)]">
+            {/* The Leather/Linen Botanical Journal on the Wooden Table */}
+            <div className="relative w-full rounded-[3px] overflow-hidden bg-[#2C1D13] shadow-2xl border border-amber-900/50">
+              {/* Journal Front Cover (Lifts open on scroll) */}
+              <div
+                ref={journalCoverRef}
+                className="absolute inset-0 bg-gradient-to-r from-[#24170E] via-[#3E2A1B] to-[#2B1B10] rounded-[3px] border border-amber-800/40 z-30 shadow-lg flex items-center justify-center p-5 will-change-transform"
+              >
+                <div className="text-center space-y-1">
+                  <span className="font-serif italic text-xs text-amber-200/80 uppercase tracking-widest border border-amber-600/40 px-3 py-1 rounded-xs block">
+                    Botanical Journal · Herbarium
+                  </span>
+                  <span className="text-[9px] font-mono text-amber-300/60 uppercase tracking-wider block">
+                    № 05 · Flora
+                  </span>
+                </div>
+              </div>
+
+              {/* Inside Journal Page: Authentic Deckled Cotton Sheet */}
+              <div
+                ref={letterSheetRef}
+                className="relative z-20 w-full bg-[#FAF6EE] p-6 sm:p-7 shadow-inner will-change-transform"
+              >
+                {/* Real Pressed Botanical Specimen Resting on the Paper */}
+                <div
+                  ref={specimenRef}
+                  className="absolute -top-3.5 right-3 w-16 sm:w-18 h-22 sm:h-26 z-25 pointer-events-none drop-shadow-[1px_4px_8px_rgba(40,25,10,0.25)] will-change-transform"
+                >
+                  <Image
+                    src="/assets/stationery/pressed_botanical.png"
+                    alt="Authentic pressed dried flower specimen"
+                    fill
+                    sizes="72px"
+                    className="object-contain"
+                    priority={false}
+                  />
+                </div>
+
+                {/* Live Authored Editorial Demonstration Text - High Contrast */}
+                <div
+                  ref={letterContentRef}
+                  className="space-y-3 text-left will-change-transform relative z-10"
+                >
+                  <div className="flex items-center justify-between border-b border-stone-800/20 pb-2 text-[9px] font-mono text-stone-800/80 uppercase tracking-widest font-semibold">
+                    <span>Field Notes · English Garden</span>
+                    <span>Pressed Botanical</span>
+                  </div>
+
+                  <p className="font-serif italic text-base sm:text-xl text-[#1C160C] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)] pr-8">
+                    “Everything worth keeping grows slowly.”
+                  </p>
+
+                  <div className="pt-2 border-t border-stone-800/20 flex items-center justify-between text-[10px] font-mono text-stone-900 font-bold uppercase tracking-widest">
+                    <span>Atelier Valentino</span>
+                    <span>Specimen № 05</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Editorial Scene Narrative & Entry Action */}
+        <div className="lg:col-span-6 space-y-4 text-left order-1 lg:order-2">
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-widest text-amber-200/90 font-medium">
               Atmosphere 05
@@ -239,69 +306,6 @@ export function WildflowerWorld() {
               worldId="wildflower-paper"
               worldName="Wildflower Paper"
             />
-          </div>
-        </div>
-
-        {/* Right Column: Physical Botanical Journal with Pressed Specimen & Cotton Letter */}
-        <div
-          ref={journalGroupRef}
-          className="lg:col-span-6 flex justify-center lg:justify-end will-change-transform [perspective:1000px]"
-        >
-          <div className="relative w-68 sm:w-80 select-none drop-shadow-[0_24px_50px_rgba(0,0,0,0.9)]">
-            {/* Journal Book Binding Frame */}
-            <div className="relative w-full bg-[#3D2C1E] border border-amber-900/60 rounded-[3px] p-2.5 shadow-2xl flex flex-col">
-              {/* Journal Linen Spine */}
-              <div className="absolute top-0 bottom-0 left-0 w-2.5 bg-[#24170E] rounded-l-[3px] border-r border-amber-950/80" />
-
-              {/* Journal Flap / Front Cover (Lifts open on scroll) */}
-              <div
-                ref={journalCoverRef}
-                className="absolute inset-0 bg-gradient-to-r from-[#2F2015] via-[#4A3728] to-[#362518] rounded-[3px] border border-amber-800/40 z-30 shadow-md flex items-center justify-center p-5 will-change-transform"
-              >
-                <span className="font-serif italic text-[11px] text-amber-200/60 uppercase tracking-widest border border-amber-600/30 px-2.5 py-1 rounded-xs">
-                  Botanical Journal · Herbarium
-                </span>
-              </div>
-
-              {/* Inside Journal Page: Deckled Cotton Sheet */}
-              <div
-                ref={letterSheetRef}
-                className="relative z-20 ml-1.5 bg-[#FAF7F0] border border-stone-300/80 rounded-[2px] p-5 sm:p-6 shadow-md will-change-transform"
-              >
-                {/* Real Pressed Botanical Specimen Pinned Naturally */}
-                <div
-                  ref={specimenRef}
-                  className="absolute -top-3.5 right-3 w-14 sm:w-16 h-20 sm:h-24 z-20 pointer-events-none drop-shadow-[1px_4px_6px_rgba(60,40,15,0.25)] will-change-transform"
-                >
-                  <Image
-                    src="/assets/stationery/pressed_botanical.png"
-                    alt="Authentic pressed dried flower specimen"
-                    fill
-                    sizes="64px"
-                    className="object-contain"
-                    unoptimized
-                  />
-                </div>
-
-                {/* Linen Thread Stitching */}
-                <div className="absolute -top-1 left-3.5 w-1 h-3.5 bg-[#8C7D6B] rounded-full" />
-                <div className="absolute top-1 left-2 w-3.5 h-1 bg-[#8C7D6B] rounded-full" />
-
-                {/* Authored Demonstration Letter Text */}
-                <div
-                  ref={letterContentRef}
-                  className="pt-5 space-y-2.5 text-left will-change-transform"
-                >
-                  <p className="font-serif italic text-base sm:text-lg text-[#1C1814] font-medium leading-relaxed">
-                    “Pressed by hand, kept forever.”
-                  </p>
-                  <div className="pt-2 border-t border-stone-200 flex items-center justify-between text-[10px] font-mono text-stone-700/70 uppercase tracking-widest">
-                    <span>Meadow Flora · № 05</span>
-                    <span>Garden Herbarium</span>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

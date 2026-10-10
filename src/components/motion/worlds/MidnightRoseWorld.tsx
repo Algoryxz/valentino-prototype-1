@@ -11,17 +11,18 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * MidnightRoseWorld (Phase 8 Cinematic Environment):
+ * MidnightRoseWorld (Phase 8.2 Environment-Integrated Letter):
  * Story: A letter reserved for two.
- * Environment: An elegant intimate restaurant at night, candlelight, ruby wine glass, deep burgundy shadows.
- * Choreography: Scroll dollies toward the candlelit table; wax-sealed velvet envelope opens to reveal the letter.
+ * Environment: An elegant intimate restaurant at night, candlelight, linen-covered table, deep shadows.
+ * Choreography: Camera dollies toward the candlelit table; a wax-sealed envelope resting on the linen
+ * opens, revealing the cream stationery letter directly under warm candlelight.
  */
 export function MidnightRoseWorld() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const candleGlowRef = useRef<HTMLDivElement | null>(null);
-  const envelopeGroupRef = useRef<HTMLDivElement | null>(null);
+  const tableLetterRef = useRef<HTMLDivElement | null>(null);
   const envelopeFlapRef = useRef<HTMLDivElement | null>(null);
   const waxSealRef = useRef<HTMLDivElement | null>(null);
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
@@ -33,17 +34,17 @@ export function MidnightRoseWorld() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(bgImageRef.current, { scale: 1.05, y: 0 });
-        gsap.set(candleGlowRef.current, { opacity: 0.8 });
-        gsap.set(envelopeGroupRef.current, { opacity: 1, scale: 1, y: 0 });
+        gsap.set(bgImageRef.current, { scale: 1.1, y: "-3%" });
+        gsap.set(candleGlowRef.current, { opacity: 0.9 });
+        gsap.set(tableLetterRef.current, { opacity: 1, scale: 1, y: 0 });
         gsap.set(envelopeFlapRef.current, { rotateX: -160, opacity: 0.1 });
         gsap.set(waxSealRef.current, { opacity: 0 });
-        gsap.set(letterSheetRef.current, { y: -30, opacity: 1, scale: 1 });
+        gsap.set(letterSheetRef.current, { opacity: 1, y: 0 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         return;
       }
 
-      // Initial resting posture: Wide dining room view, envelope resting closed
+      // Initial resting posture: Wide dining room view, envelope resting closed on the linen
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
@@ -54,8 +55,8 @@ export function MidnightRoseWorld() {
         scale: 0.9,
       });
 
-      gsap.set(envelopeGroupRef.current, {
-        opacity: 0.85,
+      gsap.set(tableLetterRef.current, {
+        opacity: 0.9,
         scale: 0.92,
         y: 20,
       });
@@ -72,9 +73,9 @@ export function MidnightRoseWorld() {
       });
 
       gsap.set(letterSheetRef.current, {
-        y: 0,
-        opacity: 0.2,
-        scale: 0.96,
+        opacity: 0,
+        y: 15,
+        scale: 0.95,
       });
 
       gsap.set(letterContentRef.current, {
@@ -94,8 +95,8 @@ export function MidnightRoseWorld() {
       tl.to(
         bgImageRef.current,
         {
-          scale: 1.08,
-          y: "-3%",
+          scale: 1.12,
+          y: "-3.5%",
           ease: "none",
           duration: 0.5,
         },
@@ -105,14 +106,14 @@ export function MidnightRoseWorld() {
         candleGlowRef.current,
         {
           opacity: 0.85,
-          scale: 1.2,
+          scale: 1.25,
           ease: "power2.out",
           duration: 0.45,
         },
         0
       )
       .to(
-        envelopeGroupRef.current,
+        tableLetterRef.current,
         {
           opacity: 1,
           scale: 1,
@@ -122,16 +123,16 @@ export function MidnightRoseWorld() {
         },
         0.05
       )
-      // 2. Unseal wax & open velvet flap (0.35 -> 0.65)
+      // 2. Unseal wax & open envelope flap on table (0.30 -> 0.65)
       .to(
         waxSealRef.current,
         {
-          scale: 0.8,
-          opacity: 0.2,
+          scale: 0.7,
+          opacity: 0,
           ease: "power2.in",
           duration: 0.25,
         },
-        0.35
+        0.3
       )
       .to(
         envelopeFlapRef.current,
@@ -141,28 +142,28 @@ export function MidnightRoseWorld() {
           ease: "power2.inOut",
           duration: 0.35,
         },
-        0.38
+        0.32
       )
-      // 3. Cream letter emerges into candlelight (0.45 -> 0.80)
+      // 3. Cream stationery letter unfolds under candlelight (0.42 -> 0.80)
       .to(
         letterSheetRef.current,
         {
-          y: -28,
           opacity: 1,
-          scale: 1.02,
+          y: 0,
+          scale: 1,
           ease: "power2.out",
           duration: 0.4,
         },
-        0.45
+        0.42
       )
       .to(
         letterContentRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.3,
+          duration: 0.35,
         },
-        0.52
+        0.5
       );
     }, containerRef);
 
@@ -198,10 +199,10 @@ export function MidnightRoseWorld() {
         aria-hidden="true"
       />
 
-      {/* Dynamic Candle Light Halo */}
+      {/* Dynamic Candle Light Halo around the table */}
       <div
         ref={candleGlowRef}
-        className="absolute top-1/2 right-1/4 w-[450px] h-[450px] -translate-y-1/2 rounded-full bg-gradient-to-tr from-amber-500/25 via-rose-600/15 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
+        className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-[550px] h-[450px] rounded-full bg-gradient-to-tr from-amber-500/30 via-rose-600/20 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
         aria-hidden="true"
       />
 
@@ -216,10 +217,10 @@ export function MidnightRoseWorld() {
         </span>
       </div>
 
-      {/* MAIN CINEMATIC STAGE: Candlelit Table & Velvet Envelope Reveal */}
+      {/* MAIN CINEMATIC STAGE: Candlelit Linen Table & Cream Letter Reveal */}
       <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
         {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-6 space-y-4 text-left">
+        <div className="lg:col-span-5 space-y-4 text-left">
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-widest text-rose-300/90 font-medium">
               Atmosphere 02
@@ -243,56 +244,71 @@ export function MidnightRoseWorld() {
           </div>
         </div>
 
-        {/* Right Column: Physical Wax-Sealed Velvet Envelope Opening into Cream Letter */}
+        {/* Right Column: Physical Cream Letter Resting Directly on the Candlelit Linen Table */}
         <div
-          ref={envelopeGroupRef}
-          className="lg:col-span-6 flex justify-center lg:justify-end will-change-transform [perspective:1000px]"
+          ref={tableLetterRef}
+          className="lg:col-span-7 flex justify-center lg:justify-center will-change-transform [perspective:1000px]"
         >
-          <div className="relative w-68 sm:w-80 select-none">
-            {/* Fallen Rose Petal */}
-            <div className="absolute -bottom-4 -left-4 z-30 pointer-events-none transform -rotate-12 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
-              <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-[#9F1239]">
+          <div className="relative w-72 sm:w-88 select-none drop-shadow-[0_25px_50px_rgba(0,0,0,0.85)]">
+            {/* Fallen Rose Petal beside the letter */}
+            <div className="absolute -bottom-4 -left-4 z-40 pointer-events-none transform -rotate-12 drop-shadow-[0_4px_12px_rgba(0,0,0,0.7)]">
+              <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-[#9F1239]">
                 <path
                   d="M5 16 C 3 9, 10 3, 17 4 C 20 11, 13 19, 5 16 Z"
                   fill="currentColor"
-                  fillOpacity="0.85"
+                  fillOpacity="0.9"
                 />
               </svg>
             </div>
 
-            {/* The Velvet Envelope Pocket Body */}
-            <div className="relative w-full min-h-[180px] bg-gradient-to-br from-[#30051B] via-[#1A020E] to-[#0A0105] shadow-[0_24px_60px_-10px_rgba(0,0,0,0.95),0_6px_20px_rgba(159,18,57,0.3)] border-t border-l border-amber-300/30 rounded-[2px] p-4 flex flex-col justify-end">
-              {/* Velvet Pointed Flap */}
+            {/* 1. Initial State: Deep Velvet Envelope with Wax Seal */}
+            <div className="relative w-full rounded-[2px] overflow-hidden">
+              {/* Velvet Envelope Flap & Wax Seal (Opens to reveal letter) */}
               <div
                 ref={envelopeFlapRef}
-                className="absolute top-0 inset-x-0 h-22 bg-gradient-to-b from-[#3E0723] to-[#16020D] [clip-path:polygon(0_0,100%_0,50%_100%)] shadow-md z-30 border-t border-amber-300/20 will-change-transform"
+                className="absolute top-0 inset-x-0 h-28 bg-gradient-to-b from-[#3E0723] via-[#240315] to-[#14010B] [clip-path:polygon(0_0,100%_0,50%_100%)] shadow-md z-30 border-t border-amber-300/30 will-change-transform"
               />
 
               {/* Hand-Poured Molten Wax Seal */}
               <div
                 ref={waxSealRef}
-                className="absolute top-18 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 will-change-transform"
+                className="absolute top-22 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 will-change-transform"
               >
-                <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-[#E11D48] via-[#9F1239] to-[#4C0519] border border-amber-300/50 shadow-[0_6px_20px_rgba(159,18,57,0.8),inset_0_2px_4px_rgba(255,255,255,0.3)] flex items-center justify-center">
-                  <div className="w-4.5 h-4.5 rounded-full border border-amber-200/40 bg-[#9F1239]/70" />
+                <div className="relative w-12 h-12 rounded-full bg-gradient-to-br from-[#E11D48] via-[#9F1239] to-[#4C0519] border border-amber-300/60 shadow-[0_6px_22px_rgba(159,18,57,0.85),inset_0_2px_4px_rgba(255,255,255,0.3)] flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full border border-amber-200/50 bg-[#9F1239]/80 flex items-center justify-center">
+                    <span className="text-[10px] text-amber-200 font-serif italic">V</span>
+                  </div>
                 </div>
               </div>
 
-              {/* The Unfolding Cream Stationery Sheet Emerging from Pocket */}
+              {/* 2. Revealed Hero Cream Stationery Sheet on the Linen Table */}
               <div
                 ref={letterSheetRef}
-                className="relative z-20 w-full bg-[#FFFDF9] shadow-[0_16px_40px_rgba(0,0,0,0.6)] border border-amber-200/50 rounded-[2px] p-5 sm:p-6 will-change-transform"
+                className="relative z-20 w-full bg-[#FAF6EE] shadow-[0_18px_45px_rgba(0,0,0,0.65)] border border-amber-200/70 rounded-[2px] p-6 sm:p-7 will-change-transform"
               >
+                {/* Subtle candlelight warmth sheen across the paper */}
+                <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/10 via-transparent to-amber-200/15 pointer-events-none" />
+
                 <div
                   ref={letterContentRef}
-                  className="space-y-2.5 text-left will-change-transform"
+                  className="space-y-3 text-left will-change-transform relative z-10"
                 >
-                  <p className="font-serif italic text-base sm:text-lg text-[#1A0311] font-medium leading-relaxed">
+                  <div className="flex items-center justify-between border-b border-rose-950/20 pb-2">
+                    <span className="text-[9px] font-mono uppercase tracking-widest text-[#7A1D45] font-bold">
+                      Table No. 02 · Reserved
+                    </span>
+                    <span className="text-[9px] font-mono text-[#58152E]/80 uppercase tracking-widest font-semibold">
+                      Midnight
+                    </span>
+                  </div>
+
+                  <p className="font-serif italic text-base sm:text-xl text-[#240314] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
                     “Written in quiet starlight, meant only for you.”
                   </p>
-                  <div className="pt-2 border-t border-rose-200/60 flex items-center justify-between text-[10px] font-mono text-rose-950/70 uppercase tracking-widest">
-                    <span>Table No. 02</span>
-                    <span>Midnight</span>
+
+                  <div className="pt-2 border-t border-rose-950/20 flex items-center justify-between text-[10px] font-mono text-[#7A1D45] uppercase tracking-widest font-semibold">
+                    <span>Atelier Valentino</span>
+                    <span>For Two</span>
                   </div>
                 </div>
               </div>

@@ -11,19 +11,19 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * OceanLetterWorld (Phase 8 Cinematic Environment):
+ * OceanLetterWorld (Phase 8.2 Environment-Integrated Parchment Reveal):
  * Story: The bottle that found its way home.
- * Environment: Dawn shoreline, turquoise tidal wave rolling onto glistening wet sand,
- * sea mist, distant horizon.
- * Choreography: Wave deposits the vintage corked bottle onto wet sand; parchment letter
- * unrolls beside a frosted sea glass pebble to reveal the message.
+ * Environment: Dawn shoreline, turquoise tidal wave rolling onto glistening wet sand, sea mist.
+ * Choreography: Camera dollies toward the washed-up glass bottle; the cork releases, and
+ * the weathered sea-salt parchment unrolls directly on the wet sand beside a frosted sea-glass pebble.
  */
 export function OceanLetterWorld() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const coastalMistRef = useRef<HTMLDivElement | null>(null);
-  const bottleGroupRef = useRef<HTMLDivElement | null>(null);
+  const sandStageRef = useRef<HTMLDivElement | null>(null);
+  const corkReleaseRef = useRef<HTMLDivElement | null>(null);
   const parchmentSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const seaGlassRef = useRef<HTMLDivElement | null>(null);
@@ -34,16 +34,17 @@ export function OceanLetterWorld() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(bgImageRef.current, { scale: 1.05, y: 0 });
-        gsap.set(coastalMistRef.current, { opacity: 0.6 });
-        gsap.set(bottleGroupRef.current, { opacity: 1, scale: 1, y: 0 });
-        gsap.set(parchmentSheetRef.current, { opacity: 1, y: 0, rotate: -2 });
+        gsap.set(bgImageRef.current, { scale: 1.1, y: "-3%" });
+        gsap.set(coastalMistRef.current, { opacity: 0.8 });
+        gsap.set(sandStageRef.current, { opacity: 1, scale: 1, y: 0 });
+        gsap.set(corkReleaseRef.current, { opacity: 0, x: 20 });
+        gsap.set(parchmentSheetRef.current, { opacity: 1, scale: 1, rotate: -1.5 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(seaGlassRef.current, { opacity: 0.95 });
         return;
       }
 
-      // Initial resting posture: Wide shoreline vista
+      // Initial resting posture: Wide shoreline vista, bottle on sand
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
@@ -54,21 +55,25 @@ export function OceanLetterWorld() {
         scale: 0.95,
       });
 
-      gsap.set(bottleGroupRef.current, {
-        opacity: 0.85,
-        scale: 0.92,
+      gsap.set(sandStageRef.current, {
+        opacity: 0.9,
+        scale: 0.9,
         y: 20,
       });
 
+      gsap.set(corkReleaseRef.current, {
+        opacity: 1,
+        x: 0,
+      });
+
       gsap.set(parchmentSheetRef.current, {
-        opacity: 0.4,
-        scale: 0.94,
-        y: 15,
-        rotate: 3,
+        opacity: 0,
+        scale: 0.88,
+        rotate: 4,
       });
 
       gsap.set(letterContentRef.current, {
-        opacity: 0.2,
+        opacity: 0,
       });
 
       gsap.set(seaGlassRef.current, {
@@ -89,8 +94,8 @@ export function OceanLetterWorld() {
       tl.to(
         bgImageRef.current,
         {
-          scale: 1.08,
-          y: "-3%",
+          scale: 1.12,
+          y: "-3.5%",
           ease: "none",
           duration: 0.5,
         },
@@ -99,15 +104,15 @@ export function OceanLetterWorld() {
       .to(
         coastalMistRef.current,
         {
-          opacity: 0.8,
-          scale: 1.15,
+          opacity: 0.85,
+          scale: 1.25,
           ease: "power2.out",
           duration: 0.45,
         },
         0
       )
       .to(
-        bottleGroupRef.current,
+        sandStageRef.current,
         {
           opacity: 1,
           scale: 1,
@@ -117,19 +122,29 @@ export function OceanLetterWorld() {
         },
         0.05
       )
-      // 2. Parchment unrolls on wet sand (0.35 -> 0.75)
+      // 2. Cork releases & parchment emerges onto wet sand (0.32 -> 0.70)
+      .to(
+        corkReleaseRef.current,
+        {
+          opacity: 0,
+          x: 25,
+          ease: "power2.in",
+          duration: 0.25,
+        },
+        0.32
+      )
       .to(
         parchmentSheetRef.current,
         {
           opacity: 1,
           scale: 1,
-          y: 0,
-          rotate: -2,
+          rotate: -1.5,
           ease: "power2.out",
-          duration: 0.4,
+          duration: 0.38,
         },
         0.35
       )
+      // 3. Frosted sea glass settles beside parchment (0.42 -> 0.75)
       .to(
         seaGlassRef.current,
         {
@@ -140,12 +155,13 @@ export function OceanLetterWorld() {
         },
         0.42
       )
+      // 4. Weathered parchment letter text reveals with crisp contrast (0.48 -> 0.82)
       .to(
         letterContentRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.3,
+          duration: 0.35,
         },
         0.48
       );
@@ -204,7 +220,7 @@ export function OceanLetterWorld() {
       {/* MAIN CINEMATIC STAGE: Shoreline Wet Sand & Unrolled Parchment */}
       <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
         {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-6 space-y-4 text-left">
+        <div className="lg:col-span-5 space-y-4 text-left">
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-widest text-sky-300/90 font-medium">
               Atmosphere 06
@@ -228,43 +244,58 @@ export function OceanLetterWorld() {
           </div>
         </div>
 
-        {/* Right Column: Physical Wet Sand Plate + Parchment Sheet + Frosted Sea Glass */}
+        {/* Right Column: Weathered Parchment Sheet Resting Directly on the Wet Sand */}
         <div
-          ref={bottleGroupRef}
-          className="lg:col-span-6 flex justify-center lg:justify-end will-change-transform"
+          ref={sandStageRef}
+          className="lg:col-span-7 flex justify-center lg:justify-center will-change-transform [perspective:1000px]"
         >
-          <div className="relative w-68 sm:w-80 select-none drop-shadow-[0_24px_50px_rgba(0,0,0,0.95)]">
+          <div className="relative w-72 sm:w-88 select-none drop-shadow-[0_24px_50px_rgba(0,10,20,0.85)]">
             {/* Tactile Frosted Sea-Glass Pebble */}
             <div
               ref={seaGlassRef}
-              className="absolute -top-3.5 -right-2 z-30 pointer-events-none will-change-transform"
+              className="absolute -top-3.5 -right-2 z-35 pointer-events-none will-change-transform"
             >
-              <div className="w-14 h-9 sm:w-18 sm:h-11 rounded-[50%_50%_60%_40%/45%_55%_50%_50%] bg-gradient-to-br from-cyan-200/50 via-cyan-400/30 to-teal-500/25 backdrop-blur-md border border-cyan-100/60 shadow-[0_8px_25px_rgba(34,211,238,0.5),0_2px_8px_rgba(0,0,0,0.6)] transform rotate-12 flex items-center justify-center">
-                <div className="w-5 h-2 rounded-full bg-white/60 blur-[0.6px] transform -rotate-6" />
+              <div className="w-14 h-9 sm:w-16 sm:h-10 rounded-[50%_50%_60%_40%/45%_55%_50%_50%] bg-gradient-to-br from-cyan-200/60 via-cyan-400/40 to-teal-500/30 backdrop-blur-md border border-cyan-100/70 shadow-[0_8px_25px_rgba(34,211,238,0.5),0_2px_8px_rgba(0,0,0,0.4)] transform rotate-12 flex items-center justify-center">
+                <div className="w-5 h-2 rounded-full bg-white/70 blur-[0.6px] transform -rotate-6" />
               </div>
             </div>
 
-            {/* Wet Sand Basal Slate Plate */}
-            <div className="relative w-full bg-gradient-to-br from-[#0B1A28] via-[#05111B] to-[#02080F] rounded-[2px] p-2.5 shadow-2xl border border-sky-500/20">
-              {/* Wet Tidal Sheen Reflection */}
-              <div className="absolute inset-0 opacity-25 pointer-events-none bg-gradient-to-tr from-cyan-400/15 via-transparent to-sky-200/15" />
+            {/* Cork Seal Release Cue */}
+            <div
+              ref={corkReleaseRef}
+              className="absolute -top-2 left-6 z-30 pointer-events-none px-2.5 py-1 bg-[#D4A373] text-[#24170E] rounded-full border border-amber-900/40 text-[9px] font-mono uppercase tracking-widest shadow-md will-change-transform"
+            >
+              Sea Seal · Uncorked
+            </div>
 
-              {/* Weathered Parchment Sheet Unrolled on the Sand */}
+            {/* Weathered Parchment Sheet Unrolled on the Sand (NO dark UI container) */}
+            <div
+              ref={parchmentSheetRef}
+              className="relative z-20 w-full bg-[#FAF5E8] border border-amber-900/30 rounded-[3px] p-6 sm:p-7 shadow-2xl overflow-hidden will-change-transform"
+            >
+              {/* Weathered sea-salt wash & parchment watermarks */}
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-900/5 via-transparent to-cyan-950/10 pointer-events-none" />
+
+              {/* Deckled Edge Frayed Trim (Top & Bottom) */}
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-amber-900/20 via-stone-700/10 to-amber-900/20" />
+              <div className="absolute bottom-0 inset-x-0 h-1 bg-gradient-to-r from-amber-900/20 via-stone-700/10 to-amber-900/20" />
+
               <div
-                ref={parchmentSheetRef}
-                className="relative z-20 bg-[#E6ECEF] border border-sky-300/40 rounded-[2px] p-5 sm:p-6 shadow-md will-change-transform"
+                ref={letterContentRef}
+                className="space-y-3 text-left will-change-transform relative z-10"
               >
-                <div
-                  ref={letterContentRef}
-                  className="space-y-2.5 text-left will-change-transform"
-                >
-                  <p className="font-serif italic text-base sm:text-lg text-[#081B26] font-medium leading-relaxed">
-                    “Our devotion is as vast and enduring as the evening tides.”
-                  </p>
-                  <div className="pt-2 border-t border-sky-200/60 flex items-center justify-between text-[10px] font-mono text-sky-900/70 uppercase tracking-widest">
-                    <span>Shoreline · Drift № 06</span>
-                    <span>Pacific Tide</span>
-                  </div>
+                <div className="flex items-center justify-between border-b border-sky-950/20 pb-2 text-[9px] font-mono text-sky-950/80 uppercase tracking-widest font-semibold">
+                  <span>Shoreline · Drift № 06</span>
+                  <span>Pacific Tide</span>
+                </div>
+
+                <p className="font-serif italic text-base sm:text-xl text-[#061923] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
+                  “Our devotion is as vast and enduring as the evening tides.”
+                </p>
+
+                <div className="pt-2 border-t border-sky-950/20 flex items-center justify-between text-[10px] font-mono text-sky-950 font-bold uppercase tracking-widest">
+                  <span>Atelier Valentino</span>
+                  <span>Message in a Bottle</span>
                 </div>
               </div>
             </div>

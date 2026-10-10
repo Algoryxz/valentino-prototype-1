@@ -11,19 +11,20 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * ApricotFilmWorld (Phase 8 Cinematic Environment):
- * Story: A memory before the credits.
- * Environment: 1930s vintage cinema with rich red velvet curtains, warm projector beam,
- * dark mahogany seating, and golden halation.
- * Choreography: Projector light beam warms the auditorium; illuminated celluloid memory letter
- * settles center stage to reveal the authored quotation.
+ * ApricotFilmWorld (Phase 8.2 Environment-Integrated Cinema Screen):
+ * Story: A memory projected before the credits.
+ * Environment: 1930s vintage cinema auditorium, velvet stage curtains, projector beam.
+ * Choreography: Camera dollies down the aisle toward the center stage; velvet curtains part open;
+ * the letter reveals directly on the illuminated cinema screen at center stage under the projector beam.
  */
 export function ApricotFilmWorld() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const bgImageRef = useRef<HTMLDivElement | null>(null);
   const projectorBeamRef = useRef<HTMLDivElement | null>(null);
-  const memoryLetterRef = useRef<HTMLDivElement | null>(null);
+  const curtainLeftRef = useRef<HTMLDivElement | null>(null);
+  const curtainRightRef = useRef<HTMLDivElement | null>(null);
+  const screenStageRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -32,14 +33,15 @@ export function ApricotFilmWorld() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(bgImageRef.current, { scale: 1.05, y: 0 });
-        gsap.set(projectorBeamRef.current, { opacity: 0.85 });
-        gsap.set(memoryLetterRef.current, { opacity: 1, scale: 1, y: 0 });
+        gsap.set(bgImageRef.current, { scale: 1.1, y: "-3%" });
+        gsap.set(projectorBeamRef.current, { opacity: 0.9 });
+        gsap.set([curtainLeftRef.current, curtainRightRef.current], { xPercent: (i) => (i === 0 ? -100 : 100) });
+        gsap.set(screenStageRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         return;
       }
 
-      // Initial resting posture: Theatre auditorium in warm low light
+      // Initial resting posture: Curtains closed, projector warming up
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
@@ -50,14 +52,21 @@ export function ApricotFilmWorld() {
         scale: 0.95,
       });
 
-      gsap.set(memoryLetterRef.current, {
-        opacity: 0.85,
-        scale: 0.92,
-        y: 20,
+      gsap.set(curtainLeftRef.current, {
+        xPercent: 0,
+      });
+
+      gsap.set(curtainRightRef.current, {
+        xPercent: 0,
+      });
+
+      gsap.set(screenStageRef.current, {
+        opacity: 0.7,
+        scale: 0.94,
       });
 
       gsap.set(letterContentRef.current, {
-        opacity: 0.25,
+        opacity: 0,
       });
 
       const tl = gsap.timeline({
@@ -69,12 +78,12 @@ export function ApricotFilmWorld() {
         },
       });
 
-      // 1. Advance toward theatre stage (0.0 -> 0.45)
+      // 1. Dolly camera down the theatre aisle toward the stage (0.0 -> 0.45)
       tl.to(
         bgImageRef.current,
         {
-          scale: 1.08,
-          y: "-3%",
+          scale: 1.12,
+          y: "-3.5%",
           ease: "none",
           duration: 0.5,
         },
@@ -84,24 +93,43 @@ export function ApricotFilmWorld() {
         projectorBeamRef.current,
         {
           opacity: 0.85,
-          scale: 1.15,
+          scale: 1.2,
           ease: "power2.out",
           duration: 0.45,
         },
         0
       )
+      // 2. Velvet curtains part open wide to wings (0.08 -> 0.38)
       .to(
-        memoryLetterRef.current,
+        curtainLeftRef.current,
+        {
+          xPercent: -105,
+          ease: "power2.inOut",
+          duration: 0.35,
+        },
+        0.08
+      )
+      .to(
+        curtainRightRef.current,
+        {
+          xPercent: 105,
+          ease: "power2.inOut",
+          duration: 0.35,
+        },
+        0.08
+      )
+      // 3. Illuminated cinema screen expands into view on stage (0.35 -> 0.75)
+      .to(
+        screenStageRef.current,
         {
           opacity: 1,
           scale: 1,
-          y: 0,
           ease: "power2.out",
-          duration: 0.45,
+          duration: 0.4,
         },
-        0.05
+        0.35
       )
-      // 2. Projector beam illuminates letter (0.35 -> 0.75)
+      // 4. Authored memory title reveals with high contrast (0.48 -> 0.82)
       .to(
         letterContentRef.current,
         {
@@ -109,7 +137,7 @@ export function ApricotFilmWorld() {
           ease: "power1.inOut",
           duration: 0.35,
         },
-        0.4
+        0.48
       );
     }, containerRef);
 
@@ -171,25 +199,19 @@ export function ApricotFilmWorld() {
         </span>
       </div>
 
-      {/* MAIN CINEMATIC STAGE: Illuminated Memory Letter */}
-      <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
-        {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-6 space-y-4 text-left">
+      {/* MAIN CINEMATIC STAGE: Stage Centered Architecture */}
+      <div className="w-full max-w-5xl mx-auto my-auto flex flex-col items-center gap-6 z-20">
+        {/* Editorial Scene Narrative & Entry Action (Centered Header) */}
+        <div className="max-w-xl text-center space-y-2">
           <div className="space-y-1">
             <span className="text-xs font-mono uppercase tracking-widest text-amber-300/90 font-medium">
-              Atmosphere 04
+              Atmosphere 04 · Apricot Film
             </span>
-            <h3 className="text-4xl sm:text-6xl font-serif font-normal tracking-tight text-[#FFFBEB] drop-shadow-[0_2px_20px_rgba(30,12,2,0.95)]">
-              Apricot Film
+            <h3 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[#FFFBEB] drop-shadow-[0_2px_20px_rgba(30,12,2,0.95)]">
+              “For memories that feel like a sun-drenched afternoon.”
             </h3>
           </div>
-          <p className="text-lg sm:text-2xl font-serif italic text-amber-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(30,12,2,0.9)]">
-            “For memories that feel like a sun-drenched afternoon.”
-          </p>
-          <p className="text-xs sm:text-sm text-amber-100/90 max-w-md font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(30,12,2,0.9)]">
-            A vintage cinema, the soft mechanical whir of the projector, and velvet curtains parting to reveal your story on the screen.
-          </p>
-          <div className="pt-2">
+          <div className="pt-1">
             <AtmosphericButton
               href="/create?template=apricot-film"
               worldId="apricot-film"
@@ -198,79 +220,53 @@ export function ApricotFilmWorld() {
           </div>
         </div>
 
-        {/* Right Column: Illuminated Celluloid Memory Frame & Cream Letter */}
-        <div
-          ref={memoryLetterRef}
-          className="lg:col-span-6 flex justify-center lg:justify-end will-change-transform"
-        >
-          <div className="relative w-68 sm:w-80 select-none drop-shadow-[0_24px_50px_rgba(0,0,0,0.95)]">
-            {/* Vintage Film Strip Header */}
-            <div className="w-full bg-[#1A0A03] border-t border-x border-amber-600/40 py-1 px-3 flex justify-between items-center rounded-t-[2px]">
-              <div className="flex gap-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2.5 h-1.5 bg-black rounded-[1px] border border-amber-700/50"
-                  />
-                ))}
+        {/* The Cinema Screen at Center Stage with Parting Velvet Curtains */}
+        <div className="w-full flex justify-center will-change-transform [perspective:1000px]">
+          <div className="relative w-[320px] sm:w-[480px] select-none rounded-[2px] overflow-hidden drop-shadow-[0_25px_60px_rgba(0,0,0,0.95)]">
+            {/* The Illuminated Cinema Screen Frame */}
+            <div
+              ref={screenStageRef}
+              className="relative w-full bg-[#FAF5EE] border border-amber-300/60 rounded-[2px] p-6 sm:p-7 shadow-2xl overflow-hidden will-change-transform"
+            >
+              {/* Restrained 35mm Perforation Header */}
+              <div className="w-full pb-2 mb-2 border-b border-amber-800/20 flex justify-between items-center text-[8.5px] font-mono uppercase tracking-widest text-amber-900/80">
+                <span className="font-semibold">Kodachrome · 1935</span>
+                <span>Scene 04 · Frame 24</span>
               </div>
-              <span className="text-[8.5px] font-mono uppercase tracking-widest text-amber-400/80">
-                Kodachrome · 1935
-              </span>
-              <div className="flex gap-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2.5 h-1.5 bg-black rounded-[1px] border border-amber-700/50"
-                  />
-                ))}
-              </div>
-            </div>
 
-            {/* The Illuminated Screen Frame with Warm Halation */}
-            <div className="w-full bg-gradient-to-b from-[#2A1005] via-[#1D0902] to-[#120501] border-x border-amber-500/40 p-4 sm:p-5 shadow-2xl relative overflow-hidden">
-              {/* Projector Halation Sheen */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/20 via-transparent to-amber-200/15 pointer-events-none mix-blend-screen" />
+              {/* Screen Projector Glow Sheen */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/15 via-transparent to-amber-200/10 pointer-events-none mix-blend-screen" />
 
-              {/* The Hero Cream Memory Letter */}
-              <div className="relative w-full bg-[#FAF5EE] border border-amber-200/60 p-5 sm:p-6 rounded-[2px] shadow-lg text-left">
-                <div
-                  ref={letterContentRef}
-                  className="space-y-2.5 will-change-transform"
-                >
-                  <p className="font-serif italic text-base sm:text-lg text-[#1C0D05] font-medium leading-relaxed">
-                    “Sunlight in your hair, golden and still.”
-                  </p>
-                  <div className="pt-2 border-t border-amber-200/70 flex items-center justify-between text-[10px] font-mono text-amber-900/70 uppercase tracking-widest">
-                    <span>Scene 04</span>
-                    <span>Golden Hour</span>
-                  </div>
+              {/* The Projected Letter - Crisp Contrast Typography */}
+              <div
+                ref={letterContentRef}
+                className="py-3 space-y-3 text-left relative z-10 will-change-transform"
+              >
+                <p className="font-serif italic text-base sm:text-xl text-[#1C0D05] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
+                  “Sunlight in your hair, golden and still.”
+                </p>
+                <div className="pt-2 border-t border-amber-800/20 flex items-center justify-between text-[10px] font-mono text-amber-950 font-bold uppercase tracking-widest">
+                  <span>Golden Hour</span>
+                  <span>35mm Projection</span>
                 </div>
               </div>
+
+              {/* Restrained 35mm Perforation Footer */}
+              <div className="w-full pt-2 mt-2 border-t border-amber-800/20 flex justify-between items-center text-[8px] font-mono text-amber-900/70">
+                <span>Atelier Valentino Cinema</span>
+                <span>Print № 04</span>
+              </div>
             </div>
 
-            {/* Film Strip Footer */}
-            <div className="w-full bg-[#1A0A03] border-b border-x border-amber-600/40 py-1 px-3 flex justify-between items-center rounded-b-[2px]">
-              <div className="flex gap-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2.5 h-1.5 bg-black rounded-[1px] border border-amber-700/50"
-                  />
-                ))}
-              </div>
-              <span className="text-[8.5px] font-mono uppercase tracking-widest text-amber-400/80">
-                Frame 24 FPS
-              </span>
-              <div className="flex gap-1.5">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-2.5 h-1.5 bg-black rounded-[1px] border border-amber-700/50"
-                  />
-                ))}
-              </div>
-            </div>
+            {/* Stage Velvet Curtains (Parting on scroll) */}
+            <div
+              ref={curtainLeftRef}
+              className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#500714] via-[#7F1D1D] to-[#3B0710] border-r border-amber-400/30 shadow-2xl z-30 will-change-transform"
+            />
+            <div
+              ref={curtainRightRef}
+              className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#500714] via-[#7F1D1D] to-[#3B0710] border-l border-amber-400/30 shadow-2xl z-30 will-change-transform"
+            />
           </div>
         </div>
       </div>
