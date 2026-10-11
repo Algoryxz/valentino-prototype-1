@@ -25,7 +25,11 @@ export function SpatialStationeryUnfold() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const letterWrapperRef = useRef<HTMLDivElement | null>(null);
-  const foldedLetterRef = useRef<HTMLDivElement | null>(null);
+  const topFlapRef = useRef<HTMLDivElement | null>(null);
+  const bottomFlapRef = useRef<HTMLDivElement | null>(null);
+  const topShadowRef = useRef<HTMLDivElement | null>(null);
+  const bottomShadowRef = useRef<HTMLDivElement | null>(null);
+  const origamiBundleRef = useRef<HTMLDivElement | null>(null);
   const unfoldedSheetRef = useRef<HTMLDivElement | null>(null);
   const creaseLinesRef = useRef<HTMLDivElement | null>(null);
   const letterTextRef = useRef<HTMLDivElement | null>(null);
@@ -38,7 +42,7 @@ export function SpatialStationeryUnfold() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(foldedLetterRef.current, { opacity: 0 });
+        gsap.set(origamiBundleRef.current, { opacity: 0 });
         gsap.set(unfoldedSheetRef.current, { opacity: 1, scale: 1, y: 0 });
         gsap.set(creaseLinesRef.current, { opacity: 0.15 });
         gsap.set(letterTextRef.current, { opacity: 1 });
@@ -47,34 +51,56 @@ export function SpatialStationeryUnfold() {
         return;
       }
 
-      // Initial resting posture: visibly folded, creased cotton paper letter
-      gsap.set(foldedLetterRef.current, {
-        opacity: 1,
-        scale: 0.95,
-        rotate: -1,
-        y: 0,
+      // Initial resting posture: The same physical deckled cotton sheet folded into a compact trifold bundle
+      gsap.set(topFlapRef.current, {
+        rotateX: -168,
+        rotateZ: -2,
+        transformOrigin: "bottom center",
+        transformStyle: "preserve-3d",
       });
 
-      // Ticket tucked beneath lower-left edge of casually folded sheet
+      gsap.set(bottomFlapRef.current, {
+        rotateX: 164,
+        rotateZ: 1.5,
+        transformOrigin: "top center",
+        transformStyle: "preserve-3d",
+      });
+
+      gsap.set(topShadowRef.current, {
+        opacity: 0.9,
+      });
+
+      gsap.set(bottomShadowRef.current, {
+        opacity: 0.8,
+      });
+
+      // Ticket tucked beneath lower crease edge of folded bundle
       gsap.set(ticketRef.current, {
-        x: 34,
-        y: -78,
-        rotate: -3,
+        x: 18,
+        y: -110,
+        rotate: -3.5,
         opacity: 1,
       });
 
+      gsap.set(origamiBundleRef.current, {
+        opacity: 1,
+        scale: 0.96,
+        rotate: -1,
+      });
+
+      // The base sheet is completely hidden initially so the viewer only sees the folded bundle
       gsap.set(unfoldedSheetRef.current, {
         opacity: 0,
-        scale: 0.92,
-        y: 12,
-      });
-
-      gsap.set(creaseLinesRef.current, {
-        opacity: 0.85,
+        scale: 0.96,
+        y: 6,
       });
 
       gsap.set(letterTextRef.current, {
         opacity: 0,
+      });
+
+      gsap.set(creaseLinesRef.current, {
+        opacity: 0.85,
       });
 
       gsap.set(ctaRef.current, {
@@ -92,18 +118,39 @@ export function SpatialStationeryUnfold() {
         },
       });
 
-      // 1. Initial Movement: Folded letter unfolds (0.04 -> 0.24)
+      // 1. Top flap lifts and physically unfolds in 3D (0.04 -> 0.34)
       tl.to(
-        foldedLetterRef.current,
+        topFlapRef.current,
         {
-          opacity: 0,
-          scale: 1.05,
+          rotateX: 0,
+          rotateZ: 0,
           ease: "power2.inOut",
-          duration: 0.22,
+          duration: 0.30,
         },
         0.04
       )
-      // 1b. Ticket glides smoothly with expanding lower-left deckled edge
+      // 2. Bottom flap unfolds down in 3D (0.08 -> 0.36)
+      .to(
+        bottomFlapRef.current,
+        {
+          rotateX: 0,
+          rotateZ: 0,
+          ease: "power2.inOut",
+          duration: 0.28,
+        },
+        0.08
+      )
+      // 3. Dynamic cast shadows soften as flaps open flat (0.08 -> 0.34)
+      .to(
+        [topShadowRef.current, bottomShadowRef.current],
+        {
+          opacity: 0,
+          ease: "power1.out",
+          duration: 0.26,
+        },
+        0.08
+      )
+      // 4. Ticket glides smoothly with expanding lower deckled edge (0.06 -> 0.36)
       .to(
         ticketRef.current,
         {
@@ -111,43 +158,63 @@ export function SpatialStationeryUnfold() {
           y: 0,
           rotate: -4,
           ease: "power2.out",
-          duration: 0.28,
+          duration: 0.30,
         },
         0.06
       )
-      // 2. Unfolded sheet expands & takes stage (0.10 -> 0.36)
+      // 5. Origami bundle settles rotation and scale (0.04 -> 0.34)
+      .to(
+        origamiBundleRef.current,
+        {
+          rotate: 0,
+          scale: 1,
+          ease: "power2.out",
+          duration: 0.30,
+        },
+        0.04
+      )
+      // 6. As flaps reach 0deg, seamless handover to unified single sheet (0.30 -> 0.38)
       .to(
         unfoldedSheetRef.current,
         {
           opacity: 1,
           scale: 1,
           y: 0,
-          ease: "power2.out",
-          duration: 0.26,
+          ease: "power1.inOut",
+          duration: 0.08,
         },
-        0.1
+        0.30
       )
-      // 3. Crease lines soften into natural fiber texture (0.22 -> 0.42)
       .to(
-        creaseLinesRef.current,
+        origamiBundleRef.current,
         {
-          opacity: 0.25,
-          ease: "power1.out",
-          duration: 0.2,
+          opacity: 0,
+          ease: "power1.inOut",
+          duration: 0.08,
         },
-        0.22
+        0.30
       )
-      // 4. Live authored text reveals with full ink opacity (0.26 -> 0.48)
+      // 7. Live authored text reveals with full ink opacity (0.28 -> 0.46)
       .to(
         letterTextRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
+          duration: 0.18,
+        },
+        0.28
+      )
+      // 8. Crease lines soften into natural fiber texture (0.26 -> 0.48)
+      .to(
+        creaseLinesRef.current,
+        {
+          opacity: 0.15,
+          ease: "power1.out",
           duration: 0.22,
         },
         0.26
       )
-      // 5. CTA resolves cleanly below settled letter (0.40 -> 0.55)
+      // 9. CTA resolves cleanly below settled letter (0.42 -> 0.58)
       .to(
         ctaRef.current,
         {
@@ -156,7 +223,7 @@ export function SpatialStationeryUnfold() {
           ease: "power2.out",
           duration: 0.18,
         },
-        0.4
+        0.42
       );
     }, containerRef);
 
@@ -186,15 +253,15 @@ export function SpatialStationeryUnfold() {
         </p>
       </div>
 
-      {/* PHYSICAL STATIONERY: One cohesive sheet unfolding naturally */}
+      {/* PHYSICAL STATIONERY: One cohesive sheet unfolding naturally in 3D */}
       <div
         ref={letterWrapperRef}
-        className="relative w-full max-w-[320px] sm:max-w-[350px] my-auto flex justify-center [perspective:1400px] will-change-transform z-20"
+        className="relative w-full max-w-[320px] sm:max-w-[350px] aspect-[540/724] my-auto flex justify-center [perspective:1400px] will-change-transform z-20"
       >
         {/* Vintage Coffee Ticket tucked naturally beneath lower-left deckled edge */}
         <div
           ref={ticketRef}
-          className="absolute -bottom-1 -left-1 sm:bottom-0 sm:-left-2 z-10 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_4px_10px_rgba(40,10,20,0.22)] will-change-transform"
+          className="absolute -bottom-1 -left-1 sm:bottom-0 sm:-left-2 z-15 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_4px_10px_rgba(40,10,20,0.22)] will-change-transform"
           aria-hidden="true"
         >
           <div className="w-24 sm:w-28 py-1 px-2.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-left">
@@ -207,27 +274,12 @@ export function SpatialStationeryUnfold() {
           </div>
         </div>
 
-        {/* 1. INITIAL STATE: Naturally Crumpled, Casually Folded Cotton Sheet */}
-        <div
-          ref={foldedLetterRef}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] sm:w-[265px] aspect-[766/936] drop-shadow-[0_12px_24px_rgba(40,8,20,0.18)] will-change-transform z-30 pointer-events-none"
-        >
-          <Image
-            src="/assets/stationery/cotton_paper_folded_casual.png"
-            alt="Naturally crumpled and casually folded deckled cotton stationery"
-            fill
-            sizes="270px"
-            className="object-contain object-center"
-            priority
-          />
-        </div>
-
-        {/* 2. UNFOLDED HERO DECKLED COTTON SHEET (One Substantially Continuous Sheet) */}
+        {/* 1. UNFOLDED HERO DECKLED COTTON SHEET (Continuous settled sheet with live typography) */}
         <div
           ref={unfoldedSheetRef}
-          className="relative z-20 w-full aspect-[540/724] drop-shadow-[0_22px_45px_rgba(50,10,25,0.26)] px-7 py-8 sm:px-8 sm:py-10 flex flex-col justify-between will-change-transform"
+          className="absolute inset-0 z-20 drop-shadow-[0_22px_45px_rgba(50,10,25,0.26)] px-7 py-8 sm:px-8 sm:py-10 flex flex-col justify-between will-change-transform opacity-0 pointer-events-auto"
         >
-          {/* Authentic Continuous Deckled Cotton Paper (No panel cuts, organic ragged edges) */}
+          {/* Authentic Continuous Deckled Cotton Paper Background */}
           <div className="absolute inset-0 -z-10 pointer-events-none">
             <Image
               src="/assets/stationery/deckled_paper.png"
@@ -242,14 +294,14 @@ export function SpatialStationeryUnfold() {
           {/* Faint Natural Fold Memory (Subtle, relaxing as paper settles) */}
           <div
             ref={creaseLinesRef}
-            className="absolute inset-x-8 top-1/3 bottom-1/3 pointer-events-none z-10 will-change-transform opacity-15"
+            className="absolute inset-x-8 top-[33.3%] bottom-[33.3%] pointer-events-none z-10 will-change-transform opacity-15"
             aria-hidden="true"
           >
-            <div className="h-px bg-gradient-to-r from-transparent via-amber-950/10 to-transparent" />
-            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-950/10 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-amber-950/15 to-transparent" />
+            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-amber-950/15 to-transparent" />
           </div>
 
-          {/* REAL LIVE HTML EDITORIAL CONTENT: Rebalanced across full paper height */}
+          {/* REAL LIVE HTML EDITORIAL CONTENT */}
           <div
             ref={letterTextRef}
             className="relative z-20 flex-1 flex flex-col justify-between text-left will-change-transform pt-1"
@@ -264,7 +316,7 @@ export function SpatialStationeryUnfold() {
               </span>
             </div>
 
-            {/* The Main Authored Demonstration Letter - Intentionally Distributed */}
+            {/* The Main Authored Demonstration Letter */}
             <div className="my-auto py-4 sm:py-6 space-y-3">
               <p className="font-serif italic text-base sm:text-lg text-[#1A0311] leading-relaxed font-bold drop-shadow-[0_1px_1px_rgba(255,255,255,0.6)]">
                 “You are the quiet place my thoughts return to when everything else is loud.”
@@ -282,6 +334,109 @@ export function SpatialStationeryUnfold() {
               <span>Pure Cotton Rag</span>
               <span>Keep Forever</span>
             </div>
+          </div>
+        </div>
+
+        {/* 2. 3D ORIGAMI UNFOLDING PANELS: Progressive physical trifold opening */}
+        <div
+          ref={origamiBundleRef}
+          className="absolute inset-0 pointer-events-none [transform-style:preserve-3d] z-30 will-change-transform drop-shadow-[0_18px_36px_rgba(50,10,25,0.24)]"
+          aria-hidden="true"
+        >
+          {/* Top Flap (0 to 33.3% height, folds down over middle panel) */}
+          <div
+            ref={topFlapRef}
+            className="absolute top-0 inset-x-0 h-[33.33%] [transform-origin:bottom_center] [transform-style:preserve-3d] will-change-transform z-35"
+          >
+            {/* Front Face (unfolded) */}
+            <div className="absolute inset-0 [backface-visibility:hidden] overflow-hidden">
+              <div className="relative w-full h-[300%] -top-0 pointer-events-none">
+                <Image
+                  src="/assets/stationery/deckled_paper.png"
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className="object-contain object-top"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Back Face (visible when folded down) */}
+            <div className="absolute inset-0 [transform:rotateX(180deg)] [backface-visibility:hidden] overflow-hidden drop-shadow-[0_12px_20px_rgba(30,5,15,0.30)]">
+              <div className="relative w-full h-[300%] -top-0 pointer-events-none filter brightness-[0.98] contrast-[1.02]">
+                <Image
+                  src="/assets/stationery/deckled_paper.png"
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className="object-contain object-top"
+                  priority
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-amber-950/8 via-transparent to-amber-950/15 pointer-events-none" />
+            </div>
+
+            {/* Cast shadow under the top flap onto the body */}
+            <div
+              ref={topShadowRef}
+              className="absolute -bottom-5 inset-x-2 h-7 bg-gradient-to-b from-amber-950/35 via-amber-950/15 to-transparent blur-xs pointer-events-none"
+            />
+          </div>
+
+          {/* Middle Body Panel (33.3% to 66.7% height) */}
+          <div className="absolute top-[33.33%] inset-x-0 h-[33.34%] overflow-hidden pointer-events-none z-20">
+            <div className="relative w-full h-[300%] -top-[100%] pointer-events-none">
+              <Image
+                src="/assets/stationery/deckled_paper.png"
+                alt=""
+                fill
+                sizes="360px"
+                className="object-contain object-center"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Bottom Flap (66.7% to 100% height, folds up over middle panel) */}
+          <div
+            ref={bottomFlapRef}
+            className="absolute bottom-0 inset-x-0 h-[33.33%] [transform-origin:top_center] [transform-style:preserve-3d] will-change-transform z-25"
+          >
+            {/* Front Face (unfolded) */}
+            <div className="absolute inset-0 [backface-visibility:hidden] overflow-hidden">
+              <div className="relative w-full h-[300%] -top-[200%] pointer-events-none">
+                <Image
+                  src="/assets/stationery/deckled_paper.png"
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className="object-contain object-bottom"
+                  priority
+                />
+              </div>
+            </div>
+
+            {/* Back Face (visible when folded up) */}
+            <div className="absolute inset-0 [transform:rotateX(180deg)] [backface-visibility:hidden] overflow-hidden drop-shadow-[0_-8px_16px_rgba(30,5,15,0.22)]">
+              <div className="relative w-full h-[300%] -top-[200%] pointer-events-none filter brightness-[0.97]">
+                <Image
+                  src="/assets/stationery/deckled_paper.png"
+                  alt=""
+                  fill
+                  sizes="360px"
+                  className="object-contain object-bottom"
+                  priority
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-amber-950/10 via-transparent to-amber-950/5 pointer-events-none" />
+            </div>
+
+            {/* Cast shadow above the bottom flap */}
+            <div
+              ref={bottomShadowRef}
+              className="absolute -top-4 inset-x-2 h-6 bg-gradient-to-t from-amber-950/25 to-transparent blur-xs pointer-events-none"
+            />
           </div>
         </div>
       </div>

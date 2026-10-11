@@ -27,6 +27,7 @@ export function MidnightRoseWorld() {
   const waxSealRef = useRef<HTMLDivElement | null>(null);
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
+  const narrativeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -44,6 +45,8 @@ export function MidnightRoseWorld() {
         return;
       }
 
+      const isMobile = window.innerWidth < 640;
+
       // Initial resting posture: Wide dining room view, envelope resting closed on the linen
       gsap.set(bgImageRef.current, {
         scale: 1.0,
@@ -55,14 +58,18 @@ export function MidnightRoseWorld() {
         scale: 0.9,
       });
 
+      gsap.set(narrativeRef.current, {
+        opacity: 1,
+      });
+
       // Ground letter physically on the candlelit linen tabletop with 3D perspective
       gsap.set(tableLetterRef.current, {
         opacity: 0.95,
-        scale: 0.9,
-        y: 12,
-        rotationX: 24,
-        rotationY: -5,
-        rotationZ: -2.5,
+        scale: isMobile ? 0.92 : 0.9,
+        y: isMobile ? 6 : 12,
+        rotationX: isMobile ? 18 : 24,
+        rotationY: isMobile ? -1 : -5,
+        rotationZ: isMobile ? -1 : -2.5,
         transformPerspective: 1000,
         transformOrigin: "center bottom",
       });
@@ -102,7 +109,7 @@ export function MidnightRoseWorld() {
         bgImageRef.current,
         {
           scale: 1.18,
-          transformOrigin: "58% 78%",
+          transformOrigin: isMobile ? "50% 80%" : "58% 78%",
           ease: "none",
           duration: 0.5,
         },
@@ -119,14 +126,23 @@ export function MidnightRoseWorld() {
         0
       )
       .to(
+        narrativeRef.current,
+        {
+          opacity: isMobile ? 0.35 : 1,
+          ease: "power1.out",
+          duration: 0.35,
+        },
+        0.05
+      )
+      .to(
         tableLetterRef.current,
         {
           opacity: 1,
-          scale: 1.04,
-          y: -10,
-          rotationX: 20,
-          rotationY: -3.5,
-          rotationZ: -1.5,
+          scale: isMobile ? 1.02 : 1.04,
+          y: isMobile ? -6 : -10,
+          rotationX: isMobile ? 14 : 20,
+          rotationY: isMobile ? 0 : -3.5,
+          rotationZ: isMobile ? -0.5 : -1.5,
           ease: "power2.out",
           duration: 0.42,
         },
@@ -217,11 +233,11 @@ export function MidnightRoseWorld() {
 
       {/* Ambient Top World Tag */}
       <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-rose-950/60 backdrop-blur-md border border-rose-500/30 text-rose-100 shadow-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-950/60 backdrop-blur-md border border-rose-500/30 text-rose-100 shadow-xs">
           <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-          <span className="text-[10px] font-mono tracking-widest uppercase">02 — Reserved for Two</span>
+          <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase">02 — Reserved for Two</span>
         </div>
-        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-200/90 drop-shadow-sm font-medium">
+        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-200/90 drop-shadow-sm font-medium hidden sm:block">
           Words meant for an unhurried hour
         </span>
       </div>
@@ -229,22 +245,25 @@ export function MidnightRoseWorld() {
       {/* MAIN CINEMATIC STAGE: Candlelit Linen Table & Cream Letter Reveal */}
       <div className="w-full max-w-7xl mx-auto my-auto relative z-20 flex-1 flex flex-col justify-between pt-2 pb-1">
         {/* Top/Left: Editorial Scene Narrative & Entry Action (Subtle, upper area) */}
-        <div className="max-w-md lg:max-w-lg space-y-2.5 text-left pt-2">
-          <div className="space-y-1">
-            <span className="text-xs font-mono uppercase tracking-widest text-rose-300/90 font-medium">
+        <div
+          ref={narrativeRef}
+          className="max-w-md lg:max-w-lg space-y-1.5 sm:space-y-2.5 text-left pt-1 sm:pt-2 will-change-transform"
+        >
+          <div className="space-y-0.5 sm:space-y-1">
+            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-300/90 font-medium">
               Atmosphere 02 · Midnight Rose
             </span>
-            <h3 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[#FFF5F7] drop-shadow-[0_2px_20px_rgba(20,0,8,0.95)]">
+            <h3 className="text-2xl sm:text-5xl font-serif font-normal tracking-tight text-[#FFF5F7] drop-shadow-[0_2px_20px_rgba(20,0,8,0.95)]">
               Midnight Rose
             </h3>
           </div>
-          <p className="text-base sm:text-xl font-serif italic text-rose-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(20,0,8,0.9)]">
+          <p className="text-sm sm:text-xl font-serif italic text-rose-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(20,0,8,0.9)]">
             “For the love that feels like midnight.”
           </p>
-          <p className="text-xs sm:text-sm text-rose-100/90 max-w-sm font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(20,0,8,0.9)]">
+          <p className="text-xs sm:text-sm text-rose-100/90 max-w-sm font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(20,0,8,0.9)] hidden sm:block">
             A private table, warm candlelight, and an unsealed note resting on the linen cloth.
           </p>
-          <div className="pt-1">
+          <div className="pt-0.5 sm:pt-1">
             <AtmosphericButton
               href="/create?template=midnight-rose"
               worldId="midnight-rose"
@@ -256,7 +275,7 @@ export function MidnightRoseWorld() {
         {/* PHYSICAL TABLETOP STATIONERY: Resting directly on the open linen tablecloth */}
         <div
           ref={tableLetterRef}
-          className="self-end mr-4 sm:mr-16 md:mr-28 lg:mr-52 xl:mr-60 mb-3 sm:mb-6 md:mb-8 w-[275px] sm:w-[310px] md:w-[340px] will-change-transform"
+          className="self-center sm:self-end mr-0 sm:mr-16 md:mr-28 lg:mr-52 xl:mr-60 mb-2 sm:mb-6 md:mb-8 w-[260px] sm:w-[310px] md:w-[340px] will-change-transform"
         >
           {/* Physical Envelope & Paper on the Table Linen */}
           <div className="relative w-full select-none drop-shadow-[0_20px_38px_rgba(15,2,8,0.75)]">
