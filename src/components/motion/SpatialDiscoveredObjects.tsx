@@ -84,7 +84,7 @@ export function SpatialDiscoveredObjects() {
           The Hidden Trove
         </p>
         <h2 className="text-3xl sm:text-5xl font-serif font-normal text-[#FFF5F8] tracking-tight leading-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.9)]">
-          Little secrets waiting between the hours.
+          And some become the things we never throw away.
         </h2>
         <p className="text-xs sm:text-base text-rose-100/80 font-normal leading-relaxed drop-shadow-[0_1px_6px_rgba(0,0,0,0.8)]">
           Love lives in folded notes, private questions, and unhurried mornings.

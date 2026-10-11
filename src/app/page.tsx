@@ -150,7 +150,7 @@ export default function HomePage() {
 
           <div className="space-y-3.5 max-w-xl mx-auto">
             <h2 className="text-3xl sm:text-5xl font-serif font-normal text-[#1A0311] leading-tight tracking-tight drop-shadow-[0_1px_12px_rgba(255,245,248,0.5)]">
-              Give them a little piece of the internet they&apos;ll want to keep.
+              Now make a story of your own.
             </h2>
             <p className="text-sm sm:text-base text-[#36091E] font-normal leading-relaxed drop-shadow-[0_1px_6px_rgba(255,245,248,0.6)]">
               Crafted for two. Never indexed by search engines, zero tracking, and no passwords.

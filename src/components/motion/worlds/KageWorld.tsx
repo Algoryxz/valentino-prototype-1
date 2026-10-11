@@ -27,6 +27,7 @@ export function KageWorld() {
   const unrolledWashiRef = useRef<HTMLDivElement | null>(null);
   const calligraphyRef = useRef<HTMLDivElement | null>(null);
   const hankoRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -41,6 +42,7 @@ export function KageWorld() {
         gsap.set(unrolledWashiRef.current, { opacity: 1, scale: 1 });
         gsap.set(calligraphyRef.current, { opacity: 1 });
         gsap.set(hankoRef.current, { opacity: 1 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -164,6 +166,16 @@ export function KageWorld() {
           duration: 0.25,
         },
         0.58
+      )
+      // 5. Narrative Bridge: Shoji golden glow transforming into cinema projector warmth of Apricot Film (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -213,7 +225,7 @@ export function KageWorld() {
           <span className="text-[10px] font-mono tracking-widest uppercase">03 — Quiet Gestures</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-emerald-200/90 drop-shadow-sm font-medium">
-          Unspoken truths kept in cedar & stone
+          Some are handed over in silence.
         </span>
       </div>
 
@@ -313,6 +325,15 @@ export function KageWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300/60">
           Scroll to step inside the cinema
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Shoji golden glow transforming into cinema projector warmth */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#180a08]/75 to-[#120702]"
+        aria-hidden="true"
+      >
+        <div className="absolute inset-y-1/4 inset-x-1/3 bg-radial from-amber-500/25 via-amber-900/30 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

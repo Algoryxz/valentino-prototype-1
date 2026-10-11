@@ -28,6 +28,7 @@ export function MidnightRoseWorld() {
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const narrativeRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -42,6 +43,7 @@ export function MidnightRoseWorld() {
         gsap.set(waxSealRef.current, { opacity: 0 });
         gsap.set(letterSheetRef.current, { opacity: 1, y: 0 });
         gsap.set(letterContentRef.current, { opacity: 1 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -189,6 +191,16 @@ export function MidnightRoseWorld() {
           duration: 0.22,
         },
         0.20
+      )
+      // 4. Narrative Bridge: Candlelight softens into amber smoke and emerald courtyard mist of Kage (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -238,7 +250,7 @@ export function MidnightRoseWorld() {
           <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase">02 — Reserved for Two</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-200/90 drop-shadow-sm font-medium hidden sm:block">
-          Words meant for an unhurried hour
+          Some wait for candlelight.
         </span>
       </div>
 
@@ -345,6 +357,15 @@ export function MidnightRoseWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-rose-300/60">
           Scroll to enter the quiet courtyard
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Candle smoke and emerald courtyard mist bridging into Kage */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#061510]/75 to-[#050d0b]"
+        aria-hidden="true"
+      >
+        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-emerald-600/20 via-teal-950/40 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

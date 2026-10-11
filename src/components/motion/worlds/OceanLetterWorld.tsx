@@ -27,6 +27,7 @@ export function OceanLetterWorld() {
   const parchmentSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const seaGlassRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -41,6 +42,7 @@ export function OceanLetterWorld() {
         gsap.set(parchmentSheetRef.current, { opacity: 1, scale: 1, rotate: -1.5 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(seaGlassRef.current, { opacity: 0.95 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -164,6 +166,16 @@ export function OceanLetterWorld() {
           duration: 0.35,
         },
         0.48
+      )
+      // 5. Narrative Bridge: Tidal wave recedes, water-dark textures lead to keepsake tabletop of The Hidden Trove (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -213,7 +225,7 @@ export function OceanLetterWorld() {
           <span className="text-[10px] font-mono tracking-widest uppercase">06 — Tidal Journey</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-sky-200/90 drop-shadow-sm font-medium">
-          Sent across distance, finding its way home
+          Some travel until they find us.
         </span>
       </div>
 
@@ -308,6 +320,15 @@ export function OceanLetterWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-sky-200/60">
           Scroll to explore discovered keepsakes
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Receding tide and water-dark textures leading to The Hidden Trove */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#0d0914]/80 to-[#12040d]"
+        aria-hidden="true"
+      >
+        <div className="absolute bottom-0 inset-x-0 h-1/3 bg-radial from-rose-950/30 via-purple-950/20 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

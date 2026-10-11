@@ -28,10 +28,10 @@ export function SpatialWorldsWalkthrough() {
       {/* Editorial Section Anchor Header */}
       <div className="text-center max-w-3xl mx-auto px-6 mb-12 sm:mb-20 space-y-3 relative z-10">
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#1A0311] tracking-tight leading-tight drop-shadow-[0_1px_12px_rgba(255,245,248,0.5)]">
-          Six atmospheres, each with its own light, silence, and memory.
+          Every letter has a place where it belongs.
         </h2>
         <p className="text-sm sm:text-base text-[#36091E] max-w-lg mx-auto font-normal leading-relaxed drop-shadow-[0_1px_6px_rgba(255,245,248,0.6)]">
-          Written on folded airmail, caught in celluloid, or kept in stone.
+          Six atmospheres, each with its own light, silence, and memory.
         </p>
       </div>
 

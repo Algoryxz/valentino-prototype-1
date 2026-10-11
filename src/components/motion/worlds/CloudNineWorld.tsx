@@ -26,6 +26,7 @@ export function CloudNineWorld() {
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const ticketRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -39,6 +40,7 @@ export function CloudNineWorld() {
         gsap.set(letterSheetRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(ticketRef.current, { opacity: 1 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -143,6 +145,16 @@ export function CloudNineWorld() {
           duration: 0.3,
         },
         0.4
+      )
+      // 4. Narrative Bridge: Morning sky warms toward evening amber & deep burgundy shadows of Midnight Rose (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -191,7 +203,7 @@ export function CloudNineWorld() {
           <span className="text-[10px] font-mono tracking-widest uppercase">01 — Skyward</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/80 drop-shadow-sm font-medium">
-          Love grows from something small
+          Some letters rise on hope.
         </span>
       </div>
 
@@ -324,6 +336,15 @@ export function CloudNineWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-white/60">
           Scroll to descend into evening
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Morning sky warming toward evening amber & deep burgundy shadows of Midnight Rose */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#200511]/75 to-[#0c0207]"
+        aria-hidden="true"
+      >
+        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-amber-600/20 via-rose-950/40 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

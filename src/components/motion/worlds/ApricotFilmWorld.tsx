@@ -26,6 +26,7 @@ export function ApricotFilmWorld() {
   const curtainRightRef = useRef<HTMLDivElement | null>(null);
   const screenStageRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -38,6 +39,7 @@ export function ApricotFilmWorld() {
         gsap.set([curtainLeftRef.current, curtainRightRef.current], { xPercent: (i) => (i === 0 ? -100 : 100) });
         gsap.set(screenStageRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -138,6 +140,16 @@ export function ApricotFilmWorld() {
           duration: 0.35,
         },
         0.48
+      )
+      // 5. Narrative Bridge: Projector beam widens into morning sunlight & cottage foliage of Wildflower Paper (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -195,7 +207,7 @@ export function ApricotFilmWorld() {
           <span className="text-[10px] font-mono tracking-widest uppercase">04 — 35mm Memory</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-amber-200/90 drop-shadow-sm font-medium">
-          Scenes worth remembering before the credits
+          Some become memories worth replaying.
         </span>
       </div>
 
@@ -276,6 +288,15 @@ export function ApricotFilmWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300/60">
           Scroll to walk through the garden
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Projector beam widening into morning sunlight and garden greens */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#121c10]/75 to-[#1a1f14]"
+        aria-hidden="true"
+      >
+        <div className="absolute top-0 right-1/4 w-[60vw] h-[60vh] bg-radial from-amber-200/25 via-emerald-800/20 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

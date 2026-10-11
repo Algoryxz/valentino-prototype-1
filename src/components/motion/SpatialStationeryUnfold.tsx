@@ -35,6 +35,7 @@ export function SpatialStationeryUnfold() {
   const letterTextRef = useRef<HTMLDivElement | null>(null);
   const ctaRef = useRef<HTMLDivElement | null>(null);
   const ticketRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -74,11 +75,11 @@ export function SpatialStationeryUnfold() {
         opacity: 0.8,
       });
 
-      // Ticket tucked beneath lower crease edge of folded bundle
+      // Ticket physically tucked beneath lower-left crease of folded bundle with deliberate overlap
       gsap.set(ticketRef.current, {
-        x: 18,
-        y: -110,
-        rotate: -3.5,
+        x: 0,
+        y: -142,
+        rotate: -5,
         opacity: 1,
       });
 
@@ -106,6 +107,10 @@ export function SpatialStationeryUnfold() {
       gsap.set(ctaRef.current, {
         opacity: 0,
         y: 12,
+      });
+
+      gsap.set(transitionBridgeRef.current, {
+        opacity: 0,
       });
 
       // Master Scroll-Driven Timeline scrubbed against dedicated scroll track
@@ -150,7 +155,7 @@ export function SpatialStationeryUnfold() {
         },
         0.06
       )
-      // 4. Ticket glides smoothly with expanding lower deckled edge (0.06 -> 0.30)
+      // 4. Ticket glides smoothly with expanding lower deckled edge, maintaining physical overlap (0.06 -> 0.30)
       .to(
         ticketRef.current,
         {
@@ -225,6 +230,16 @@ export function SpatialStationeryUnfold() {
           duration: 0.18,
         },
         0.42
+      )
+      // 10. Narrative bridge: Morning sky atmosphere warms into Cloud Nine entry (0.75 -> 0.95)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.20,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -241,13 +256,20 @@ export function SpatialStationeryUnfold() {
       >
       <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
 
-      {/* Editorial Header with ample headroom beneath fixed navigation */}
+      {/* Cinematic Transition Bridge to Cloud Nine: Morning atmosphere opens up toward skyward blue */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0c1a2e]/60 to-[#0c1a2e] pointer-events-none opacity-0 z-35 transition-opacity"
+        aria-hidden="true"
+      />
+
+      {/* Editorial Header with Chapter Continuity */}
       <div className="text-center max-w-xl mx-auto space-y-1 relative z-10">
         <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-[#7A1D45] font-semibold drop-shadow-[0_1px_4px_rgba(255,245,248,0.4)]">
-          The Unsealing · Physical Keepsakes
+          The Unsealing · Chapter 00
         </p>
         <h2 className="text-2xl sm:text-4xl font-serif font-normal text-[#1A0311] tracking-tight leading-tight drop-shadow-[0_1px_10px_rgba(255,245,248,0.5)]">
-          Made from little things.
+          Every story begins with something small.
         </h2>
         <p className="text-xs sm:text-sm text-[#36091E] font-normal leading-relaxed drop-shadow-[0_1px_8px_rgba(255,245,248,0.5)] max-w-md mx-auto">
           A pressed petal, a fold of deckled cotton, a ticket kept from a rainy Tuesday.
@@ -259,17 +281,17 @@ export function SpatialStationeryUnfold() {
         ref={letterWrapperRef}
         className="relative w-full max-w-[320px] sm:max-w-[350px] aspect-[540/724] my-auto flex justify-center [perspective:1400px] will-change-transform z-20"
       >
-        {/* Vintage Coffee Ticket tucked naturally beneath lower-left deckled edge */}
+        {/* Vintage Coffee Ticket tucked naturally beneath lower-left deckled edge with deliberate overlap */}
         <div
           ref={ticketRef}
-          className="absolute -bottom-1 -left-1 sm:bottom-0 sm:-left-2 z-15 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_4px_10px_rgba(40,10,20,0.22)] will-change-transform"
+          className="absolute bottom-2.5 -left-10 sm:bottom-3.5 sm:-left-12 z-15 pointer-events-none transform rotate-[-4deg] drop-shadow-[0_4px_14px_rgba(40,10,20,0.28)] will-change-transform"
           aria-hidden="true"
         >
-          <div className="w-24 sm:w-28 py-1 px-2.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-left">
-            <span className="text-[6.5px] sm:text-[7.5px] font-mono uppercase tracking-widest text-[#7A1D45] font-semibold block">
+          <div className="w-28 sm:w-32 py-1 px-2 sm:px-2.5 bg-[#FAF3E8] rounded-xs border border-amber-900/35 text-left shadow-xs">
+            <span className="text-[7px] sm:text-[8px] font-mono uppercase tracking-widest text-[#7A1D45] font-semibold block">
               FIRST COFFEE
             </span>
-            <span className="font-serif italic text-[11px] sm:text-xs text-[#1C0412] font-semibold leading-none block mt-0.5">
+            <span className="font-serif italic text-[11px] sm:text-xs text-[#1C0412] font-semibold leading-none block mt-0.5 whitespace-nowrap">
               Rainy Tuesday
             </span>
           </div>

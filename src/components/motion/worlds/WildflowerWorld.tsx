@@ -27,6 +27,7 @@ export function WildflowerWorld() {
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const specimenRef = useRef<HTMLDivElement | null>(null);
+  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -41,6 +42,7 @@ export function WildflowerWorld() {
         gsap.set(letterSheetRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(specimenRef.current, { opacity: 0.95 });
+        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -162,6 +164,16 @@ export function WildflowerWorld() {
           duration: 0.35,
         },
         0.48
+      )
+      // 4. Narrative Bridge: Garden foliage softens into coastal sea mist & turquoise tide of Ocean Letter (0.75 -> 0.98)
+      .to(
+        transitionBridgeRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.23,
+        },
+        0.75
       );
     }, containerRef);
 
@@ -211,7 +223,7 @@ export function WildflowerWorld() {
           <span className="text-[10px] font-mono tracking-widest uppercase">05 — Botanical Care</span>
         </div>
         <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-amber-100/90 drop-shadow-sm font-medium">
-          Love flourishes through small, consistent acts
+          Some are kept growing.
         </span>
       </div>
 
@@ -315,6 +327,15 @@ export function WildflowerWorld() {
         <span className="text-[10px] font-mono uppercase tracking-widest text-amber-200/60">
           Scroll to follow the tide home
         </span>
+      </div>
+
+      {/* Narrative Transition Bridge: Garden foliage dissolving into coastal sea mist & turquoise tide */}
+      <div
+        ref={transitionBridgeRef}
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#061825]/75 to-[#05111c]"
+        aria-hidden="true"
+      >
+        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-cyan-500/20 via-sky-950/40 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

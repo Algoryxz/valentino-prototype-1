@@ -62,6 +62,12 @@ test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
         path: path.join(OUTPUT_DIR, `01_stationery_settled_${vp.name}.png`),
       });
 
+      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.40));
+      await page.waitForTimeout(600);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01_stationery_transition_${vp.name}.png`),
+      });
+
       // Helper function for capturing world 3-stage sequences
       const captureWorld = async (selector: string, prefix: string) => {
         const el = page.locator(selector);
@@ -83,6 +89,13 @@ test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
         await page.waitForTimeout(700);
         await page.screenshot({
           path: path.join(OUTPUT_DIR, `${prefix}_reveal_${vp.name}.png`),
+        });
+
+        // Atmospheric Transition Bridge to Next World
+        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
+        await page.waitForTimeout(700);
+        await page.screenshot({
+          path: path.join(OUTPUT_DIR, `${prefix}_transition_${vp.name}.png`),
         });
       };
 
