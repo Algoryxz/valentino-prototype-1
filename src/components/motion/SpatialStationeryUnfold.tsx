@@ -118,39 +118,39 @@ export function SpatialStationeryUnfold() {
         },
       });
 
-      // 1. Top flap lifts and physically unfolds in 3D (0.04 -> 0.34)
+      // 1. Top flap lifts and physically unfolds in 3D (0.04 -> 0.30)
       tl.to(
         topFlapRef.current,
         {
           rotateX: 0,
           rotateZ: 0,
           ease: "power2.inOut",
-          duration: 0.30,
+          duration: 0.26,
         },
         0.04
       )
-      // 2. Bottom flap unfolds down in 3D (0.08 -> 0.36)
+      // 2. Bottom flap unfolds down in 3D (0.06 -> 0.30)
       .to(
         bottomFlapRef.current,
         {
           rotateX: 0,
           rotateZ: 0,
           ease: "power2.inOut",
-          duration: 0.28,
+          duration: 0.24,
         },
-        0.08
+        0.06
       )
-      // 3. Dynamic cast shadows soften as flaps open flat (0.08 -> 0.34)
+      // 3. Dynamic cast shadows soften as flaps flatten out (0.06 -> 0.28)
       .to(
         [topShadowRef.current, bottomShadowRef.current],
         {
           opacity: 0,
           ease: "power1.out",
-          duration: 0.26,
+          duration: 0.22,
         },
-        0.08
+        0.06
       )
-      // 4. Ticket glides smoothly with expanding lower deckled edge (0.06 -> 0.36)
+      // 4. Ticket glides smoothly with expanding lower deckled edge (0.06 -> 0.30)
       .to(
         ticketRef.current,
         {
@@ -158,22 +158,23 @@ export function SpatialStationeryUnfold() {
           y: 0,
           rotate: -4,
           ease: "power2.out",
-          duration: 0.30,
+          duration: 0.24,
         },
         0.06
       )
-      // 5. Origami bundle settles rotation and scale (0.04 -> 0.34)
+      // 5. Origami bundle settles casual rotation and scale (0.04 -> 0.30)
       .to(
         origamiBundleRef.current,
         {
           rotate: 0,
           scale: 1,
           ease: "power2.out",
-          duration: 0.30,
+          duration: 0.26,
         },
         0.04
       )
-      // 6. As flaps reach 0deg, seamless handover to unified single sheet (0.30 -> 0.38)
+      // 6. Seamless handover: At 0.30 both flaps are completely flat at 0deg.
+      // Handover between 0.30 and 0.36 has zero geometry shift and prevents subpixel hairline seams.
       .to(
         unfoldedSheetRef.current,
         {
@@ -181,7 +182,7 @@ export function SpatialStationeryUnfold() {
           scale: 1,
           y: 0,
           ease: "power1.inOut",
-          duration: 0.08,
+          duration: 0.06,
         },
         0.30
       )
@@ -190,27 +191,27 @@ export function SpatialStationeryUnfold() {
         {
           opacity: 0,
           ease: "power1.inOut",
-          duration: 0.08,
+          duration: 0.06,
         },
         0.30
       )
-      // 7. Live authored text reveals with full ink opacity (0.28 -> 0.46)
+      // 7. Live authored text reveals with full ink opacity (0.24 -> 0.40)
       .to(
         letterTextRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.18,
+          duration: 0.16,
         },
-        0.28
+        0.24
       )
-      // 8. Crease lines soften into natural fiber texture (0.26 -> 0.48)
+      // 8. Crease lines soften into natural fiber texture (0.26 -> 0.46)
       .to(
         creaseLinesRef.current,
         {
           opacity: 0.15,
           ease: "power1.out",
-          duration: 0.22,
+          duration: 0.20,
         },
         0.26
       )

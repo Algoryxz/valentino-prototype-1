@@ -50,13 +50,13 @@ test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
         path: path.join(OUTPUT_DIR, `01_stationery_initial_${vp.name}.png`),
       });
 
-      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.42));
+      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.32));
       await page.waitForTimeout(600);
       await page.screenshot({
         path: path.join(OUTPUT_DIR, `01_stationery_midpoint_${vp.name}.png`),
       });
 
-      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
+      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.30));
       await page.waitForTimeout(600);
       await page.screenshot({
         path: path.join(OUTPUT_DIR, `01_stationery_settled_${vp.name}.png`),
