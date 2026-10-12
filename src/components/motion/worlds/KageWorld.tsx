@@ -206,15 +206,15 @@ export function KageWorld() {
       .to(
         bgImageRef.current,
         {
-          scale: 1.22,
+          scale: 1.32,
           y: "-6%",
-          x: "3%",
+          x: "4%",
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging cinema proscenium and warm incandescent light reveals in the depth
+      // Emerging cinema proscenium and warm incandescent light reveals in full spatial depth
       .to(
         transitionBridgeRef.current,
         {
@@ -222,7 +222,7 @@ export function KageWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -230,7 +230,7 @@ export function KageWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#050d0b] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -380,8 +380,8 @@ export function KageWorld() {
         className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        {/* Emerging 1930s Cinema Proscenium Silhouette & Depth Plate */}
-        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+        {/* Emerging 1930s Cinema Proscenium Full-Viewport Depth Plate */}
+        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
           <Image
             src="/assets/environments/apricot_vintage_cinema.jpg"
             alt=""
@@ -391,9 +391,8 @@ export function KageWorld() {
             unoptimized
           />
         </div>
-        {/* Atmospheric edge darkening and warm projector beam focus */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#120702] via-[#180a08]/65 to-transparent" />
-        <div className="absolute inset-y-1/4 inset-x-1/4 bg-radial from-amber-400/25 via-amber-900/35 to-transparent blur-3xl" />
+        {/* Atmospheric edge darkening matching cinema warmth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#120702]/80 via-transparent to-[#120702]/40 pointer-events-none" />
       </div>
     </section>
   </div>

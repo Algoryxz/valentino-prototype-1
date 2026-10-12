@@ -201,18 +201,19 @@ export function OceanLetterWorld() {
         },
         0.70
       )
-      // Camera dollies down from the wave crest to macro ground level on the dark woodgrain plane
+      // Camera dollies down from the wave crest to macro ground level, and shoreline dissolves into midnight
       .to(
         bgImageRef.current,
         {
-          scale: 1.22,
-          y: "-5%",
+          scale: 1.28,
+          y: "-6%",
+          opacity: 0,
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging dark evening tabletop and starlight keepsake constellation reveals in the depth
+      // Emerging dark evening tabletop and starlight keepsake constellation reveals in full spatial depth
       .to(
         transitionBridgeRef.current,
         {
@@ -220,7 +221,7 @@ export function OceanLetterWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -228,7 +229,7 @@ export function OceanLetterWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#05111c] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -374,19 +375,21 @@ export function OceanLetterWorld() {
         aria-hidden="true"
       >
         {/* Seamless dark evening woodgrain plane bridging directly into The Hidden Trove */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#12040D] via-[#0d0914]/85 to-[#05111c]/60" />
+        <div className="absolute inset-0 bg-[#05111c]" />
 
         {/* Floating starlight particles in the deepening atmosphere matching The Hidden Trove */}
         <div className="absolute inset-0 select-none overflow-hidden" aria-hidden="true">
-          <svg viewBox="0 0 1200 600" fill="none" className="w-full h-full opacity-30">
-            <circle cx="300" cy="180" r="1.5" fill="#FAF5EE" fillOpacity="0.6" />
-            <circle cx="850" cy="380" r="1.2" fill="#FAF5EE" fillOpacity="0.5" />
-            <circle cx="580" cy="120" r="1.8" fill="#F472B6" fillOpacity="0.4" />
+          <svg viewBox="0 0 1200 600" fill="none" className="w-full h-full opacity-40">
+            <circle cx="300" cy="180" r="1.5" fill="#FAF5EE" fillOpacity="0.7" />
+            <circle cx="850" cy="380" r="1.2" fill="#FAF5EE" fillOpacity="0.6" />
+            <circle cx="580" cy="120" r="1.8" fill="#F472B6" fillOpacity="0.5" />
+            <circle cx="210" cy="420" r="1.0" fill="#38BDF8" fillOpacity="0.5" />
+            <circle cx="980" cy="220" r="1.4" fill="#FAF5EE" fillOpacity="0.6" />
           </svg>
         </div>
 
         {/* Soft tabletop shadow and subtle warm keepsake glow emerging in the lower depth */}
-        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-rose-950/40 via-purple-950/30 to-transparent blur-3xl" />
+        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-rose-950/30 via-slate-950/40 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

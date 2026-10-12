@@ -43,32 +43,34 @@ export function ApricotFilmWorld() {
         return;
       }
 
-      // Initial resting posture: Curtains closed, projector warming up
+      // Initial resting posture: Stage softly lit, illuminated 35mm cinema screen frame on center stage
       gsap.set(bgImageRef.current, {
         scale: 1.0,
         y: "0%",
       });
 
       gsap.set(projectorBeamRef.current, {
-        opacity: 0.45,
-        scale: 0.95,
+        opacity: 0.55,
+        scale: 1.0,
       });
 
       gsap.set(curtainLeftRef.current, {
-        xPercent: 0,
+        x: 0,
+        opacity: 0.9,
       });
 
       gsap.set(curtainRightRef.current, {
-        xPercent: 0,
+        x: 0,
+        opacity: 0.9,
       });
 
       gsap.set(screenStageRef.current, {
-        opacity: 0.7,
-        scale: 0.94,
+        opacity: 0.92,
+        scale: 0.95,
       });
 
       gsap.set(letterContentRef.current, {
-        opacity: 0,
+        opacity: 0.35,
       });
 
       const tl = gsap.timeline({
@@ -84,109 +86,111 @@ export function ApricotFilmWorld() {
       tl.to(
         bgImageRef.current,
         {
-          scale: 1.12,
+          scale: 1.15,
           y: "-3.5%",
           ease: "none",
-          duration: 0.5,
+          duration: 0.45,
         },
         0
       )
       .to(
         projectorBeamRef.current,
         {
-          opacity: 0.85,
-          scale: 1.2,
+          opacity: 0.95,
+          scale: 1.25,
           ease: "power2.out",
           duration: 0.45,
         },
         0
       )
-      // 2. Velvet curtains part open wide to wings (0.08 -> 0.38)
+      // 2. Velvet side draperies frame stage wings as proscenium opens wide (0.05 -> 0.35)
       .to(
         curtainLeftRef.current,
         {
-          xPercent: -105,
+          x: -16,
+          opacity: 0.8,
           ease: "power2.inOut",
           duration: 0.35,
         },
-        0.08
+        0.05
       )
       .to(
         curtainRightRef.current,
         {
-          xPercent: 105,
+          x: 16,
+          opacity: 0.8,
           ease: "power2.inOut",
           duration: 0.35,
         },
-        0.08
+        0.05
       )
-      // 3. Illuminated cinema screen expands into view on stage (0.35 -> 0.75)
+      // 3. Illuminated cinema screen expands into primary focus on stage (0.20 -> 0.60)
       .to(
         screenStageRef.current,
         {
           opacity: 1,
           scale: 1,
           ease: "power2.out",
-          duration: 0.4,
+          duration: 0.38,
         },
-        0.35
+        0.20
       )
-      // 4. Authored memory title reveals with high contrast (0.48 -> 0.82)
+      // 4. Authored memory title reveals with crisp print contrast (0.35 -> 0.65)
       .to(
         letterContentRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.35,
+          duration: 0.30,
         },
-        0.48
+        0.35
       )
-      // Screen memory card settles as the projection draws to an intimate close, maintaining clear projection legibility
+      // 5. Memory letter settles firmly onto the stage frame, retaining solid card opacity & contact shadow
       .to(
         screenStageRef.current,
         {
           scale: 0.96,
           y: 4,
-          opacity: 0.95,
+          opacity: 0.96,
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.22,
         },
-        0.68
+        0.65
       )
-      // Narrative text gracefully yields
+      // Narrative text gracefully yields focus to spatial motion
       .to(
         sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
         {
           opacity: 0,
           y: -15,
           ease: "power1.in",
-          duration: 0.22,
+          duration: 0.20,
         },
-        0.70
+        0.72
       )
-      // Vintage projector beam softens as auditorium doors open
+      // Projector beam softens as auditorium doors open to sunlight
       .to(
         projectorBeamRef.current,
         {
           opacity: 0.2,
           scale: 0.8,
           ease: "power2.out",
-          duration: 0.26,
+          duration: 0.24,
         },
-        0.70
+        0.74
       )
-      // Camera dollies down the aisle past the stage toward morning sunlight
+      // Camera dollies down the aisle past the seats toward the sunlit garden exit
       .to(
         bgImageRef.current,
         {
-          scale: 1.22,
-          y: "-5%",
+          scale: 1.30,
+          y: "-7%",
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging sunlit English cottage garden vista reveals through the open doors
+      // Emerging sunlit English cottage garden vista reveals in full spatial depth through the open doors
       .to(
         transitionBridgeRef.current,
         {
@@ -194,7 +198,7 @@ export function ApricotFilmWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -202,7 +206,7 @@ export function ApricotFilmWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#120702] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -256,7 +260,7 @@ export function ApricotFilmWorld() {
         </span>
       </div>
 
-      {/* MAIN CINEMATIC STAGE: Stage Centered Architecture */}
+      {/* MAIN CINEMATIC STAGE: Center Stage Architecture */}
       <div className="w-full max-w-5xl mx-auto my-auto flex flex-col items-center gap-6 z-20">
         {/* Editorial Scene Narrative & Entry Action (Centered Header) */}
         <div className="max-w-xl text-center space-y-2">
@@ -277,13 +281,13 @@ export function ApricotFilmWorld() {
           </div>
         </div>
 
-        {/* The Cinema Screen at Center Stage with Parting Velvet Curtains */}
+        {/* The Cinema Screen at Center Stage with Elegant Architectural Drapery Wings */}
         <div className="w-full flex justify-center will-change-transform [perspective:1000px]">
-          <div className="relative w-[320px] sm:w-[480px] select-none rounded-[2px] overflow-hidden drop-shadow-[0_25px_60px_rgba(0,0,0,0.95)]">
-            {/* The Illuminated Cinema Screen Frame */}
+          <div className="relative w-[320px] sm:w-[480px] select-none rounded-[2px] drop-shadow-[0_25px_60px_rgba(0,0,0,0.95)]">
+            {/* The Illuminated Cinema Screen Frame (Authentic 35mm projection card) */}
             <div
               ref={screenStageRef}
-              className="relative w-full bg-[#FAF5EE] border border-amber-300/60 rounded-[2px] p-6 sm:p-7 shadow-2xl overflow-hidden will-change-transform"
+              className="relative w-full bg-[#FAF5EE] border border-amber-300/70 rounded-[2px] p-6 sm:p-7 shadow-2xl overflow-hidden will-change-transform z-20"
             >
               {/* Restrained 35mm Perforation Header */}
               <div className="w-full pb-2 mb-2 border-b border-amber-800/20 flex justify-between items-center text-[8.5px] font-mono uppercase tracking-widest text-amber-900/80">
@@ -292,7 +296,7 @@ export function ApricotFilmWorld() {
               </div>
 
               {/* Screen Projector Glow Sheen */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/15 via-transparent to-amber-200/10 pointer-events-none mix-blend-screen" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-amber-400/20 via-transparent to-amber-200/15 pointer-events-none mix-blend-screen" />
 
               {/* The Projected Letter - Crisp Contrast Typography */}
               <div
@@ -315,15 +319,21 @@ export function ApricotFilmWorld() {
               </div>
             </div>
 
-            {/* Stage Velvet Curtains (Parting on scroll) */}
+            {/* Stage Velvet Drapery Wings (Framing stage edges naturally with gold fringe trim) */}
             <div
               ref={curtainLeftRef}
-              className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-[#500714] via-[#7F1D1D] to-[#3B0710] border-r border-amber-400/30 shadow-2xl z-30 will-change-transform"
-            />
+              className="absolute -inset-y-2 -left-4 sm:-left-6 w-8 sm:w-12 bg-gradient-to-r from-[#4A0812] via-[#6B1424] to-[#3B050E] border-r border-amber-400/40 rounded-l-[2px] shadow-2xl z-30 pointer-events-none will-change-transform"
+              aria-hidden="true"
+            >
+              <div className="absolute inset-y-0 right-0 w-[1px] bg-amber-300/40" />
+            </div>
             <div
               ref={curtainRightRef}
-              className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-[#500714] via-[#7F1D1D] to-[#3B0710] border-l border-amber-400/30 shadow-2xl z-30 will-change-transform"
-            />
+              className="absolute -inset-y-2 -right-4 sm:-right-6 w-8 sm:w-12 bg-gradient-to-l from-[#4A0812] via-[#6B1424] to-[#3B050E] border-l border-amber-400/40 rounded-r-[2px] shadow-2xl z-30 pointer-events-none will-change-transform"
+              aria-hidden="true"
+            >
+              <div className="absolute inset-y-0 left-0 w-[1px] bg-amber-300/40" />
+            </div>
           </div>
         </div>
       </div>
@@ -335,14 +345,14 @@ export function ApricotFilmWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Cinema shadows yield as camera tracks toward sunlit English cottage garden */}
+      {/* Narrative Transition Bridge: Cinema auditorium camera tracks toward sunlit English cottage garden */}
       <div
         ref={transitionBridgeRef}
         className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        {/* Emerging English Cottage Garden Silhouette & Depth Plate */}
-        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+        {/* Emerging English Cottage Garden Full-Viewport Plate */}
+        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
           <Image
             src="/assets/environments/wildflower_english_garden.jpg"
             alt=""
@@ -352,9 +362,8 @@ export function ApricotFilmWorld() {
             unoptimized
           />
         </div>
-        {/* Soft edge darkening and warm morning sunlight streaming in */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1f14] via-[#121c10]/60 to-transparent" />
-        <div className="absolute top-0 right-1/4 w-[65vw] h-[65vh] bg-radial from-amber-200/30 via-emerald-800/25 to-transparent blur-3xl" />
+        {/* Soft edge vignette framing the doorway and golden morning light */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1f14]/80 via-transparent to-[#121c10]/40 pointer-events-none" />
       </div>
     </section>
   </div>

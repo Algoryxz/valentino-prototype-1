@@ -242,15 +242,15 @@ export function MidnightRoseWorld() {
       .to(
         bgImageRef.current,
         {
-          scale: 1.25,
-          xPercent: isMobile ? -6 : -8,
+          scale: 1.35,
+          xPercent: isMobile ? -8 : -10,
           yPercent: isMobile ? -2 : -3,
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging Kyoto courtyard atmosphere reveals through the veranda
+      // Emerging Kyoto courtyard atmosphere reveals in full spatial depth through the veranda opening
       .to(
         transitionBridgeRef.current,
         {
@@ -258,7 +258,7 @@ export function MidnightRoseWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -266,7 +266,7 @@ export function MidnightRoseWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c0207] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -423,8 +423,8 @@ export function MidnightRoseWorld() {
         className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        {/* Emerging Kage Kyoto Courtyard Silhouette & Depth Plate */}
-        <div className="absolute inset-0 w-full h-full opacity-60 mix-blend-screen scale-105 pointer-events-none select-none">
+        {/* Emerging Kage Kyoto Courtyard Full-Viewport Depth Plate */}
+        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
           <Image
             src="/assets/environments/kage_kyoto_courtyard.jpg"
             alt=""
@@ -434,9 +434,8 @@ export function MidnightRoseWorld() {
             unoptimized
           />
         </div>
-        {/* Soft edge darkening and authentic emerald moss mist drifting into the dining room */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050d0b] via-[#061510]/60 to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-emerald-600/25 via-teal-950/45 to-transparent blur-2xl" />
+        {/* Natural architectural edge darkening matching Kyoto dusk ambiance */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050e0c]/80 via-transparent to-[#050e0c]/40 pointer-events-none" />
       </div>
     </section>
   </div>

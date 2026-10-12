@@ -199,18 +199,18 @@ export function WildflowerWorld() {
         },
         0.70
       )
-      // Camera dollies past the garden table toward the open coastal horizon
+      // Camera dollies past the garden table through the arbor toward the open coastal horizon
       .to(
         bgImageRef.current,
         {
-          scale: 1.22,
-          y: "-5%",
+          scale: 1.32,
+          y: "-6%",
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging dawn shoreline and breaking waves reveal in the distance
+      // Emerging dawn shoreline and breaking turquoise waves reveal in full spatial depth
       .to(
         transitionBridgeRef.current,
         {
@@ -218,7 +218,7 @@ export function WildflowerWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -226,7 +226,7 @@ export function WildflowerWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#1a1f14] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -374,14 +374,14 @@ export function WildflowerWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Garden greenery dissolves as camera tracks toward ocean shoreline */}
+      {/* Narrative Transition Bridge: Garden greenery dissolves as camera tracks through the arbor toward ocean shoreline */}
       <div
         ref={transitionBridgeRef}
         className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        {/* Emerging Ocean Letter Dawn Shoreline Silhouette & Depth Plate */}
-        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+        {/* Emerging Ocean Letter Dawn Shoreline Full-Viewport Depth Plate */}
+        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
           <Image
             src="/assets/environments/ocean_letter_shoreline.jpg"
             alt=""
@@ -391,9 +391,8 @@ export function WildflowerWorld() {
             unoptimized
           />
         </div>
-        {/* Soft edge darkening and authentic coastal morning sea spray */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#05111c] via-[#061825]/60 to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-cyan-500/25 via-sky-950/45 to-transparent blur-2xl" />
+        {/* Natural coastal morning atmospheric vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05111c]/80 via-transparent to-[#05111c]/40 pointer-events-none" />
       </div>
     </section>
   </div>

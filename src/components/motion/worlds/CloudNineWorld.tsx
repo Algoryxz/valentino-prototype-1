@@ -174,14 +174,14 @@ export function CloudNineWorld() {
       .to(
         bgImageRef.current,
         {
-          scale: 1.22,
-          y: "-5%",
+          scale: 1.30,
+          y: "-6%",
           ease: "power1.inOut",
-          duration: 0.28,
+          duration: 0.26,
         },
-        0.70
+        0.74
       )
-      // Emerging candlelit dining room and deep burgundy shadows reveal in the depth
+      // Emerging candlelit dining room and deep burgundy shadows reveal in full spatial depth
       .to(
         transitionBridgeRef.current,
         {
@@ -189,7 +189,7 @@ export function CloudNineWorld() {
           ease: "power2.inOut",
           duration: 0.26,
         },
-        0.70
+        0.74
       );
     }, containerRef);
 
@@ -197,7 +197,7 @@ export function CloudNineWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[180vh] sm:h-[200vh]">
+    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
       <section
         ref={sectionRef}
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c1a2e] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
@@ -379,8 +379,8 @@ export function CloudNineWorld() {
         className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        {/* Emerging Midnight Rose Dining Room Silhouette & Depth Plate */}
-        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+        {/* Emerging Midnight Rose Dining Room Full-Viewport Depth Plate */}
+        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
           <Image
             src="/assets/environments/midnight_rose_restaurant.jpg"
             alt=""
@@ -390,9 +390,8 @@ export function CloudNineWorld() {
             unoptimized
           />
         </div>
-        {/* Soft edge darkening and warm candlelight points in the evening dusk */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0207] via-[#200511]/60 to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-amber-600/25 via-rose-950/45 to-transparent blur-2xl" />
+        {/* Soft edge darkening matching evening dusk */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0207]/80 via-transparent to-[#0c0207]/40 pointer-events-none" />
       </div>
     </section>
   </div>

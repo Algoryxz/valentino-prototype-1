@@ -68,7 +68,7 @@ test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
         path: path.join(OUTPUT_DIR, `01_stationery_transition_${vp.name}.png`),
       });
 
-      // Helper function for capturing world 3-stage sequences
+      // Helper function for capturing world multi-stage sequences within calibrated pin range
       const captureWorld = async (selector: string, prefix: string) => {
         const el = page.locator(selector);
         await el.scrollIntoViewIfNeeded();
@@ -77,25 +77,32 @@ test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
           path: path.join(OUTPUT_DIR, `${prefix}_initial_${vp.name}.png`),
         });
 
-        // Midpoint
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.40));
+        // 1. Midpoint (progress ~0.35)
+        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
         await page.waitForTimeout(600);
         await page.screenshot({
           path: path.join(OUTPUT_DIR, `${prefix}_midpoint_${vp.name}.png`),
         });
 
-        // Completed Reveal
+        // 2. Completed Reveal & Solid Paper Settling (progress ~0.65)
         await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
-        await page.waitForTimeout(700);
+        await page.waitForTimeout(600);
         await page.screenshot({
           path: path.join(OUTPUT_DIR, `${prefix}_reveal_${vp.name}.png`),
         });
 
-        // Atmospheric Transition Bridge to Next World
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
-        await page.waitForTimeout(700);
+        // 3. Camera Dolly & Opening Handover (progress ~0.85)
+        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.35));
+        await page.waitForTimeout(600);
         await page.screenshot({
           path: path.join(OUTPUT_DIR, `${prefix}_transition_${vp.name}.png`),
+        });
+
+        // 4. Full Destination Atmosphere Handover (progress ~0.95)
+        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.15));
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(OUTPUT_DIR, `${prefix}_handover_${vp.name}.png`),
         });
       };
 
