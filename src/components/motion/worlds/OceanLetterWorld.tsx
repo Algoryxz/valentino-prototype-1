@@ -167,14 +167,13 @@ export function OceanLetterWorld() {
         },
         0.48
       )
-      // 5. Narrative Handover & Camera Dolly toward Discovered Keepsakes (0.68 -> 0.98)
-      // Weathered parchment and sea glass settle peacefully into dark wet sand and driftwood
+      // Weathered parchment and sea glass settle peacefully into dark wet sand and driftwood, retaining physical parchment opacity
       .to(
         sandStageRef.current,
         {
-          scale: 0.94,
-          y: 8,
-          opacity: 0.68,
+          scale: 0.96,
+          y: 4,
+          opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },

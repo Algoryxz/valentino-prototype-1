@@ -165,14 +165,13 @@ export function WildflowerWorld() {
         },
         0.48
       )
-      // 4. Narrative Handover & Camera Dolly toward Shoreline (0.68 -> 0.98)
-      // Botanical journal settles peacefully into the weathered teak grain
+      // Botanical journal settles peacefully into the weathered teak grain, retaining physical paper materiality
       .to(
         journalTableRef.current,
         {
-          scale: 0.94,
-          y: 8,
-          opacity: 0.68,
+          scale: 0.96,
+          y: 4,
+          opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },

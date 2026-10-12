@@ -193,14 +193,14 @@ export function MidnightRoseWorld() {
         0.20
       )
       // 4. Narrative Handover & Camera Dolly into Kage (0.68 -> 0.98)
-      // Letter settles into the linen cloth as the unhurried hour closes
+      // Letter settles into the linen cloth as the unhurried hour closes, retaining physical paper opacity
       .to(
         tableLetterRef.current,
         {
-          scale: isMobile ? 0.92 : 0.94,
-          y: isMobile ? 8 : 14,
+          scale: isMobile ? 0.94 : 0.96,
+          y: isMobile ? 6 : 10,
           rotationX: isMobile ? 18 : 22,
-          opacity: 0.68,
+          opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },
@@ -209,8 +209,8 @@ export function MidnightRoseWorld() {
       .to(
         letterSheetRef.current,
         {
-          y: 2,
-          opacity: 0.85,
+          y: 0,
+          opacity: 1,
           ease: "power1.out",
           duration: 0.24,
         },

@@ -141,14 +141,13 @@ export function ApricotFilmWorld() {
         },
         0.48
       )
-      // 5. Narrative Handover & Camera Dolly toward Sunlit Garden (0.68 -> 0.98)
-      // Screen memory card settles as the projection draws to an intimate close
+      // Screen memory card settles as the projection draws to an intimate close, maintaining clear projection legibility
       .to(
         screenStageRef.current,
         {
-          scale: 0.94,
-          y: 8,
-          opacity: 0.65,
+          scale: 0.96,
+          y: 4,
+          opacity: 0.95,
           ease: "power1.inOut",
           duration: 0.28,
         },

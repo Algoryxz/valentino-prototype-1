@@ -168,13 +168,13 @@ export function KageWorld() {
         0.58
       )
       // 5. Narrative Handover & Camera Dolly toward Interior Cinema (0.68 -> 0.98)
-      // Washi scroll settles onto the dark cedar veranda floorboards
+      // Washi scroll settles onto the dark cedar veranda floorboards, retaining authentic tactile materiality
       .to(
         scrollContainerRef.current,
         {
-          scale: 0.94,
-          y: 10,
-          opacity: 0.68,
+          scale: 0.96,
+          y: 6,
+          opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },

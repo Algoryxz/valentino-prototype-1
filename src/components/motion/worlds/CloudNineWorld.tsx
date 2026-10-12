@@ -147,13 +147,13 @@ export function CloudNineWorld() {
         0.4
       )
       // 4. Narrative Handover & Camera Dolly toward Evening (0.68 -> 0.98)
-      // Airmail envelope settles back into the green beanstalk vines
+      // Airmail envelope settles back into the green beanstalk vines, retaining crisp paper materiality
       .to(
         letterGroupRef.current,
         {
-          scale: 0.95,
-          y: 8,
-          opacity: 0.68,
+          scale: 0.96,
+          y: 4,
+          opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },
