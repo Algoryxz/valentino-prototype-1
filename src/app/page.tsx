@@ -20,7 +20,7 @@ import { FinaleBotanicalFrame } from "@/components/motion/FinaleBotanicalFrame";
  */
 export default function HomePage() {
   return (
-    <main className="relative min-h-[100dvh] flex flex-col items-center justify-start bg-transparent text-[#1A0311] overflow-x-hidden selection:bg-rose-500/20 selection:text-[#1A0311]">
+    <main className="relative min-h-[100dvh] flex flex-col items-center justify-start bg-transparent text-[#1A0311] overflow-x-clip selection:bg-rose-500/20 selection:text-[#1A0311]">
       {/* ========================================================================= */}
       {/* 00 — CANONICAL GLOBAL PERSISTENT ATMOSPHERE                               */}
       {/* Pinned behind the entire public experience; morphs continuously as user    */}
@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section
         id="moments"
-        className="w-full bg-transparent text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
+        className="w-full bg-[#05111c] text-[#FAF8F5] relative z-20 z-content"
       >
         <SpatialDiscoveredObjects />
       </section>
@@ -113,7 +113,7 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section
         id="create"
-        className="w-full bg-transparent text-[#240412] relative z-20 z-content py-20 sm:py-28 px-6 overflow-hidden"
+        className="w-full bg-gradient-to-b from-[#1c0514] via-[#2d061f]/30 to-transparent text-[#240412] relative z-20 z-content py-20 sm:py-28 px-6 overflow-hidden"
       >
         {/* Asymmetric Scroll-Aware Botanical Frame at Empty Viewport Edges */}
         <FinaleBotanicalFrame />
@@ -150,7 +150,7 @@ export default function HomePage() {
 
           <div className="space-y-3.5 max-w-xl mx-auto">
             <h2 className="text-3xl sm:text-5xl font-serif font-normal text-[#1A0311] leading-tight tracking-tight drop-shadow-[0_1px_12px_rgba(255,245,248,0.5)]">
-              Give them a little piece of the internet they&apos;ll want to keep.
+              Now make a story of your own.
             </h2>
             <p className="text-sm sm:text-base text-[#36091E] font-normal leading-relaxed drop-shadow-[0_1px_6px_rgba(255,245,248,0.6)]">
               Crafted for two. Never indexed by search engines, zero tracking, and no passwords.
