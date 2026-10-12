@@ -165,15 +165,61 @@ export function WildflowerWorld() {
         },
         0.48
       )
-      // 4. Narrative Bridge: Garden foliage softens into coastal sea mist & turquoise tide of Ocean Letter (0.75 -> 0.98)
+      // 4. Narrative Handover & Camera Dolly toward Shoreline (0.68 -> 0.98)
+      // Botanical journal settles peacefully into the weathered teak grain
+      .to(
+        journalTableRef.current,
+        {
+          scale: 0.94,
+          y: 8,
+          opacity: 0.68,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      // Narrative text gracefully yields
+      .to(
+        sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Garden sunbeams soften as cool coastal morning fog rolls over the hedge
+      .to(
+        sunbeamsRef.current,
+        {
+          opacity: 0.2,
+          scale: 0.8,
+          ease: "power2.out",
+          duration: 0.26,
+        },
+        0.70
+      )
+      // Camera dollies past the garden table toward the open coastal horizon
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.22,
+          y: "-5%",
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging dawn shoreline and breaking waves reveal in the distance
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -329,13 +375,26 @@ export function WildflowerWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Garden foliage dissolving into coastal sea mist & turquoise tide */}
+      {/* Narrative Transition Bridge: Garden greenery dissolves as camera tracks toward ocean shoreline */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#061825]/75 to-[#05111c]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-cyan-500/20 via-sky-950/40 to-transparent blur-2xl" />
+        {/* Emerging Ocean Letter Dawn Shoreline Silhouette & Depth Plate */}
+        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+          <Image
+            src="/assets/environments/ocean_letter_shoreline.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            unoptimized
+          />
+        </div>
+        {/* Soft edge darkening and authentic coastal morning sea spray */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05111c] via-[#061825]/60 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-cyan-500/25 via-sky-950/45 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

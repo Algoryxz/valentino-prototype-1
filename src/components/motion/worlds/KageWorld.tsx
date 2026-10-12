@@ -167,15 +167,62 @@ export function KageWorld() {
         },
         0.58
       )
-      // 5. Narrative Bridge: Shoji golden glow transforming into cinema projector warmth of Apricot Film (0.75 -> 0.98)
+      // 5. Narrative Handover & Camera Dolly toward Interior Cinema (0.68 -> 0.98)
+      // Washi scroll settles onto the dark cedar veranda floorboards
+      .to(
+        scrollContainerRef.current,
+        {
+          scale: 0.94,
+          y: 10,
+          opacity: 0.68,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      // Narrative text gracefully fades down
+      .to(
+        sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Emerald courtyard mist softens as focus turns toward interior warmth
+      .to(
+        emeraldMistRef.current,
+        {
+          opacity: 0.25,
+          scale: 0.85,
+          ease: "power2.out",
+          duration: 0.26,
+        },
+        0.70
+      )
+      // Camera dollies forward along the veranda toward the glowing interior entrance
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.22,
+          y: "-6%",
+          x: "3%",
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging cinema proscenium and warm incandescent light reveals in the depth
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -327,13 +374,26 @@ export function KageWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Shoji golden glow transforming into cinema projector warmth */}
+      {/* Narrative Transition Bridge: Veranda dusk gives way to warm cinema projector beam and velvet curtains */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#180a08]/75 to-[#120702]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute inset-y-1/4 inset-x-1/3 bg-radial from-amber-500/25 via-amber-900/30 to-transparent blur-3xl" />
+        {/* Emerging 1930s Cinema Proscenium Silhouette & Depth Plate */}
+        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+          <Image
+            src="/assets/environments/apricot_vintage_cinema.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            unoptimized
+          />
+        </div>
+        {/* Atmospheric edge darkening and warm projector beam focus */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#120702] via-[#180a08]/65 to-transparent" />
+        <div className="absolute inset-y-1/4 inset-x-1/4 bg-radial from-amber-400/25 via-amber-900/35 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

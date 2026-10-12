@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { AmbientBotanicalFrame } from "@/components/motion/AmbientBotanicalFrame";
@@ -259,6 +260,19 @@ export function SpatialDiscoveredObjects() {
             </span>
           </div>
         </div>
+      </div>
+
+      {/* Understated Showroom Full Catalog Link */}
+      <div className="w-full text-center pt-16 sm:pt-20 pb-4 relative z-20">
+        <Link
+          href="/templates"
+          className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-mono uppercase tracking-widest bg-rose-950/40 hover:bg-rose-900/60 border border-rose-400/40 text-rose-100 hover:text-white font-medium shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5"
+        >
+          <span>Explore all six atmospheres</span>
+          <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
+            →
+          </span>
+        </Link>
       </div>
     </div>
   );

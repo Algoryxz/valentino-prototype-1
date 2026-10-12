@@ -11,7 +11,7 @@ const VIEWPORTS = [
   { name: "mobile_360x800", width: 360, height: 800 },
 ];
 
-const OUTPUT_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9d610088-6efa-4241-82b7-70b0cc3a4a13/phase8_captures";
+const OUTPUT_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9fabd511-bd1c-41d3-a59d-3a047823f7e2/phase8_captures";
 
 test.beforeAll(() => {
   if (!fs.existsSync(OUTPUT_DIR)) {

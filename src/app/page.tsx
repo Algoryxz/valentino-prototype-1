@@ -102,7 +102,7 @@ export default function HomePage() {
       {/* ========================================================================= */}
       <section
         id="moments"
-        className="w-full bg-[#12040D] text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
+        className="w-full bg-[#05111c] text-[#FAF8F5] relative z-20 z-content"
       >
         <SpatialDiscoveredObjects />
       </section>

@@ -141,15 +141,61 @@ export function ApricotFilmWorld() {
         },
         0.48
       )
-      // 5. Narrative Bridge: Projector beam widens into morning sunlight & cottage foliage of Wildflower Paper (0.75 -> 0.98)
+      // 5. Narrative Handover & Camera Dolly toward Sunlit Garden (0.68 -> 0.98)
+      // Screen memory card settles as the projection draws to an intimate close
+      .to(
+        screenStageRef.current,
+        {
+          scale: 0.94,
+          y: 8,
+          opacity: 0.65,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      // Narrative text gracefully yields
+      .to(
+        sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Vintage projector beam softens as auditorium doors open
+      .to(
+        projectorBeamRef.current,
+        {
+          opacity: 0.2,
+          scale: 0.8,
+          ease: "power2.out",
+          duration: 0.26,
+        },
+        0.70
+      )
+      // Camera dollies down the aisle past the stage toward morning sunlight
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.22,
+          y: "-5%",
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging sunlit English cottage garden vista reveals through the open doors
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -290,13 +336,26 @@ export function ApricotFilmWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Projector beam widening into morning sunlight and garden greens */}
+      {/* Narrative Transition Bridge: Cinema shadows yield as camera tracks toward sunlit English cottage garden */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#121c10]/75 to-[#1a1f14]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute top-0 right-1/4 w-[60vw] h-[60vh] bg-radial from-amber-200/25 via-emerald-800/20 to-transparent blur-3xl" />
+        {/* Emerging English Cottage Garden Silhouette & Depth Plate */}
+        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+          <Image
+            src="/assets/environments/wildflower_english_garden.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            unoptimized
+          />
+        </div>
+        {/* Soft edge darkening and warm morning sunlight streaming in */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1a1f14] via-[#121c10]/60 to-transparent" />
+        <div className="absolute top-0 right-1/4 w-[65vw] h-[65vh] bg-radial from-amber-200/30 via-emerald-800/25 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

@@ -146,15 +146,50 @@ export function CloudNineWorld() {
         },
         0.4
       )
-      // 4. Narrative Bridge: Morning sky warms toward evening amber & deep burgundy shadows of Midnight Rose (0.75 -> 0.98)
+      // 4. Narrative Handover & Camera Dolly toward Evening (0.68 -> 0.98)
+      // Airmail envelope settles back into the green beanstalk vines
+      .to(
+        letterGroupRef.current,
+        {
+          scale: 0.95,
+          y: 8,
+          opacity: 0.68,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      // Narrative text gracefully yields
+      .to(
+        sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Camera dollies down through cloud canopy toward ground level
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.22,
+          y: "-5%",
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging candlelit dining room and deep burgundy shadows reveal in the depth
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -338,13 +373,26 @@ export function CloudNineWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Morning sky warming toward evening amber & deep burgundy shadows of Midnight Rose */}
+      {/* Narrative Transition Bridge: Skyward morning descends toward intimate candlelit dining room */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#200511]/75 to-[#0c0207]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-amber-600/20 via-rose-950/40 to-transparent blur-2xl" />
+        {/* Emerging Midnight Rose Dining Room Silhouette & Depth Plate */}
+        <div className="absolute inset-0 w-full h-full opacity-55 mix-blend-screen scale-105 pointer-events-none select-none">
+          <Image
+            src="/assets/environments/midnight_rose_restaurant.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            unoptimized
+          />
+        </div>
+        {/* Soft edge darkening and warm candlelight points in the evening dusk */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0207] via-[#200511]/60 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-amber-600/25 via-rose-950/45 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

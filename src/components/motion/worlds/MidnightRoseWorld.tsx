@@ -192,15 +192,73 @@ export function MidnightRoseWorld() {
         },
         0.20
       )
-      // 4. Narrative Bridge: Candlelight softens into amber smoke and emerald courtyard mist of Kage (0.75 -> 0.98)
+      // 4. Narrative Handover & Camera Dolly into Kage (0.68 -> 0.98)
+      // Letter settles into the linen cloth as the unhurried hour closes
+      .to(
+        tableLetterRef.current,
+        {
+          scale: isMobile ? 0.92 : 0.94,
+          y: isMobile ? 8 : 14,
+          rotationX: isMobile ? 18 : 22,
+          opacity: 0.68,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      .to(
+        letterSheetRef.current,
+        {
+          y: 2,
+          opacity: 0.85,
+          ease: "power1.out",
+          duration: 0.24,
+        },
+        0.68
+      )
+      // Dining candle flickers low as midnight deepens
+      .to(
+        candleGlowRef.current,
+        {
+          opacity: 0.2,
+          scale: 0.6,
+          ease: "power2.out",
+          duration: 0.26,
+        },
+        0.70
+      )
+      // Narrative text gracefully fades, yielding focus to the spatial depth
+      .to(
+        narrativeRef.current,
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Camera dollies past the candlelit table toward the left veranda opening
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.25,
+          xPercent: isMobile ? -6 : -8,
+          yPercent: isMobile ? -2 : -3,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging Kyoto courtyard atmosphere reveals through the veranda
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -359,13 +417,26 @@ export function MidnightRoseWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Candle smoke and emerald courtyard mist bridging into Kage */}
+      {/* Narrative Transition Bridge: Candlelight yields as camera moves toward Kage's Kyoto courtyard veranda */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#061510]/75 to-[#050d0b]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-emerald-600/20 via-teal-950/40 to-transparent blur-2xl" />
+        {/* Emerging Kage Kyoto Courtyard Silhouette & Depth Plate */}
+        <div className="absolute inset-0 w-full h-full opacity-60 mix-blend-screen scale-105 pointer-events-none select-none">
+          <Image
+            src="/assets/environments/kage_kyoto_courtyard.jpg"
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover object-left"
+            unoptimized
+          />
+        </div>
+        {/* Soft edge darkening and authentic emerald moss mist drifting into the dining room */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050d0b] via-[#061510]/60 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-2/3 bg-radial from-emerald-600/25 via-teal-950/45 to-transparent blur-2xl" />
       </div>
     </section>
   </div>

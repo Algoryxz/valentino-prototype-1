@@ -167,15 +167,61 @@ export function OceanLetterWorld() {
         },
         0.48
       )
-      // 5. Narrative Bridge: Tidal wave recedes, water-dark textures lead to keepsake tabletop of The Hidden Trove (0.75 -> 0.98)
+      // 5. Narrative Handover & Camera Dolly toward Discovered Keepsakes (0.68 -> 0.98)
+      // Weathered parchment and sea glass settle peacefully into dark wet sand and driftwood
+      .to(
+        sandStageRef.current,
+        {
+          scale: 0.94,
+          y: 8,
+          opacity: 0.68,
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.68
+      )
+      // Narrative text gracefully yields
+      .to(
+        sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
+        {
+          opacity: 0,
+          y: -15,
+          ease: "power1.in",
+          duration: 0.22,
+        },
+        0.70
+      )
+      // Coastal morning wave recedes as daylight deepens into intimate evening starlight
+      .to(
+        coastalMistRef.current,
+        {
+          opacity: 0.2,
+          scale: 0.8,
+          ease: "power2.out",
+          duration: 0.26,
+        },
+        0.70
+      )
+      // Camera dollies down from the wave crest to macro ground level on the dark woodgrain plane
+      .to(
+        bgImageRef.current,
+        {
+          scale: 1.22,
+          y: "-5%",
+          ease: "power1.inOut",
+          duration: 0.28,
+        },
+        0.70
+      )
+      // Emerging dark evening tabletop and starlight keepsake constellation reveals in the depth
       .to(
         transitionBridgeRef.current,
         {
           opacity: 1,
           ease: "power2.inOut",
-          duration: 0.23,
+          duration: 0.26,
         },
-        0.75
+        0.70
       );
     }, containerRef);
 
@@ -322,13 +368,26 @@ export function OceanLetterWorld() {
         </span>
       </div>
 
-      {/* Narrative Transition Bridge: Receding tide and water-dark textures leading to The Hidden Trove */}
+      {/* Narrative Transition Bridge: Receding dawn tide dissolves as camera glides down onto dark evening keepsake tabletop */}
       <div
         ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity bg-gradient-to-b from-transparent via-[#0d0914]/80 to-[#12040d]"
+        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
         aria-hidden="true"
       >
-        <div className="absolute bottom-0 inset-x-0 h-1/3 bg-radial from-rose-950/30 via-purple-950/20 to-transparent blur-2xl" />
+        {/* Seamless dark evening woodgrain plane bridging directly into The Hidden Trove */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#12040D] via-[#0d0914]/85 to-[#05111c]/60" />
+
+        {/* Floating starlight particles in the deepening atmosphere matching The Hidden Trove */}
+        <div className="absolute inset-0 select-none overflow-hidden" aria-hidden="true">
+          <svg viewBox="0 0 1200 600" fill="none" className="w-full h-full opacity-30">
+            <circle cx="300" cy="180" r="1.5" fill="#FAF5EE" fillOpacity="0.6" />
+            <circle cx="850" cy="380" r="1.2" fill="#FAF5EE" fillOpacity="0.5" />
+            <circle cx="580" cy="120" r="1.8" fill="#F472B6" fillOpacity="0.4" />
+          </svg>
+        </div>
+
+        {/* Soft tabletop shadow and subtle warm keepsake glow emerging in the lower depth */}
+        <div className="absolute bottom-0 inset-x-0 h-1/2 bg-radial from-rose-950/40 via-purple-950/30 to-transparent blur-3xl" />
       </div>
     </section>
   </div>

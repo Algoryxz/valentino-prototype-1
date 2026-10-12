@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { CloudNineWorld } from "@/components/motion/worlds/CloudNineWorld";
 import { MidnightRoseWorld } from "@/components/motion/worlds/MidnightRoseWorld";
 import { KageWorld } from "@/components/motion/worlds/KageWorld";
@@ -24,7 +23,7 @@ import { OceanLetterWorld } from "@/components/motion/worlds/OceanLetterWorld";
  */
 export function SpatialWorldsWalkthrough() {
   return (
-    <div className="relative w-full bg-transparent text-[#FAF8F5] pt-16 sm:pt-24 pb-12">
+    <div className="relative w-full bg-transparent text-[#FAF8F5] pt-16 sm:pt-24 pb-0">
       {/* Editorial Section Anchor Header */}
       <div className="text-center max-w-3xl mx-auto px-6 mb-12 sm:mb-20 space-y-3 relative z-10">
         <h2 className="text-3xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#1A0311] tracking-tight leading-tight drop-shadow-[0_1px_12px_rgba(255,245,248,0.5)]">
@@ -43,19 +42,6 @@ export function SpatialWorldsWalkthrough() {
         <ApricotFilmWorld />
         <WildflowerWorld />
         <OceanLetterWorld />
-      </div>
-
-      {/* Understated Showroom Full Catalog Link & Seamless Bridge to Hidden Trove */}
-      <div className="w-full text-center py-20 px-6 relative z-10 bg-gradient-to-b from-[#05111c] via-[#0b0c16] to-[#12040D]">
-        <Link
-          href="/templates"
-          className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-mono uppercase tracking-widest bg-rose-950/40 hover:bg-rose-900/60 border border-rose-400/40 text-rose-100 hover:text-white font-medium shadow-[0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5"
-        >
-          <span>Explore all six atmospheres</span>
-          <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5">
-            →
-          </span>
-        </Link>
       </div>
     </div>
   );
