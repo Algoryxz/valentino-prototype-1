@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test } from "@playwright/test";
 import path from "path";
 import fs from "fs";
 
@@ -11,7 +11,7 @@ const VIEWPORTS = [
   { name: "mobile_360x800", width: 360, height: 800 },
 ];
 
-const OUTPUT_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9fabd511-bd1c-41d3-a59d-3a047823f7e2/phase8_captures";
+const OUTPUT_DIR = process.env.OUTPUT_DIR || path.join(process.cwd(), "test-results", "phase8_visual_matrix");
 
 test.beforeAll(() => {
   if (!fs.existsSync(OUTPUT_DIR)) {
@@ -19,125 +19,173 @@ test.beforeAll(() => {
   }
 });
 
-test.describe("Phase 8 Cinematic Worlds Visual Matrix", () => {
+test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", () => {
   for (const vp of VIEWPORTS) {
-    test(`Visual capture across all cinematic worlds at ${vp.name}`, async ({ page }) => {
-      test.setTimeout(240000);
+    test(`Visual verification at ${vp.name}`, async ({ page }) => {
+      test.setTimeout(300000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
       await page.waitForTimeout(1000);
 
-      const vh = vp.height;
+      // Helper function to scroll to exact progress inside any scroll-driven section
+      const scrollToProgress = async (selector: string, progress: number) => {
+        await page.evaluate(
+          ({ sel, prog }) => {
+            const el = document.querySelector(sel);
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const elementTop = rect.top + scrollTop;
+            const elementHeight = rect.height;
+            const maxScroll = Math.max(0, elementHeight - window.innerHeight);
+            const targetY = elementTop + prog * maxScroll;
+            window.scrollTo({ top: targetY, behavior: "instant" });
+          },
+          { sel: selector, prog: progress }
+        );
+        // Wait for GSAP scrub to settle
+        await page.waitForTimeout(650);
+      };
 
       // 0. Protected Homepage Hero Baseline
-      const hero = page.locator("#hero");
-      await hero.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
       await page.waitForTimeout(500);
       await page.screenshot({
         path: path.join(OUTPUT_DIR, `00_hero_${vp.name}.png`),
       });
 
       // 1. Stationery Unfolding Sequence (#personalize)
+      // 1a. Folded compact trifold bundle
+      await scrollToProgress("#personalize", 0.04);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01a_stationery_folded_${vp.name}.png`),
+      });
+
+      // 1b. Flaps opening in 3D space
+      await scrollToProgress("#personalize", 0.28);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01b_stationery_unfolding_${vp.name}.png`),
+      });
+
+      // 1c. Sheet settled flat with ink typography resolving
+      await scrollToProgress("#personalize", 0.58);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01c_stationery_settled_${vp.name}.png`),
+      });
+
+      // 1d. Botanical vines bloomed around perimeter
+      await scrollToProgress("#personalize", 0.78);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01d_stationery_vines_${vp.name}.png`),
+      });
+
+      // 1e. Stationery transition into morning sky
+      await scrollToProgress("#personalize", 0.96);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `01e_stationery_to_sky_${vp.name}.png`),
+      });
+
+      // 2. Worlds Walkthrough (#worlds-section)
+      // 2a. Chapter 01 Headline over Cloud Nine Sky
+      await scrollToProgress("#worlds-section", 0.02);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02a_chapter01_sky_${vp.name}.png`),
+      });
+
+      // 2b. Cloud Nine Active (Skyward aerogramme)
+      await scrollToProgress("#worlds-section", 0.10);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02b_cloud_nine_active_${vp.name}.png`),
+      });
+
+      // 2c. Boundary: Cloud Nine -> Midnight Rose Handoff
+      await scrollToProgress("#worlds-section", 0.165);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02c_handoff_cloud_to_rose_${vp.name}.png`),
+      });
+
+      // 2d. Midnight Rose Active (Burgundy velvet envelope & wax seal)
+      await scrollToProgress("#worlds-section", 0.25);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02d_midnight_rose_active_${vp.name}.png`),
+      });
+
+      // 2e. Boundary: Midnight Rose -> Kage Handoff
+      await scrollToProgress("#worlds-section", 0.33);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02e_handoff_rose_to_kage_${vp.name}.png`),
+      });
+
+      // 2f. Kage Active (Kyoto veranda & washi calligraphy)
+      await scrollToProgress("#worlds-section", 0.41);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02f_kage_active_${vp.name}.png`),
+      });
+
+      // 2g. Boundary: Kage -> Apricot Film Handoff
+      await scrollToProgress("#worlds-section", 0.495);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02g_handoff_kage_to_apricot_${vp.name}.png`),
+      });
+
+      // 2h. Apricot Film Active (35mm projection screen on stage)
+      await scrollToProgress("#worlds-section", 0.58);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02h_apricot_film_active_${vp.name}.png`),
+      });
+
+      // 2i. Boundary: Apricot Film -> Wildflower Paper Handoff
+      await scrollToProgress("#worlds-section", 0.66);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02i_handoff_apricot_to_wildflower_${vp.name}.png`),
+      });
+
+      // 2j. Wildflower Paper Active (English cottage garden pressed botanicals)
+      await scrollToProgress("#worlds-section", 0.74);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02j_wildflower_active_${vp.name}.png`),
+      });
+
+      // 2k. Boundary: Wildflower Paper -> Ocean Letter Handoff
+      await scrollToProgress("#worlds-section", 0.825);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02k_handoff_wildflower_to_ocean_${vp.name}.png`),
+      });
+
+      // 2l. Ocean Letter Active (Dawn shoreline & message in a bottle)
+      await scrollToProgress("#worlds-section", 0.90);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02l_ocean_letter_active_${vp.name}.png`),
+      });
+
+      // 2m. Boundary: Ocean Letter -> The Hidden Trove Transition
+      await scrollToProgress("#worlds-section", 0.98);
+      await page.screenshot({
+        path: path.join(OUTPUT_DIR, `02m_handoff_ocean_to_trove_${vp.name}.png`),
+      });
+
+      // 3. The Hidden Trove Still Life (#moments)
       await page.evaluate(() => {
-        const el = document.getElementById("personalize");
+        const el = document.getElementById("moments");
         if (el) {
-          const rect = el.getBoundingClientRect();
-          window.scrollBy(0, rect.top);
+          el.scrollIntoView({ behavior: "instant" });
         }
       });
       await page.waitForTimeout(600);
       await page.screenshot({
-        path: path.join(OUTPUT_DIR, `01_stationery_initial_${vp.name}.png`),
+        path: path.join(OUTPUT_DIR, `03a_trove_settled_${vp.name}.png`),
       });
 
-      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.32));
-      await page.waitForTimeout(600);
-      await page.screenshot({
-        path: path.join(OUTPUT_DIR, `01_stationery_midpoint_${vp.name}.png`),
+      // 4. Finale Section (#create)
+      await page.evaluate(() => {
+        const el = document.getElementById("create");
+        if (el) {
+          el.scrollIntoView({ behavior: "instant" });
+        }
       });
-
-      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.30));
       await page.waitForTimeout(600);
       await page.screenshot({
-        path: path.join(OUTPUT_DIR, `01_stationery_settled_${vp.name}.png`),
-      });
-
-      await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.40));
-      await page.waitForTimeout(600);
-      await page.screenshot({
-        path: path.join(OUTPUT_DIR, `01_stationery_transition_${vp.name}.png`),
-      });
-
-      // Helper function for capturing world multi-stage sequences within calibrated pin range
-      const captureWorld = async (selector: string, prefix: string) => {
-        const el = page.locator(selector);
-        await el.scrollIntoViewIfNeeded();
-        await page.waitForTimeout(600);
-        await page.screenshot({
-          path: path.join(OUTPUT_DIR, `${prefix}_initial_${vp.name}.png`),
-        });
-
-        // 1. Midpoint (progress ~0.35)
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
-        await page.waitForTimeout(600);
-        await page.screenshot({
-          path: path.join(OUTPUT_DIR, `${prefix}_midpoint_${vp.name}.png`),
-        });
-
-        // 2. Completed Reveal & Solid Paper Settling (progress ~0.65)
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.45));
-        await page.waitForTimeout(600);
-        await page.screenshot({
-          path: path.join(OUTPUT_DIR, `${prefix}_reveal_${vp.name}.png`),
-        });
-
-        // 3. Camera Dolly & Opening Handover (progress ~0.85)
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.35));
-        await page.waitForTimeout(600);
-        await page.screenshot({
-          path: path.join(OUTPUT_DIR, `${prefix}_transition_${vp.name}.png`),
-        });
-
-        // 4. Full Destination Atmosphere Handover (progress ~0.95)
-        await page.evaluate((scrollAmount) => window.scrollBy(0, scrollAmount), Math.round(vh * 0.15));
-        await page.waitForTimeout(600);
-        await page.screenshot({
-          path: path.join(OUTPUT_DIR, `${prefix}_handover_${vp.name}.png`),
-        });
-      };
-
-      // 2. World 1: Cloud Nine
-      await captureWorld('section[aria-label="Cloud Nine cinematic world"]', "02_world_cloud_nine");
-
-      // 3. World 2: Midnight Rose
-      await captureWorld('section[aria-label="Midnight Rose cinematic world"]', "03_world_midnight_rose");
-
-      // 4. World 3: Kage
-      await captureWorld('section[aria-label="Kage cinematic world"]', "04_world_kage");
-
-      // 5. World 4: Apricot Film
-      await captureWorld('section[aria-label="Apricot Film cinematic world"]', "05_world_apricot_film");
-
-      // 6. World 5: Wildflower Paper
-      await captureWorld('section[aria-label="Wildflower Paper cinematic world"]', "06_world_wildflower");
-
-      // 7. World 6: Ocean Letter
-      await captureWorld('section[aria-label="Ocean Letter cinematic world"]', "07_world_ocean_letter");
-
-      // 8. Lower Page: The Hidden Trove (#moments)
-      const trove = page.locator("#moments");
-      await trove.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(600);
-      await page.screenshot({
-        path: path.join(OUTPUT_DIR, `08_trove_${vp.name}.png`),
-      });
-
-      // 9. Finale Section (#create)
-      const finale = page.locator("#create");
-      await finale.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(600);
-      await page.screenshot({
-        path: path.join(OUTPUT_DIR, `09_finale_${vp.name}.png`),
+        path: path.join(OUTPUT_DIR, `04a_finale_${vp.name}.png`),
       });
     });
   }

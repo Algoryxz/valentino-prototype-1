@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * CloudNineWorld (Phase 8.2 Environment-Integrated Letter):
+ * CloudNineWorld (Phase 8.5 Single-Stage Continuity):
  * Story: A letter nestled in the climbing vine.
  * Environment: Serene morning sky, sunrise clouds, towering green beanstalk.
  * Choreography: Camera dollies closer to the vine branch; an airmail aerogramme letter
@@ -26,7 +26,6 @@ export function CloudNineWorld() {
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const ticketRef = useRef<HTMLDivElement | null>(null);
-  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -40,7 +39,6 @@ export function CloudNineWorld() {
         gsap.set(letterSheetRef.current, { opacity: 1, scale: 1 });
         gsap.set(letterContentRef.current, { opacity: 1 });
         gsap.set(ticketRef.current, { opacity: 1 });
-        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -174,19 +172,9 @@ export function CloudNineWorld() {
       .to(
         bgImageRef.current,
         {
-          scale: 1.30,
-          y: "-6%",
+          scale: 1.25,
+          y: "-5%",
           ease: "power1.inOut",
-          duration: 0.26,
-        },
-        0.74
-      )
-      // Emerging candlelit dining room and deep burgundy shadows reveal in full spatial depth
-      .to(
-        transitionBridgeRef.current,
-        {
-          opacity: 1,
-          ease: "power2.inOut",
           duration: 0.26,
         },
         0.74
@@ -197,203 +185,146 @@ export function CloudNineWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
+    <div ref={containerRef} className="relative w-full h-[220vh] sm:h-[240vh]">
       <section
         ref={sectionRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c1a2e] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c1a2e] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden shadow-[0_24px_50px_rgba(0,0,0,0.6)]"
         aria-label="Cloud Nine cinematic world"
       >
-      {/* CINEMATIC ENVIRONMENT PLATE: Beanstalk ascending through morning clouds */}
-      <div
-        ref={bgImageRef}
-        className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
-      >
-        <Image
-          src="/assets/environments/cloud_nine_beanstalk.jpg"
-          alt="Towering green beanstalk rising through serene morning clouds into pale blue sky"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-          priority={false}
-          unoptimized
-        />
-      </div>
-
-      {/* Atmospheric Vignette */}
-      <div
-        className="absolute inset-0 bg-gradient-to-b from-[#031525]/30 via-transparent to-[#04111E]/55 pointer-events-none -z-10"
-        aria-hidden="true"
-      />
-
-      {/* Soft Golden Sunrise Radiance */}
-      <div
-        className="absolute top-0 right-0 w-[50vw] h-[50vh] bg-gradient-to-bl from-amber-100/20 via-sky-200/10 to-transparent blur-3xl pointer-events-none -z-10"
-        aria-hidden="true"
-      />
-
-      {/* Ambient Top World Tag */}
-      <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse" />
-          <span className="text-[10px] font-mono tracking-widest uppercase">01 — Skyward</span>
-        </div>
-        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/80 drop-shadow-sm font-medium">
-          Some letters rise on hope.
-        </span>
-      </div>
-
-      {/* MAIN CINEMATIC STAGE: Beanstalk Vine & Nestled Airmail Letter */}
-      <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
-        {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-5 space-y-4 text-left">
-          <div className="space-y-1">
-            <span className="text-xs font-mono uppercase tracking-widest text-sky-200/90 font-medium">
-              Atmosphere 01
-            </span>
-            <h3 className="text-4xl sm:text-6xl font-serif font-normal tracking-tight text-white drop-shadow-[0_2px_18px_rgba(2,20,40,0.85)]">
-              Cloud Nine
-            </h3>
-          </div>
-          <p className="text-lg sm:text-2xl font-serif italic text-sky-100 font-light leading-relaxed drop-shadow-[0_1px_8px_rgba(2,20,40,0.8)]">
-            “For the person who makes everything lighter.”
-          </p>
-          <p className="text-xs sm:text-sm text-sky-100/90 max-w-md font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(2,20,40,0.8)]">
-            Nestled high along the climbing vine, an airmail letter carried upward toward the quiet morning light.
-          </p>
-          <div className="pt-2">
-            <AtmosphericButton
-              href="/create?template=cloud-nine"
-              worldId="cloud-nine"
-              worldName="Cloud Nine"
-            />
-          </div>
-        </div>
-
-        {/* Right Column: Physical Airmail Letter Nestled Directly Against the Living Vine */}
+        {/* CINEMATIC ENVIRONMENT PLATE: Beanstalk ascending through morning clouds */}
         <div
-          ref={letterGroupRef}
-          className="lg:col-span-7 flex justify-center lg:justify-center will-change-transform [perspective:1000px]"
+          ref={bgImageRef}
+          className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
         >
-          <div className="relative w-72 sm:w-88 select-none drop-shadow-[0_22px_45px_rgba(2,25,50,0.7)]">
-            {/* Coffee Ticket Pinned to Vine */}
-            <div
-              ref={ticketRef}
-              className="absolute -top-3.5 -left-3 z-30 pointer-events-none transform rotate-[-5deg] drop-shadow-[0_6px_14px_rgba(3,105,161,0.35)]"
-            >
-              <div className="w-24 sm:w-28 py-1 px-2.5 bg-[#FAF5EE] rounded-[2px] border border-sky-300/40 text-left shadow-xs">
-                <span className="font-serif italic text-[11px] sm:text-xs text-[#1A0311] leading-none block font-semibold">
-                  Rainy Tuesday
-                </span>
-                <span className="block text-[7.5px] font-mono tracking-wider text-sky-800/80 mt-0.5 uppercase font-medium">
-                  First Coffee
-                </span>
-              </div>
+          <Image
+            src="/assets/environments/cloud_nine_beanstalk.jpg"
+            alt="Towering green beanstalk rising through serene morning clouds into pale blue sky"
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            priority={false}
+            unoptimized
+          />
+        </div>
+
+        {/* Atmospheric Vignette */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#031525]/30 via-transparent to-[#04111E]/55 pointer-events-none -z-10"
+          aria-hidden="true"
+        />
+
+        {/* Soft Golden Sunrise Radiance */}
+        <div
+          className="absolute top-0 right-0 w-[50vw] h-[50vh] bg-gradient-to-bl from-amber-100/20 via-sky-200/10 to-transparent blur-3xl pointer-events-none -z-10"
+          aria-hidden="true"
+        />
+
+        {/* Ambient Top World Tag */}
+        <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-300 animate-pulse" />
+            <span className="text-[10px] font-mono tracking-widest uppercase">01 — Skyward</span>
+          </div>
+          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/80 drop-shadow-sm font-medium">
+            Some letters rise on hope.
+          </span>
+        </div>
+
+        {/* MAIN CINEMATIC STAGE: Beanstalk Vine & Nestled Airmail Letter */}
+        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
+          {/* Left Column: Editorial Scene Narrative & Entry Action */}
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <div className="space-y-1">
+              <span className="text-xs font-mono uppercase tracking-widest text-sky-200/90 font-medium">
+                Atmosphere 01 · Cloud Nine
+              </span>
+              <h3 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-white drop-shadow-[0_2px_16px_rgba(3,21,37,0.9)]">
+                “For the love that lifts you off the ground.”
+              </h3>
             </div>
-
-            {/* 1. Folded Aerogramme Envelope State */}
-            <div
-              ref={aerogrammeCoverRef}
-              className="absolute inset-0 z-25 bg-[#FAF6EE] rounded-[2px] border border-sky-200/60 p-5 shadow-lg flex flex-col justify-between overflow-hidden will-change-transform"
-            >
-              <div
-                className="absolute top-0 inset-x-0 h-2 opacity-90"
-                style={{
-                  background:
-                    "repeating-linear-gradient(45deg, #0284C7, #0284C7 8px, #FFFDF9 8px, #FFFDF9 16px, #E11D48 16px, #E11D48 24px, #FFFDF9 24px, #FFFDF9 32px)",
-                }}
-              />
-              <div className="my-auto text-center space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-sky-900/80 font-bold block">
-                  PAR AVION · AIR MAIL
-                </span>
-                <span className="font-serif italic text-xs text-sky-950/70">
-                  Folded along the vine
-                </span>
-              </div>
-              <div
-                className="absolute bottom-0 inset-x-0 h-2 opacity-90"
-                style={{
-                  background:
-                    "repeating-linear-gradient(45deg, #0284C7, #0284C7 8px, #FFFDF9 8px, #FFFDF9 16px, #E11D48 16px, #E11D48 24px, #FFFDF9 24px, #FFFDF9 32px)",
-                }}
+            <p className="text-sm sm:text-base text-sky-100/90 max-w-sm font-normal leading-relaxed drop-shadow-sm">
+              High above the everyday world, words find the quiet space to breathe.
+            </p>
+            <div className="pt-2">
+              <AtmosphericButton
+                href="/create?template=cloud-nine"
+                worldId="cloud-nine"
+                worldName="Cloud Nine"
               />
             </div>
+          </div>
 
-            {/* 2. Physical Unfolded Airmail Aerogramme Sheet */}
+          {/* Right Column: Physical Airmail Envelope Nestled Directly in the Living Vine */}
+          <div className="lg:col-span-7 flex justify-center lg:justify-end items-center">
             <div
-              ref={letterSheetRef}
-              className="relative w-full bg-[#FFFDF9] shadow-[0_20px_50px_-8px_rgba(2,30,60,0.65),0_6px_16px_rgba(0,0,0,0.12)] border border-sky-200/60 rounded-[2px] p-6 sm:p-7 overflow-hidden will-change-transform"
+              ref={letterGroupRef}
+              className="relative w-full max-w-[280px] sm:max-w-[340px] aspect-[540/724] will-change-transform drop-shadow-[0_20px_45px_rgba(2,12,24,0.65)] select-none"
             >
-              {/* Airmail Par Avion Hatched Border Trim (Top & Bottom) */}
+              {/* Vintage Airmail Ticket pinned casually to the left deckled margin */}
               <div
-                className="absolute top-0 inset-x-0 h-2 opacity-90"
-                style={{
-                  background:
-                    "repeating-linear-gradient(45deg, #0284C7, #0284C7 8px, #FFFDF9 8px, #FFFDF9 16px, #E11D48 16px, #E11D48 24px, #FFFDF9 24px, #FFFDF9 32px)",
-                }}
-              />
-              <div
-                className="absolute bottom-0 inset-x-0 h-2 opacity-90"
-                style={{
-                  background:
-                    "repeating-linear-gradient(45deg, #0284C7, #0284C7 8px, #FFFDF9 8px, #FFFDF9 16px, #E11D48 16px, #E11D48 24px, #FFFDF9 24px, #FFFDF9 32px)",
-                }}
-              />
+                ref={ticketRef}
+                className="absolute -top-3 -left-4 z-30 transform rotate-[-4deg] drop-shadow-md pointer-events-none will-change-transform"
+                aria-hidden="true"
+              >
+                <div className="w-24 sm:w-28 py-1 px-2 bg-[#FFFDF9] rounded-xs border border-sky-900/30 text-left shadow-xs">
+                  <span className="text-[7.5px] sm:text-[8px] font-mono uppercase tracking-widest text-sky-950 font-bold block">
+                    AIR LETTER
+                  </span>
+                  <span className="font-serif italic text-[11px] sm:text-xs text-sky-900 leading-none block mt-0.5 font-semibold">
+                    Dawn Flight
+                  </span>
+                </div>
+              </div>
 
-              {/* Handled Paper Edge Corner Fold */}
-              <div className="absolute top-0 right-0 w-5 h-5 pointer-events-none z-20">
-                <div
-                  className="w-full h-full bg-gradient-to-bl from-[#D8CDB6] via-[#FAF6EE] to-[#FFFDF9] shadow-[-1px_2px_4px_rgba(0,0,0,0.15)] border-b border-l border-sky-200/50"
-                  style={{ clipPath: "polygon(0 0, 100% 100%, 0 100%)" }}
+              {/* 1. Closed Airmail Aerogramme Cover on the Branch */}
+              <div
+                ref={aerogrammeCoverRef}
+                className="absolute inset-0 z-20 pointer-events-none will-change-transform"
+                aria-hidden="true"
+              >
+                <Image
+                  src="/assets/stationery/airmail_envelope.png"
+                  alt="Airmail envelope nestled naturally on beanstalk branch"
+                  fill
+                  sizes="(max-width: 640px) 280px, 340px"
+                  className="object-contain"
+                  priority
                 />
               </div>
 
-              {/* Live Authored Editorial Demonstration Text - High Contrast Ink */}
+              {/* 2. Unfolded Airmail Stationery Sheet with Live Typography */}
               <div
-                ref={letterContentRef}
-                className="pt-3 pb-2 space-y-3 text-left will-change-transform"
+                ref={letterSheetRef}
+                className="relative w-full h-full bg-[#FAF5EE] border border-sky-300/60 rounded-[2px] p-6 sm:p-7 flex flex-col justify-between shadow-2xl overflow-hidden will-change-transform z-10"
               >
-                <p className="font-serif italic text-base sm:text-xl text-[#0A192F] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
-                  “Every sunrise is lighter with you.”
-                </p>
-                <div className="pt-3 border-t border-sky-100 flex items-center justify-between text-[10px] font-mono text-sky-950 font-bold uppercase tracking-widest">
-                  <span>Par Avion · № 01</span>
-                  <span>Skyward</span>
+                {/* Airmail Border Chevron Strip along Top and Bottom */}
+                <div className="w-full h-2.5 bg-[repeating-linear-gradient(45deg,#3B82F6,#3B82F6_8px,#FAF5EE_8px,#FAF5EE_12px,#EF4444_12px,#EF4444_20px,#FAF5EE_20px,#FAF5EE_24px)] opacity-90 rounded-xs mb-3" />
+
+                {/* Live Authored Editorial Demonstration Text - High Contrast Ink */}
+                <div
+                  ref={letterContentRef}
+                  className="pt-3 pb-2 space-y-3 text-left will-change-transform"
+                >
+                  <p className="font-serif italic text-base sm:text-xl text-[#0A192F] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]">
+                    “Every sunrise is lighter with you.”
+                  </p>
+                  <div className="pt-3 border-t border-sky-100 flex items-center justify-between text-[10px] font-mono text-sky-950 font-bold uppercase tracking-widest">
+                    <span>Par Avion · № 01</span>
+                    <span>Skyward</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Ambient Cue */}
-      <div className="text-center z-10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-white/60">
-          Scroll to descend into evening
-        </span>
-      </div>
-
-      {/* Narrative Transition Bridge: Skyward morning descends toward intimate candlelit dining room */}
-      <div
-        ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
-        aria-hidden="true"
-      >
-        {/* Emerging Midnight Rose Dining Room Full-Viewport Depth Plate */}
-        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
-          <Image
-            src="/assets/environments/midnight_rose_restaurant.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-            unoptimized
-          />
+        {/* Bottom Ambient Cue */}
+        <div className="text-center z-10">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-white/60">
+            Scroll to descend into evening
+          </span>
         </div>
-        {/* Soft edge darkening matching evening dusk */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0207]/80 via-transparent to-[#0c0207]/40 pointer-events-none" />
-      </div>
-    </section>
-  </div>
-);
+      </section>
+    </div>
+  );
 }

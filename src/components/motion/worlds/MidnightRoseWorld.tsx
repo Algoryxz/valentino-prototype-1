@@ -11,11 +11,11 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * MidnightRoseWorld (Phase 8.2 Environment-Integrated Letter):
+ * MidnightRoseWorld (Phase 8.5 Material Polish & Single-Stage Continuity):
  * Story: A letter reserved for two.
  * Environment: An elegant intimate restaurant at night, candlelight, linen-covered table, deep shadows.
- * Choreography: Camera dollies toward the candlelit table; a wax-sealed envelope resting on the linen
- * opens, revealing the cream stationery letter directly under warm candlelight.
+ * Choreography: Camera dollies toward the candlelit table; a wax-sealed velvet envelope resting on the linen
+ * unseals, the triangular flap opens, and the cream stationery letter extracts forward onto the linen cloth.
  */
 export function MidnightRoseWorld() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -28,7 +28,6 @@ export function MidnightRoseWorld() {
   const letterSheetRef = useRef<HTMLDivElement | null>(null);
   const letterContentRef = useRef<HTMLDivElement | null>(null);
   const narrativeRef = useRef<HTMLDivElement | null>(null);
-  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -41,9 +40,8 @@ export function MidnightRoseWorld() {
         gsap.set(tableLetterRef.current, { opacity: 1, scale: 1, y: 0 });
         gsap.set(envelopeFlapRef.current, { rotateX: -160, opacity: 0.1 });
         gsap.set(waxSealRef.current, { opacity: 0 });
-        gsap.set(letterSheetRef.current, { opacity: 1, y: 0 });
+        gsap.set(letterSheetRef.current, { opacity: 1, y: -24 });
         gsap.set(letterContentRef.current, { opacity: 1 });
-        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -87,10 +85,11 @@ export function MidnightRoseWorld() {
         scale: 1,
       });
 
+      // Letter starts nestled inside the envelope pocket
       gsap.set(letterSheetRef.current, {
         opacity: 0,
-        y: 15,
-        scale: 0.95,
+        y: 16,
+        scale: 0.96,
       });
 
       gsap.set(letterContentRef.current, {
@@ -150,7 +149,7 @@ export function MidnightRoseWorld() {
         },
         0.04
       )
-      // 2. Unseal wax & open envelope flap on table (0.08 -> 0.30)
+      // 2. Unseal wax & open triangular flap on table (0.08 -> 0.32)
       .to(
         waxSealRef.current,
         {
@@ -165,21 +164,21 @@ export function MidnightRoseWorld() {
         envelopeFlapRef.current,
         {
           rotateX: -160,
-          opacity: 0.2,
+          opacity: 0.25,
           ease: "power2.inOut",
-          duration: 0.22,
+          duration: 0.24,
         },
         0.10
       )
-      // 3. Cream stationery letter slides forward & unfolds on linen (0.16 -> 0.46)
+      // 3. Deliberate letter extraction: Cream stationery letter extracts upward & forward from pocket (0.16 -> 0.48)
       .to(
         letterSheetRef.current,
         {
           opacity: 1,
-          y: -12,
+          y: -24,
           scale: 1.02,
           ease: "power2.out",
-          duration: 0.28,
+          duration: 0.30,
         },
         0.16
       )
@@ -188,12 +187,12 @@ export function MidnightRoseWorld() {
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.22,
+          duration: 0.24,
         },
-        0.20
+        0.22
       )
-      // 4. Narrative Handover & Camera Dolly into Kage (0.68 -> 0.98)
-      // Letter settles into the linen cloth as the unhurried hour closes, retaining physical paper opacity
+      // 4. Narrative Handover & Settle (0.68 -> 0.98)
+      // Letter settles into the linen cloth as the unhurried hour closes
       .to(
         tableLetterRef.current,
         {
@@ -206,28 +205,18 @@ export function MidnightRoseWorld() {
         },
         0.68
       )
-      .to(
-        letterSheetRef.current,
-        {
-          y: 0,
-          opacity: 1,
-          ease: "power1.out",
-          duration: 0.24,
-        },
-        0.68
-      )
       // Dining candle flickers low as midnight deepens
       .to(
         candleGlowRef.current,
         {
-          opacity: 0.2,
-          scale: 0.6,
+          opacity: 0.3,
+          scale: 0.7,
           ease: "power2.out",
           duration: 0.26,
         },
         0.70
       )
-      // Narrative text gracefully fades, yielding focus to the spatial depth
+      // Narrative text gracefully yields
       .to(
         narrativeRef.current,
         {
@@ -238,24 +227,14 @@ export function MidnightRoseWorld() {
         },
         0.70
       )
-      // Camera dollies past the candlelit table toward the left veranda opening
+      // Camera dollies past the candlelit table toward veranda
       .to(
         bgImageRef.current,
         {
-          scale: 1.35,
-          xPercent: isMobile ? -8 : -10,
+          scale: 1.30,
+          xPercent: isMobile ? -6 : -8,
           yPercent: isMobile ? -2 : -3,
           ease: "power1.inOut",
-          duration: 0.26,
-        },
-        0.74
-      )
-      // Emerging Kyoto courtyard atmosphere reveals in full spatial depth through the veranda opening
-      .to(
-        transitionBridgeRef.current,
-        {
-          opacity: 1,
-          ease: "power2.inOut",
           duration: 0.26,
         },
         0.74
@@ -266,111 +245,96 @@ export function MidnightRoseWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
+    <div ref={containerRef} className="relative w-full h-[220vh] sm:h-[240vh]">
       <section
         ref={sectionRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c0207] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#0c0207] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden shadow-[0_-24px_50px_rgba(0,0,0,0.7)]"
         aria-label="Midnight Rose cinematic world"
       >
-      {/* CINEMATIC ENVIRONMENT PLATE: Intimate Candlelit Restaurant at Night */}
-      <div
-        ref={bgImageRef}
-        className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
-      >
-        <Image
-          src="/assets/environments/midnight_rose_restaurant.jpg"
-          alt="Intimate candlelit fine dining table at midnight with burgundy velvet and mahogany shadows"
-          fill
-          sizes="100vw"
-          className="object-cover object-center"
-          priority={false}
-          unoptimized
+        {/* CINEMATIC ENVIRONMENT PLATE: Intimate Candlelit Restaurant at Night */}
+        <div
+          ref={bgImageRef}
+          className="absolute inset-0 w-full h-full will-change-transform pointer-events-none select-none -z-20"
+        >
+          <Image
+            src="/assets/environments/midnight_rose_restaurant.jpg"
+            alt="Intimate candlelit fine dining table at midnight with burgundy velvet and mahogany shadows"
+            fill
+            sizes="100vw"
+            className="object-cover object-center"
+            priority={false}
+            unoptimized
+          />
+        </div>
+
+        {/* Chiaroscuro Atmospheric Vignette */}
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-[#0c0207]/75 via-transparent to-[#0c0207]/60 pointer-events-none -z-10"
+          aria-hidden="true"
         />
-      </div>
 
-      {/* Chiaroscuro Atmospheric Vignette */}
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-[#0c0207]/75 via-transparent to-[#0c0207]/60 pointer-events-none -z-10"
-        aria-hidden="true"
-      />
-
-      {/* Dynamic Candle Light Halo around the table */}
-      <div
-        ref={candleGlowRef}
-        className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-[550px] h-[450px] rounded-full bg-gradient-to-tr from-amber-500/30 via-rose-600/20 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
-        aria-hidden="true"
-      />
-
-      {/* Ambient Top World Tag */}
-      <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-950/60 backdrop-blur-md border border-rose-500/30 text-rose-100 shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-          <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase">02 — Reserved for Two</span>
-        </div>
-        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-200/90 drop-shadow-sm font-medium hidden sm:block">
-          Some wait for candlelight.
-        </span>
-      </div>
-
-      {/* MAIN CINEMATIC STAGE: Candlelit Linen Table & Cream Letter Reveal */}
-      <div className="w-full max-w-7xl mx-auto my-auto relative z-20 flex-1 flex flex-col justify-between pt-2 pb-1">
-        {/* Top/Left: Editorial Scene Narrative & Entry Action (Subtle, upper area) */}
+        {/* Dynamic Candle Light Halo around the table */}
         <div
-          ref={narrativeRef}
-          className="max-w-md lg:max-w-lg space-y-1.5 sm:space-y-2.5 text-left pt-1 sm:pt-2 will-change-transform"
-        >
-          <div className="space-y-0.5 sm:space-y-1">
-            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-300/90 font-medium">
-              Atmosphere 02 · Midnight Rose
-            </span>
-            <h3 className="text-2xl sm:text-5xl font-serif font-normal tracking-tight text-[#FFF5F7] drop-shadow-[0_2px_20px_rgba(20,0,8,0.95)]">
-              Midnight Rose
-            </h3>
+          ref={candleGlowRef}
+          className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-[550px] h-[450px] rounded-full bg-gradient-to-tr from-amber-500/30 via-rose-600/20 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
+          aria-hidden="true"
+        />
+
+        {/* Ambient Top World Tag */}
+        <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-rose-950/60 backdrop-blur-md border border-rose-500/30 text-rose-100 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-widest uppercase">02 — Reserved for Two</span>
           </div>
-          <p className="text-sm sm:text-xl font-serif italic text-rose-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(20,0,8,0.9)]">
-            “For the love that feels like midnight.”
-          </p>
-          <p className="text-xs sm:text-sm text-rose-100/90 max-w-sm font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(20,0,8,0.9)] hidden sm:block">
-            A private table, warm candlelight, and an unsealed note resting on the linen cloth.
-          </p>
-          <div className="pt-0.5 sm:pt-1">
-            <AtmosphericButton
-              href="/create?template=midnight-rose"
-              worldId="midnight-rose"
-              worldName="Midnight Rose"
-            />
-          </div>
+          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-200/90 drop-shadow-sm font-medium hidden sm:block">
+            Some wait for candlelight.
+          </span>
         </div>
 
-        {/* PHYSICAL TABLETOP STATIONERY: Resting directly on the open linen tablecloth */}
-        <div
-          ref={tableLetterRef}
-          className="self-center sm:self-end mr-0 sm:mr-16 md:mr-28 lg:mr-52 xl:mr-60 mb-2 sm:mb-6 md:mb-8 w-[260px] sm:w-[310px] md:w-[340px] will-change-transform"
-        >
-          {/* Physical Envelope & Paper on the Table Linen */}
-          <div className="relative w-full select-none drop-shadow-[0_20px_38px_rgba(15,2,8,0.75)]">
-            {/* 1. Deep Velvet Envelope Body */}
-            <div className="relative w-full bg-gradient-to-br from-[#2D0418] via-[#1A020E] to-[#100108] border border-amber-300/25 rounded-[3px] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.8)]">
-              {/* Envelope Flap */}
-              <div
-                ref={envelopeFlapRef}
-                className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-[#3E0723] via-[#240315] to-[#14010B] [clip-path:polygon(0_0,100%_0,50%_100%)] shadow-md z-30 border-t border-amber-300/30 will-change-transform"
+        {/* MAIN CINEMATIC STAGE: Candlelit Linen Table & Cream Letter Reveal */}
+        <div className="w-full max-w-7xl mx-auto my-auto relative z-20 flex-1 flex flex-col justify-between pt-2 pb-1">
+          {/* Top/Left: Editorial Scene Narrative & Entry Action */}
+          <div
+            ref={narrativeRef}
+            className="max-w-md lg:max-w-lg space-y-1.5 sm:space-y-2.5 text-left pt-1 sm:pt-2 will-change-transform"
+          >
+            <div className="space-y-0.5 sm:space-y-1">
+              <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-rose-300/90 font-medium">
+                Atmosphere 02 · Midnight Rose
+              </span>
+              <h3 className="text-2xl sm:text-5xl font-serif font-normal tracking-tight text-[#FFF5F7] drop-shadow-[0_2px_20px_rgba(20,0,8,0.95)]">
+                Midnight Rose
+              </h3>
+            </div>
+            <p className="text-sm sm:text-xl font-serif italic text-rose-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(20,0,8,0.9)]">
+              “For the love that feels like midnight.”
+            </p>
+            <p className="text-xs sm:text-sm text-rose-100/90 max-w-sm font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(20,0,8,0.9)] hidden sm:block">
+              A private table, warm candlelight, and an unsealed note resting on the linen cloth.
+            </p>
+            <div className="pt-0.5 sm:pt-1">
+              <AtmosphericButton
+                href="/create?template=midnight-rose"
+                worldId="midnight-rose"
+                worldName="Midnight Rose"
               />
+            </div>
+          </div>
 
-              {/* Wax Seal */}
-              <div
-                ref={waxSealRef}
-                className="absolute top-18 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 will-change-transform"
-              >
-                <div className="relative w-10 h-10 rounded-full bg-gradient-to-br from-[#E11D48] via-[#9F1239] to-[#4C0519] border border-amber-300/60 shadow-[0_4px_16px_rgba(159,18,57,0.85)] flex items-center justify-center">
-                  <span className="text-[10px] text-amber-200 font-serif italic font-bold">V</span>
-                </div>
-              </div>
+          {/* PHYSICAL TABLETOP STATIONERY: Resting directly on the open linen tablecloth */}
+          <div
+            ref={tableLetterRef}
+            className="self-center sm:self-end mr-0 sm:mr-16 md:mr-28 lg:mr-52 xl:mr-60 mb-2 sm:mb-6 md:mb-8 w-[270px] sm:w-[320px] md:w-[340px] will-change-transform drop-shadow-[0_24px_42px_rgba(10,1,5,0.85)]"
+          >
+            {/* Tactile Velvet Envelope with Authentic Construction Seams */}
+            <div className="relative w-full aspect-[4/3] rounded-[3px] bg-[#1a020e] border border-amber-500/25 shadow-[0_14px_36px_rgba(0,0,0,0.85)] overflow-visible">
+              {/* Inner Pocket Lining (Warm burgundy tone) */}
+              <div className="absolute inset-x-2 inset-y-2 bg-gradient-to-b from-[#2a0316] to-[#12010a] rounded-[2px]" />
 
-              {/* 2. Revealed Cream Stationery Sheet Resting on Linen */}
+              {/* The Cream Stationery Sheet (Extracts upward and forward from within pocket) */}
               <div
                 ref={letterSheetRef}
-                className="relative z-20 w-full bg-[#FAF5EC] border border-amber-200/60 rounded-[2px] p-5 sm:p-6 shadow-[0_14px_35px_rgba(0,0,0,0.55)] will-change-transform"
+                className="absolute inset-x-3 bottom-3 top-4 bg-[#FAF5EC] border border-amber-200/60 rounded-[2px] p-5 sm:p-6 shadow-[0_16px_38px_rgba(0,0,0,0.65)] z-20 will-change-transform pointer-events-auto"
                 style={{
                   background: "linear-gradient(115deg, #FFFDF8 0%, #FAF3E6 50%, #F5E9D5 100%)",
                 }}
@@ -405,39 +369,43 @@ export function MidnightRoseWorld() {
                   </div>
                 </div>
               </div>
+
+              {/* Envelope Construction Side & Bottom Flaps (In front of retracted letter) */}
+              <div className="absolute inset-0 z-25 pointer-events-none">
+                {/* Left side triangle seam */}
+                <div className="absolute inset-y-0 left-0 w-1/2 [clip-path:polygon(0_0,100%_50%,0_100%)] bg-gradient-to-r from-[#2c0418] to-[#1c0210] border-l border-amber-500/20 shadow-sm" />
+                {/* Right side triangle seam */}
+                <div className="absolute inset-y-0 right-0 w-1/2 [clip-path:polygon(100%_0,0_50%,100%_100%)] bg-gradient-to-l from-[#2c0418] to-[#1c0210] border-r border-amber-500/20 shadow-sm" />
+                {/* Bottom pocket triangle */}
+                <div className="absolute inset-x-0 bottom-0 h-1/2 [clip-path:polygon(0_100%,50%_0,100%_100%)] bg-gradient-to-t from-[#36051f] via-[#240315] to-[#16020c] border-b border-amber-500/25 shadow-md" />
+              </div>
+
+              {/* Folded Triangular Top Flap (Hinged at top edge) */}
+              <div
+                ref={envelopeFlapRef}
+                className="absolute top-0 inset-x-0 h-[56%] [transform-origin:top_center] [transform-style:preserve-3d] z-30 will-change-transform [clip-path:polygon(0_0,100%_0,50%_100%)] bg-gradient-to-b from-[#420726] via-[#2a0418] to-[#18020e] border-t border-amber-300/30 shadow-[0_6px_16px_rgba(0,0,0,0.6)]"
+              />
+
+              {/* Molten Wax Seal (Positioned at triangular flap apex, not clipped) */}
+              <div
+                ref={waxSealRef}
+                className="absolute top-[56%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-40 will-change-transform"
+              >
+                <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-[#E11D48] via-[#9F1239] to-[#4C0519] border border-amber-300/70 shadow-[0_4px_18px_rgba(159,18,57,0.9)] flex items-center justify-center">
+                  <span className="text-[11px] text-amber-200 font-serif italic font-bold">V</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Ambient Cue */}
-      <div className="text-center z-10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-rose-300/60">
-          Scroll to enter the quiet courtyard
-        </span>
-      </div>
-
-      {/* Narrative Transition Bridge: Candlelight yields as camera moves toward Kage's Kyoto courtyard veranda */}
-      <div
-        ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
-        aria-hidden="true"
-      >
-        {/* Emerging Kage Kyoto Courtyard Full-Viewport Depth Plate */}
-        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
-          <Image
-            src="/assets/environments/kage_kyoto_courtyard.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-left"
-            unoptimized
-          />
+        {/* Bottom Ambient Cue */}
+        <div className="text-center z-10">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-rose-300/60">
+            Scroll to enter the quiet courtyard
+          </span>
         </div>
-        {/* Natural architectural edge darkening matching Kyoto dusk ambiance */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#050e0c]/80 via-transparent to-[#050e0c]/40 pointer-events-none" />
-      </div>
-    </section>
-  </div>
-);
+      </section>
+    </div>
+  );
 }
