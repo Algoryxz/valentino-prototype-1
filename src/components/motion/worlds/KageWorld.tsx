@@ -11,7 +11,7 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * KageWorld (Phase 8.2 Coherent Handover Sequence):
+ * KageWorld (Phase 8.5 Material Polish & Single-Stage Continuity):
  * Story: A letter from the quiet house.
  * Environment: Japanese Kyoto machiya courtyard, timber veranda, shoji lighting, emerald moss mist.
  * Choreography: Camera advances toward the veranda; the attendant quietly presents the rolled washi scroll;
@@ -27,7 +27,6 @@ export function KageWorld() {
   const unrolledWashiRef = useRef<HTMLDivElement | null>(null);
   const calligraphyRef = useRef<HTMLDivElement | null>(null);
   const hankoRef = useRef<HTMLDivElement | null>(null);
-  const transitionBridgeRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -42,7 +41,6 @@ export function KageWorld() {
         gsap.set(unrolledWashiRef.current, { opacity: 1, scale: 1 });
         gsap.set(calligraphyRef.current, { opacity: 1 });
         gsap.set(hankoRef.current, { opacity: 1 });
-        gsap.set(transitionBridgeRef.current, { opacity: 0 });
         return;
       }
 
@@ -114,7 +112,6 @@ export function KageWorld() {
         },
         0
       )
-      // 2. Handover travel: Scroll glides from attendant's hands into courtyard foreground (0.10 -> 0.55)
       .to(
         scrollContainerRef.current,
         {
@@ -125,17 +122,18 @@ export function KageWorld() {
           ease: "power2.out",
           duration: 0.45,
         },
-        0.1
+        0.05
       )
-      // 3. Rolled scroll unties & unfurls into washi keepsake (0.38 -> 0.75)
+      // 2. Rolled scroll travels smoothly forward & unrolls in 3D (0.35 -> 0.75)
       .to(
         rolledScrollRef.current,
         {
           opacity: 0,
           scale: 0.9,
-          duration: 0.25,
+          ease: "power2.inOut",
+          duration: 0.28,
         },
-        0.38
+        0.35
       )
       .to(
         unrolledWashiRef.current,
@@ -145,42 +143,42 @@ export function KageWorld() {
           ease: "power2.out",
           duration: 0.35,
         },
-        0.4
+        0.35
       )
-      // 4. Sumi calligraphy & cinnabar seal stamp appear crisply (0.50 -> 0.85)
+      // 3. Deep black Sumi calligraphy reveals stroke by stroke (0.45 -> 0.80)
       .to(
         calligraphyRef.current,
         {
           opacity: 1,
           ease: "power1.inOut",
-          duration: 0.35,
+          duration: 0.3,
         },
-        0.5
+        0.45
       )
       .to(
         hankoRef.current,
         {
           opacity: 1,
           scale: 1,
-          ease: "back.out(1.5)",
-          duration: 0.25,
+          ease: "back.out(1.7)",
+          duration: 0.24,
         },
-        0.58
+        0.55
       )
-      // 5. Narrative Handover & Camera Dolly toward Interior Cinema (0.68 -> 0.98)
-      // Washi scroll settles onto the dark cedar veranda floorboards, retaining authentic tactile materiality
+      // 4. Narrative Handover & Camera Dolly toward Evening (0.68 -> 0.98)
+      // Washi scroll settles calmly into foreground space
       .to(
         scrollContainerRef.current,
         {
-          scale: 0.96,
-          y: 6,
+          scale: 0.97,
+          y: 4,
           opacity: 0.96,
           ease: "power1.inOut",
           duration: 0.28,
         },
         0.68
       )
-      // Narrative text gracefully fades down
+      // Narrative text gracefully yields
       .to(
         sectionRef.current?.querySelector(".lg\\:col-span-5") || {},
         {
@@ -191,7 +189,7 @@ export function KageWorld() {
         },
         0.70
       )
-      // Emerald courtyard mist softens as focus turns toward interior warmth
+      // Mist settles
       .to(
         emeraldMistRef.current,
         {
@@ -202,24 +200,14 @@ export function KageWorld() {
         },
         0.70
       )
-      // Camera dollies forward along the veranda toward the glowing interior entrance
+      // Camera dollies forward along veranda
       .to(
         bgImageRef.current,
         {
-          scale: 1.32,
-          y: "-6%",
-          x: "4%",
+          scale: 1.25,
+          y: "-5%",
+          x: "2%",
           ease: "power1.inOut",
-          duration: 0.26,
-        },
-        0.74
-      )
-      // Emerging cinema proscenium and warm incandescent light reveals in full spatial depth
-      .to(
-        transitionBridgeRef.current,
-        {
-          opacity: 1,
-          ease: "power2.inOut",
           duration: 0.26,
         },
         0.74
@@ -230,10 +218,10 @@ export function KageWorld() {
   }, []);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[240vh] sm:h-[260vh]">
+    <div ref={containerRef} className="relative w-full h-[220vh] sm:h-[240vh]">
       <section
         ref={sectionRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#050d0b] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden"
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between bg-[#050d0b] pt-24 sm:pt-28 pb-6 sm:pb-8 px-6 sm:px-12 select-none overflow-hidden shadow-[0_-24px_50px_rgba(0,0,0,0.7)]"
         aria-label="Kage cinematic world"
       >
         {/* CINEMATIC ENVIRONMENT PLATE: Kyoto Machiya Courtyard with Attendant Handover */}
@@ -252,111 +240,117 @@ export function KageWorld() {
           />
         </div>
 
-      {/* Atmospheric Dark Mist Vignette */}
-      <div
-        className="absolute inset-0 bg-gradient-to-t from-[#050d0b]/75 via-transparent to-[#050d0b]/60 pointer-events-none -z-10"
-        aria-hidden="true"
-      />
-
-      {/* RECOVERED EMERALD SANCTUARY GLOW */}
-      <div
-        ref={emeraldMistRef}
-        className="absolute top-1/2 left-1/3 w-[550px] h-[500px] -translate-y-1/2 rounded-full bg-gradient-to-tr from-emerald-600/35 via-teal-900/30 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
-        aria-hidden="true"
-      />
-
-      {/* Ambient Top World Tag */}
-      <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
-        <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 backdrop-blur-md border border-emerald-500/30 text-emerald-100 shadow-xs">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-[10px] font-mono tracking-widest uppercase">03 — Quiet Gestures</span>
-        </div>
-        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-emerald-200/90 drop-shadow-sm font-medium">
-          Some are handed over in silence.
-        </span>
-      </div>
-
-      {/* MAIN CINEMATIC STAGE: Courtyard Handover & Unfurled Washi Scroll */}
-      <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
-        {/* Left Column: Editorial Scene Narrative & Entry Action */}
-        <div className="lg:col-span-5 space-y-4 text-left">
-          <div className="space-y-1">
-            <span className="text-xs font-mono uppercase tracking-widest text-emerald-300/90 font-medium">
-              Atmosphere 03
-            </span>
-            <h3 className="text-4xl sm:text-6xl font-serif font-normal tracking-tight text-[#F0FDF4] drop-shadow-[0_2px_20px_rgba(2,15,10,0.95)]">
-              Kage <span className="text-2xl sm:text-4xl opacity-80 font-light font-serif">(影)</span>
-            </h3>
-          </div>
-          <p className="text-lg sm:text-2xl font-serif italic text-emerald-100 font-light leading-relaxed drop-shadow-[0_1px_10px_rgba(2,15,10,0.9)]">
-            “For the love of quiet shadows and unspoken truths.”
-          </p>
-          <p className="text-xs sm:text-sm text-emerald-100/90 max-w-md font-normal leading-relaxed drop-shadow-[0_1px_4px_rgba(2,15,10,0.9)]">
-            At the veranda doorway, a quiet attendant presents a rolled washi scroll into the misty courtyard. Some feelings are communicated more honestly through quiet gestures and patient silence.
-          </p>
-          <div className="pt-2">
-            <AtmosphericButton
-              href="/create?template=kage"
-              worldId="kage"
-              worldName="Kage"
-            />
-          </div>
-        </div>
-
-        {/* Right Column: Physical Washi Scroll Handed from Attendant into Foreground */}
+        {/* Atmospheric Dark Mist Vignette */}
         <div
-          ref={scrollContainerRef}
-          className="lg:col-span-7 flex justify-center lg:justify-center will-change-transform [perspective:1000px]"
-        >
-          <div className="relative w-72 sm:w-88 select-none drop-shadow-[0_24px_55px_rgba(0,0,0,0.95)]">
-            {/* 1. Initial State: The Rolled Washi Scroll Tied with Red Silk Cord */}
-            <div
-              ref={rolledScrollRef}
-              className="absolute inset-x-4 top-10 z-30 p-4 bg-gradient-to-r from-[#D7CCA8] via-[#F4EED8] to-[#D7CCA8] rounded-full border border-amber-950/40 shadow-xl flex items-center justify-between will-change-transform"
-            >
-              <div className="w-5 h-5 rounded-full bg-[#3B2212] border border-amber-900/60" />
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-12 bg-[#991B1B] rounded-full shadow-sm" />
-                <span className="text-[10px] font-mono uppercase tracking-widest text-[#24170E] font-bold">
-                  Washi Scroll · 手紙
-                </span>
-                <div className="w-2.5 h-12 bg-[#991B1B] rounded-full shadow-sm" />
-              </div>
-              <div className="w-5 h-5 rounded-full bg-[#3B2212] border border-amber-900/60" />
+          className="absolute inset-0 bg-gradient-to-t from-[#050d0b]/75 via-transparent to-[#050d0b]/60 pointer-events-none -z-10"
+          aria-hidden="true"
+        />
+
+        {/* Dynamic Shoji Glow on Veranda */}
+        <div
+          ref={emeraldMistRef}
+          className="absolute bottom-1/4 left-1/3 w-[500px] h-[400px] rounded-full bg-gradient-to-tr from-emerald-500/15 via-teal-400/10 to-transparent blur-3xl pointer-events-none -z-10 will-change-transform"
+          aria-hidden="true"
+        />
+
+        {/* Ambient Top World Tag */}
+        <div className="w-full max-w-7xl mx-auto flex justify-between items-center z-10">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 backdrop-blur-md border border-emerald-500/30 text-emerald-100 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] font-mono tracking-widest uppercase">03 — The Quiet House</span>
+          </div>
+          <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-emerald-200/90 drop-shadow-sm font-medium">
+            Some are handed over in silence.
+          </span>
+        </div>
+
+        {/* MAIN CINEMATIC STAGE: Veranda Doorway & Handed-Over Washi Scroll */}
+        <div className="w-full max-w-6xl mx-auto my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center z-20">
+          {/* Left Column: Editorial Scene Narrative & Entry Action */}
+          <div className="lg:col-span-5 space-y-4 text-left">
+            <div className="space-y-1">
+              <span className="text-xs font-mono uppercase tracking-widest text-emerald-300/90 font-medium">
+                Atmosphere 03 · Kage
+              </span>
+              <h3 className="text-3xl sm:text-5xl font-serif font-normal tracking-tight text-[#ECFDF5] drop-shadow-[0_2px_16px_rgba(2,15,10,0.9)]">
+                “For the love that needs no explanation.”
+              </h3>
             </div>
+            <p className="text-sm sm:text-base text-emerald-100/90 max-w-sm font-normal leading-relaxed drop-shadow-sm">
+              Across polished cedar and tatami shadows, a letter presented with two hands in absolute stillness.
+            </p>
+            <div className="pt-2">
+              <AtmosphericButton
+                href="/create?template=kage"
+                worldId="kage"
+                worldName="Kage"
+              />
+            </div>
+          </div>
 
-            {/* 2. Revealed State: The Unfurled Deckled Washi Sheet in the Foreground */}
+          {/* Right Column: Physical Washi Scroll Traveling from Attendant into Foreground */}
+          <div className="lg:col-span-7 flex justify-center lg:justify-end items-center">
             <div
-              ref={unrolledWashiRef}
-              className="relative w-full bg-[#F3ECDF] border border-amber-900/30 rounded-[2px] p-6 sm:p-7 shadow-2xl flex flex-col justify-between overflow-hidden will-change-transform"
+              ref={scrollContainerRef}
+              className="relative w-full max-w-[280px] sm:max-w-[340px] aspect-[540/724] will-change-transform drop-shadow-[0_22px_48px_rgba(1,10,8,0.75)] select-none"
             >
-              {/* Natural Japanese cedar dowel trim at top and bottom */}
-              <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-[#20120B] via-[#4A2E1B] to-[#20120B] shadow-xs" />
-              <div className="absolute bottom-0 inset-x-0 h-2 bg-gradient-to-r from-[#20120B] via-[#4A2E1B] to-[#20120B] shadow-xs" />
-
-              {/* Sumi Ink Calligraphy & Authored Words - Crisp Contrast */}
+              {/* 1. Rolled Silk-Tied Washi Scroll (Presented by the attendant) */}
               <div
-                ref={calligraphyRef}
-                className="py-4 space-y-3 text-center will-change-transform"
+                ref={rolledScrollRef}
+                className="absolute inset-0 z-20 pointer-events-none will-change-transform flex items-center justify-center"
+                aria-hidden="true"
               >
-                <div className="flex items-center justify-between border-b border-stone-800/20 pb-2 text-[9px] font-mono text-stone-800/80 uppercase tracking-widest font-semibold">
-                  <span>Kyoto Machiya · 閑寂</span>
-                  <span>Shikishi · 色紙</span>
+                <div className="relative w-3/4 aspect-[3/4]">
+                  <Image
+                    src="/assets/stationery/washi_scroll.png"
+                    alt="Rolled washi scroll presented by attendant"
+                    fill
+                    sizes="(max-width: 640px) 260px, 320px"
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </div>
+
+              {/* 2. Unrolled Handmade Washi Paper Sheet with Sumi Calligraphy */}
+              <div
+                ref={unrolledWashiRef}
+                className="relative w-full h-full bg-[#FAF5EE] border border-emerald-900/30 rounded-[2px] p-6 sm:p-8 flex flex-col justify-between shadow-2xl overflow-hidden will-change-transform z-10"
+                style={{
+                  backgroundImage:
+                    "radial-gradient(#d1fae5 0.5px, transparent 0.5px), radial-gradient(#d1fae5 0.5px, #FAF5EE 0.5px)",
+                  backgroundSize: "20px 20px",
+                  backgroundPosition: "0 0, 10px 10px",
+                }}
+              >
+                {/* Washi Raw Deckled Header Bar */}
+                <div className="w-full pb-2 border-b border-emerald-950/20 flex justify-between items-center text-[9px] font-mono tracking-widest uppercase text-emerald-950 font-bold">
+                  <span>Kyoto Machiya · 影</span>
+                  <span>№ 03</span>
                 </div>
 
-                <span className="text-4xl sm:text-5xl font-serif text-[#09090B] font-light tracking-widest block pt-2 drop-shadow-xs">
-                  静寂
-                </span>
+                {/* Live Authored Sumi Calligraphy Demonstration Text */}
+                <div
+                  ref={calligraphyRef}
+                  className="py-4 space-y-3 text-left will-change-transform"
+                >
+                  <p className="font-serif italic text-base sm:text-xl text-[#031A12] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
+                    “In the quiet house, I heard your voice first.”
+                  </p>
+                  <div className="pt-2 border-t border-emerald-950/15 flex items-center justify-between text-[10px] font-mono text-emerald-950 font-bold uppercase tracking-widest">
+                    <span>Shoji Light</span>
+                    <span>Tatami Stillness</span>
+                  </div>
+                </div>
 
-                <p className="font-serif italic text-base sm:text-lg text-[#1C1917] font-semibold leading-relaxed drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
-                  “Some words live quietly in the shadows.”
-                </p>
-
-                {/* Cinnabar Vermilion Hanko Seal Stamp */}
+                {/* Hanko Vermilion Seal Stamp at bottom right */}
                 <div
                   ref={hankoRef}
-                  className="flex justify-end pt-3 will-change-transform"
+                  className="w-full pt-2 border-t border-emerald-950/20 flex justify-between items-center will-change-transform"
                 >
+                  <span className="text-[8.5px] font-mono text-emerald-900/80 uppercase tracking-widest">
+                    Washi Fiber Paper
+                  </span>
                   <div className="w-7 h-7 rounded-[2px] bg-[#991B1B] border border-red-950/70 shadow-xs flex items-center justify-center text-xs font-serif text-white font-bold opacity-95">
                     印
                   </div>
@@ -365,36 +359,14 @@ export function KageWorld() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Ambient Cue */}
-      <div className="text-center z-10">
-        <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300/60">
-          Scroll to step inside the cinema
-        </span>
-      </div>
-
-      {/* Narrative Transition Bridge: Veranda dusk gives way to warm cinema projector beam and velvet curtains */}
-      <div
-        ref={transitionBridgeRef}
-        className="absolute inset-0 z-30 pointer-events-none opacity-0 will-change-opacity overflow-hidden"
-        aria-hidden="true"
-      >
-        {/* Emerging 1930s Cinema Proscenium Full-Viewport Depth Plate */}
-        <div className="absolute inset-0 w-full h-full scale-100 pointer-events-none select-none">
-          <Image
-            src="/assets/environments/apricot_vintage_cinema.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-            unoptimized
-          />
+        {/* Bottom Ambient Cue */}
+        <div className="text-center z-10">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300/60">
+            Scroll to step inside the cinema
+          </span>
         </div>
-        {/* Atmospheric edge darkening matching cinema warmth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#120702]/80 via-transparent to-[#120702]/40 pointer-events-none" />
-      </div>
-    </section>
-  </div>
-);
+      </section>
+    </div>
+  );
 }
