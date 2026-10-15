@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,18 +11,9 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * SpatialStationeryUnfold (Phase 8.5 Physical Paper Materiality):
+ * SpatialStationeryUnfold (Phase 8.6 Physical Paper Materiality & Continuity):
  * One coherent physical deckled cotton stationery sheet unfolding
- * progressively in 3D without dual-sheet crossfading.
- *
- * Motion Pacing:
- * 1. Early Scroll (0.00 -> 0.12): Compact folded trifold bundle established in gentle 3D perspective.
- * 2. Early-to-Middle (0.12 -> 0.46): Upper and lower flaps progressively rotate open along natural fold lines.
- * 3. Middle Scroll (0.42 -> 0.60): Sheet settles flat into square alignment; fold shadows soften naturally.
- * 4. After Sheet Opens (0.50 -> 0.72): Live HTML ink typography resolves into readable contrast.
- *    Blush-pink botanical vines delicately trace along the outer deckled perimeter.
- * 5. Later Scroll (0.68 -> 0.85): Letter rests peacefully; CTA becomes available without competing.
- * 6. Handover (0.85 -> 1.00): Warm stationery atmosphere dissolves into morning sky of Cloud Nine.
+ * progressively in 3D without dual-sheet crossfading or backing panels.
  */
 export function SpatialStationeryUnfold() {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -37,8 +27,6 @@ export function SpatialStationeryUnfold() {
   const creaseLinesRef = useRef<HTMLDivElement | null>(null);
   const letterTextRef = useRef<HTMLDivElement | null>(null);
   const botanicalVinesRef = useRef<HTMLDivElement | null>(null);
-  const ctaRef = useRef<HTMLDivElement | null>(null);
-  const fadeOutLayerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -46,14 +34,13 @@ export function SpatialStationeryUnfold() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(baseSheetRef.current, { clipPath: "inset(0% 0% 0% 0%)" });
+        gsap.set(baseSheetRef.current, { opacity: 1 });
         gsap.set(topFlapRef.current, { rotateX: 0, opacity: 0 });
         gsap.set(bottomFlapRef.current, { rotateX: 0, opacity: 0 });
         gsap.set([topShadowRef.current, bottomShadowRef.current], { opacity: 0 });
         gsap.set(creaseLinesRef.current, { opacity: 0.15 });
         gsap.set(letterTextRef.current, { opacity: 1 });
         gsap.set(botanicalVinesRef.current, { opacity: 0.85 });
-        gsap.set(ctaRef.current, { opacity: 1, y: 0 });
         return;
       }
 
@@ -67,9 +54,9 @@ export function SpatialStationeryUnfold() {
         transformOrigin: "center center",
       });
 
-      // The base sheet is initially clipped to the middle 1/3 (matching the folded packet height)
+      // The base sheet starts hidden while folded to prevent any backing panel or translucent silhouette
       gsap.set(baseSheetRef.current, {
-        clipPath: "inset(33.33% 0% 33.33% 0%)",
+        opacity: 0,
       });
 
       // Top flap is folded down over the middle (rotateX 180 degrees around bottom fold line)
@@ -87,15 +74,15 @@ export function SpatialStationeryUnfold() {
       });
 
       gsap.set(topShadowRef.current, {
-        opacity: 0.8,
+        opacity: 0.6,
       });
 
       gsap.set(bottomShadowRef.current, {
-        opacity: 0.7,
+        opacity: 0.5,
       });
 
       gsap.set(creaseLinesRef.current, {
-        opacity: 0.6,
+        opacity: 0.4,
       });
 
       // Live ink text begins hidden while folded
@@ -107,11 +94,6 @@ export function SpatialStationeryUnfold() {
       gsap.set(botanicalVinesRef.current, {
         opacity: 0,
         scale: 0.96,
-      });
-
-      gsap.set(ctaRef.current, {
-        opacity: 0,
-        y: 14,
       });
 
       // Master Scroll-Driven Timeline scrubbed smoothly across generous scroll distance
@@ -135,29 +117,21 @@ export function SpatialStationeryUnfold() {
         },
         0.12
       )
+      // Base continuous sheet seamlessly dissolves in as flaps open (0.16 -> 0.40)
       .to(
         baseSheetRef.current,
         {
-          clipPath: "inset(33.33% 0% 0% 0%)",
-          ease: "power2.inOut",
-          duration: 0.26,
+          opacity: 1,
+          ease: "power1.inOut",
+          duration: 0.24,
         },
-        0.12
+        0.16
       )
       // 3. Top flap unfolds upward in 3D (0.18 -> 0.44)
       .to(
         topFlapRef.current,
         {
           rotateX: 0,
-          ease: "power2.inOut",
-          duration: 0.26,
-        },
-        0.18
-      )
-      .to(
-        baseSheetRef.current,
-        {
-          clipPath: "inset(0% 0% 0% 0%)",
           ease: "power2.inOut",
           duration: 0.26,
         },
@@ -227,31 +201,19 @@ export function SpatialStationeryUnfold() {
         },
         0.52
       )
-      // 10. CTA resolves cleanly below settled stationery (0.68 -> 0.84)
-      .to(
-        ctaRef.current,
-        {
-          opacity: 1,
-          y: 0,
-          ease: "power2.out",
-          duration: 0.16,
-        },
-        0.68
-      )
-      // 11. Seamless Handover: Settled stationery and atmosphere softly yield (0.86 -> 0.98)
+      // 10. Seamless Handover: Settled stationery and header softly yield to morning sky (0.84 -> 0.98)
       .to(
         [
           letterWrapperRef.current,
-          ctaRef.current,
           sectionRef.current?.querySelector(".stationery-editorial-header") || {},
         ],
         {
           opacity: 0,
-          y: -18,
+          y: -20,
           ease: "power1.inOut",
-          duration: 0.12,
+          duration: 0.14,
         },
-        0.86
+        0.84
       );
     }, containerRef);
 
@@ -433,13 +395,13 @@ export function SpatialStationeryUnfold() {
 
               {/* Back Face (visible when folded downward over middle) */}
               <div
-                className="absolute inset-0 overflow-hidden drop-shadow-[0_12px_24px_rgba(30,5,15,0.35)]"
+                className="absolute inset-0 overflow-hidden"
                 style={{
                   transform: "rotateX(180deg)",
                   backfaceVisibility: "hidden",
                 }}
               >
-                <div className="relative w-full h-[300%] -top-0 pointer-events-none filter brightness-[0.97]">
+                <div className="relative w-full h-[300%] -top-0 pointer-events-none filter brightness-[0.98]">
                   <Image
                     src="/assets/stationery/deckled_paper.png"
                     alt=""
@@ -449,8 +411,6 @@ export function SpatialStationeryUnfold() {
                     priority
                   />
                 </div>
-                {/* Fold crease shading */}
-                <div className="absolute inset-0 bg-gradient-to-b from-amber-950/15 via-transparent to-amber-950/20 pointer-events-none" />
               </div>
 
               {/* Cast shadow under top flap onto the body */}
@@ -485,13 +445,13 @@ export function SpatialStationeryUnfold() {
 
               {/* Back Face (visible when folded upward over middle) */}
               <div
-                className="absolute inset-0 overflow-hidden drop-shadow-[0_-8px_20px_rgba(30,5,15,0.28)]"
+                className="absolute inset-0 overflow-hidden"
                 style={{
                   transform: "rotateX(180deg)",
                   backfaceVisibility: "hidden",
                 }}
               >
-                <div className="relative w-full h-[300%] -top-[200%] pointer-events-none filter brightness-[0.96]">
+                <div className="relative w-full h-[300%] -top-[200%] pointer-events-none filter brightness-[0.97]">
                   <Image
                     src="/assets/stationery/deckled_paper.png"
                     alt=""
@@ -501,7 +461,6 @@ export function SpatialStationeryUnfold() {
                     priority
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-amber-950/15 via-transparent to-amber-950/10 pointer-events-none" />
               </div>
 
               {/* Cast shadow above bottom flap */}
@@ -511,22 +470,6 @@ export function SpatialStationeryUnfold() {
               />
             </div>
           </div>
-        </div>
-
-        {/* RESOLUTION CTA: Positioned cleanly below stationery */}
-        <div
-          ref={ctaRef}
-          className="text-center z-20 pt-2 will-change-transform"
-        >
-          <Link
-            href="/create"
-            className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-serif text-[#FAF5EE] bg-[#1A0512] hover:bg-[#2A091E] border border-[#3E0A28]/40 shadow-[0_4px_16px_rgba(26,5,18,0.25)] hover:shadow-[0_6px_22px_rgba(26,5,18,0.35)] transition-all duration-300"
-          >
-            <span>Make yours</span>
-            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1 text-[#F3A5BC]">
-              →
-            </span>
-          </Link>
         </div>
       </section>
     </div>
