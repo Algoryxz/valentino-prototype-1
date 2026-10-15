@@ -37,6 +37,7 @@ export function SpatialWorldsWalkthrough() {
   const bg3Ref = useRef<HTMLDivElement | null>(null); // Apricot Film
   const bg4Ref = useRef<HTMLDivElement | null>(null); // Wildflower Paper
   const bg5Ref = useRef<HTMLDivElement | null>(null); // Ocean Letter
+  const bgTroveRef = useRef<HTMLDivElement | null>(null); // The Hidden Trove Transition Plate
 
   // Chapter 01 intro headline ref
   const chapterIntroRef = useRef<HTMLDivElement | null>(null);
@@ -82,21 +83,21 @@ export function SpatialWorldsWalkthrough() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set([bg0Ref.current, bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current], { opacity: 1 });
+        gsap.set([bg0Ref.current, bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current, bgTroveRef.current], { opacity: 1 });
         gsap.set([world0Ref.current, world1Ref.current, world2Ref.current, world3Ref.current, world4Ref.current, world5Ref.current], { opacity: 1 });
         return;
       }
 
       // Initial resting posture: Single authoritative viewport
-      // Backgrounds: Cloud Nine is visible; all others start at opacity 0
-      gsap.set(bg0Ref.current, { opacity: 1, scale: 1.0 });
-      gsap.set([bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current], {
+      // Backgrounds: Start transparent for seamless crossfade with stationery atmosphere
+      gsap.set(bg0Ref.current, { opacity: 0, scale: 1.0 });
+      gsap.set([bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current, bgTroveRef.current], {
         opacity: 0,
         scale: 1.0,
       });
 
-      // Chapter intro headline sits naturally over the morning sky
-      gsap.set(chapterIntroRef.current, { opacity: 1, y: 0 });
+      // Chapter intro headline emerges smoothly from morning light
+      gsap.set(chapterIntroRef.current, { opacity: 0, y: 16 });
 
       // World stages: World 0 starts gently visible behind intro; others hidden
       gsap.set(world0Ref.current, { opacity: 0, y: 15 });
@@ -141,16 +142,36 @@ export function SpatialWorldsWalkthrough() {
       // -------------------------------------------------------------------------
       // 00. CHAPTER 01 INTRO -> CLOUD NINE ACTIVE (0.00 -> 0.16)
       // -------------------------------------------------------------------------
-      // Chapter 01 headline dissolves upward into the morning sky (0.03 -> 0.08)
+      // Cloud Nine sky & Beanstalk background plate crossfades in smoothly over the dawn atmosphere (0.00 -> 0.08)
       tl.to(
+        bg0Ref.current,
+        {
+          opacity: 1,
+          ease: "power1.inOut",
+          duration: 0.08,
+        },
+        0.00
+      )
+      // Chapter 01 headline emerges softly (0.00 -> 0.05) then dissolves upward into the morning sky (0.05 -> 0.09)
+      .to(
+        chapterIntroRef.current,
+        {
+          opacity: 1,
+          y: 0,
+          ease: "power2.out",
+          duration: 0.05,
+        },
+        0.00
+      )
+      .to(
         chapterIntroRef.current,
         {
           opacity: 0,
           y: -24,
           ease: "power1.inOut",
-          duration: 0.05,
+          duration: 0.04,
         },
-        0.03
+        0.05
       )
       // Cloud Nine narrative & stage emerges (0.05 -> 0.10)
       .to(
@@ -621,27 +642,41 @@ export function SpatialWorldsWalkthrough() {
         0.84
       )
       // -------------------------------------------------------------------------
-      // HANDOFF 06: OCEAN LETTER -> THE HIDDEN TROVE (0.95 -> 1.00)
+      // HANDOFF 06: OCEAN LETTER -> THE HIDDEN TROVE (0.92 -> 1.00)
       // -------------------------------------------------------------------------
-      // Tide recedes, sunrise warm glow gently softens toward keepsake tabletop
+      // Ocean Letter foreground yields softly
       .to(
         world5Ref.current,
         {
-          opacity: 0.35,
-          y: -10,
+          opacity: 0,
+          y: -15,
           ease: "power1.inOut",
-          duration: 0.05,
+          duration: 0.06,
+          onComplete: () => {
+            if (world5Ref.current) world5Ref.current.style.pointerEvents = "none";
+          },
         },
-        0.95
+        0.92
       )
+      // Deep mahogany & warm candlelight atmosphere plate crossfades across the full viewport
+      .to(
+        bgTroveRef.current,
+        {
+          opacity: 1,
+          ease: "power1.inOut",
+          duration: 0.07,
+        },
+        0.93
+      )
+      // Ocean beach background plate dissolves away underneath
       .to(
         bg5Ref.current,
         {
-          scale: 1.20,
+          opacity: 0,
           ease: "power1.inOut",
-          duration: 0.05,
+          duration: 0.06,
         },
-        0.95
+        0.94
       );
     }, containerRef);
 
@@ -653,7 +688,7 @@ export function SpatialWorldsWalkthrough() {
       {/* THE SINGLE AUTHORITATIVE STICKY VIEWPORT STAGE */}
       <div
         ref={stageRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[640px] overflow-hidden select-none bg-[#0c1a2e]"
+        className="sticky top-0 w-full h-[100dvh] min-h-[640px] overflow-hidden select-none bg-transparent"
       >
         {/* ===================================================================== */}
         {/* SHARED FULL-VIEWPORT ENVIRONMENTAL BACKGROUND PLATES                 */}
@@ -749,6 +784,47 @@ export function SpatialWorldsWalkthrough() {
               className="object-cover object-center"
               unoptimized
             />
+          </div>
+
+          {/* Plate 6: The Hidden Trove Transition (Deep rich mahogany, warm candlelight glow, and ribbon prelude) */}
+          <div
+            ref={bgTroveRef}
+            className="absolute inset-0 w-full h-full will-change-transform opacity-0 pointer-events-none"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 38%, #2A091A 0%, #170410 50%, #0E020A 100%)",
+            }}
+          >
+            <div
+              className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[520px] blur-3xl pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse, rgba(251,191,36,0.14) 0%, rgba(225,29,72,0.14) 42%, transparent 70%)",
+              }}
+            />
+
+            {/* Prelude satin ribbon trailing into the candlelight glow as ocean dissolves */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none opacity-45"
+              viewBox="0 0 1000 480"
+              preserveAspectRatio="xMidYMid meet"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="trove-prelude-ribbon" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#BE123C" stopOpacity="0.75" />
+                  <stop offset="50%" stopColor="#9F1239" stopOpacity="0.85" />
+                  <stop offset="100%" stopColor="#4C0519" stopOpacity="0.65" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 50,45 C 130,90 220,165 310,140 C 410,115 480,250 580,225"
+                fill="none"
+                stroke="url(#trove-prelude-ribbon)"
+                strokeWidth="8"
+                strokeLinecap="round"
+              />
+            </svg>
           </div>
         </div>
 
