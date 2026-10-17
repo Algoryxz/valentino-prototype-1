@@ -40,6 +40,8 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
       background: #070B09;
       color: #DFE7E0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
     .wrapper {
       position: relative;
@@ -175,6 +177,17 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
       pointer-events: none;
       opacity: 0.7;
       background: radial-gradient(circle at center, transparent 55%, rgba(5, 9, 7, 0.75) 100%);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html, body {
+        scroll-behavior: auto !important;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
     }
     ${PRINT_MEDIA_STYLES}
   </style>

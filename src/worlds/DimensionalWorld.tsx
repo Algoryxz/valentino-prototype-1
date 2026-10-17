@@ -20,13 +20,13 @@ export const DimensionalWorld: React.FC<DimensionalWorldProps> = ({
   const { tier, isReducedMotion, isMobile, canHover } = useDeviceTier();
   const [pointer, setPointer] = useState({ x: 0, y: 0 });
 
-  // Spring-smoothed pointer parallax
+  // Restrained, well-damped spring-smoothed pointer parallax
   const springConfig =
     pacing === "calm"
-      ? { damping: 35, stiffness: 60 }
+      ? { damping: 42, stiffness: 60 }
       : pacing === "cinematic"
-      ? { damping: 22, stiffness: 100 }
-      : { damping: 28, stiffness: 80 };
+      ? { damping: 38, stiffness: 75 }
+      : { damping: 40, stiffness: 70 };
 
   const mouseX = useSpring(0, springConfig);
   const mouseY = useSpring(0, springConfig);
@@ -47,20 +47,16 @@ export const DimensionalWorld: React.FC<DimensionalWorldProps> = ({
     return () => window.removeEventListener("mousemove", handlePointerMove);
   }, [isReducedMotion, canHover, mouseX, mouseY]);
 
-  // Scroll-linked depth parallax for distant layers
-  const { scrollY } = useScroll();
-  const rawBgParallax = useTransform(scrollY, [0, 1000], [0, 60]);
-  const bgParallax = useSpring(rawBgParallax, springConfig);
+  // Restrained parallax transforms by depth layer (subtle ambient depth, zero reading distraction)
+  const distantEnvX = useTransform(mouseX, (v) => (isReducedMotion || !canHover ? 0 : v * -7));
+  const distantEnvY = useTransform(mouseY, (v) => (isReducedMotion || !canHover ? 0 : v * -4));
 
-  // Parallax transforms by depth layer
-  const distantEnvX = useTransform(mouseX, (v) => (isReducedMotion ? 0 : v * -12));
-  const distantEnvY = useTransform(mouseY, (v) => (isReducedMotion ? 0 : v * -8));
+  const atmosphereX = useTransform(mouseX, (v) => (isReducedMotion || !canHover ? 0 : v * -4));
+  const atmosphereY = useTransform(mouseY, (v) => (isReducedMotion || !canHover ? 0 : v * -2));
 
-  const atmosphereX = useTransform(mouseX, (v) => (isReducedMotion ? 0 : v * -6));
-  const atmosphereY = useTransform(mouseY, (v) => (isReducedMotion ? 0 : v * -4));
-
-  const foregroundX = useTransform(mouseX, (v) => (isReducedMotion ? 0 : v * 10));
-  const foregroundY = useTransform(mouseY, (v) => (isReducedMotion ? 0 : v * 6));
+  // Foreground vignette is kept nearly static to prevent edge wobbling while reading
+  const foregroundX = useTransform(mouseX, (v) => (isReducedMotion || !canHover ? 0 : v * 2));
+  const foregroundY = useTransform(mouseY, (v) => (isReducedMotion || !canHover ? 0 : v * 1));
 
   return (
     <DimensionalEntrance

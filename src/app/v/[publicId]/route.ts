@@ -473,6 +473,8 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
       background-image: radial-gradient(ellipse at 50% 15%, #2A0815 0%, #12030A 70%, #080104 100%);
       color: #FAF8F5;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
     .wrapper {
       position: relative;
@@ -735,11 +737,11 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
       font-size: 1.05rem;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fadeIn {
-      animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeIn 0.35s ease-out forwards;
     }
     .paper-card {
       position: relative;
@@ -797,6 +799,9 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
     }
     .hidden { display: none !important; }
     @media (prefers-reduced-motion: reduce) {
+      html, body {
+        scroll-behavior: auto !important;
+      }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
@@ -807,6 +812,13 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
     }
     ${PRINT_MEDIA_STYLES}
   </style>
+  <noscript>
+    <style>
+      .seal-box { display: none !important; }
+      .letter-box { display: flex !important; opacity: 1 !important; transform: none !important; }
+      #reseal-btn { display: none !important; }
+    </style>
+  </noscript>
 </head>
 <body>
   <div class="wrapper" data-dimensional-world="midnight-rose" data-scene="welcome" data-testid="experience-container">
