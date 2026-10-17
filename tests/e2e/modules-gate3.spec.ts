@@ -45,8 +45,13 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
     await expect(moduleManager.getByText("Love Letter")).toBeVisible();
     await expect(moduleManager.getByText("Memory Photo")).toBeVisible();
 
+    const addMomentTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+
     // Enable Timeline
     const timelineBtn = page.locator('[data-testid="toggle-module-timeline"]');
+    if (!(await timelineBtn.isVisible())) {
+      await addMomentTrigger.click();
+    }
     await expect(timelineBtn).toBeVisible();
     await timelineBtn.click();
 
@@ -60,6 +65,9 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
 
     // Enable Secret Note
     const secretBtn = page.locator('[data-testid="toggle-module-secret"]');
+    if (!(await secretBtn.isVisible())) {
+      await addMomentTrigger.click();
+    }
     await expect(secretBtn).toBeVisible();
     await secretBtn.click();
 
@@ -76,6 +84,9 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
 
     // Enable Love Quiz
     const quizBtn = page.locator('[data-testid="toggle-module-quiz"]');
+    if (!(await quizBtn.isVisible())) {
+      await addMomentTrigger.click();
+    }
     await expect(quizBtn).toBeVisible();
     await quizBtn.click();
 

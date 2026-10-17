@@ -56,7 +56,14 @@ test.describe("Phase 5D: Relationship Story & Personalization Renaissance E2E", 
       await page.waitForTimeout(400);
     }
 
+    const addMomentTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
     const timelineToggle = page.locator('[data-testid="toggle-module-timeline"]');
+    if (!(await timelineToggle.isVisible())) {
+      if (await addMomentTrigger.isVisible()) {
+        await addMomentTrigger.click();
+        await page.waitForTimeout(300);
+      }
+    }
     if (await timelineToggle.isVisible()) {
       await timelineToggle.click();
       await page.waitForTimeout(400);
@@ -121,9 +128,10 @@ test.describe("Phase 5D: Relationship Story & Personalization Renaissance E2E", 
     await page.locator('[data-testid="input-sender-name"]').fill("Leo");
     await page.locator('[data-testid="input-message"]').fill("Higher than the softest clouds in the celestial sky.");
 
-    await page.waitForTimeout(1000);
+    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved", { timeout: 15000 });
     const publishBtn = page.locator('[data-testid="publish-button"]');
-    await expect(publishBtn).toBeEnabled({ timeout: 10000 });
+    await publishBtn.scrollIntoViewIfNeeded();
+    await expect(publishBtn).toBeEnabled({ timeout: 15000 });
     await publishBtn.click();
 
     await expect(page.locator('[data-testid="publish-success-modal"]')).toBeVisible({ timeout: 15000 });

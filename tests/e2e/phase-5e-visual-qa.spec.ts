@@ -4,7 +4,7 @@ import fs from "fs";
 import { db } from "../../src/lib/db";
 
 const APP_URL = process.env.APP_URL || "http://localhost:3000";
-const QA_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/5b3d85b7-f4f3-4d6f-88c9-6f46f38b3788/visual_qa";
+const QA_DIR = path.join(process.cwd(), "test-results", "screenshots", "phase-5e-visual");
 
 test.describe("Phase 5E: Human Visual QA & Dimensional Worlds Inspection", () => {
   test.beforeAll(async () => {

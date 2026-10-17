@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 const APP_URL = process.env.APP_URL || "http://localhost:3000";
-const QA_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/e5eae4f4-e648-40a2-9962-cbe0c413455d/visual_qa";
+const QA_DIR = path.join(process.cwd(), "test-results", "screenshots", "visual-qa");
 
 test.describe("Phase 5A: Comprehensive Visual QA Screenshot Generation", () => {
   test.beforeAll(async () => {

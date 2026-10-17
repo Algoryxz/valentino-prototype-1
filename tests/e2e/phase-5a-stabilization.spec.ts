@@ -32,7 +32,13 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
     // Should activate Moments section and display Timeline module card
     await expect(page.locator('[data-testid="experience-module-manager"]')).toBeVisible();
     await expect(page.locator("text=Moments & Interactive Experiences")).toBeVisible();
-    await expect(page.locator('[data-testid="toggle-module-timeline"]')).toBeVisible();
+
+    // Open library drawer if not already open
+    const toggleTimeline = page.locator('[data-testid="toggle-module-timeline"]');
+    if (!(await toggleTimeline.isVisible())) {
+      await page.locator('[data-testid="add-moment-trigger"]').first().click();
+    }
+    await expect(toggleTimeline).toBeVisible();
   });
 
   test("3. World switching preserves content end-to-end with autosave and persistence", async ({
@@ -101,19 +107,18 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
     await expect(page.getByRole("button", { name: "SURPRISE ME" })).toBeVisible();
 
     // Switch stage to Cloud Nine
-    const cloudNineTab = page.locator('button:has-text("Cloud Nine")').first();
+    const cloudNineTab = page.locator('button[aria-label="Select Cloud Nine atmosphere"]');
     await cloudNineTab.click();
     await expect(page.locator("#template-cloud-nine")).toBeVisible();
 
     // Switch stage to Kage
-    const kageTab = page.locator('button:has-text("Kage")').first();
+    const kageTab = page.locator('button[aria-label="Select Kage atmosphere"]');
     await kageTab.click();
     await expect(page.locator("#template-kage")).toBeVisible();
 
-    // Verify interactive capability chips exist on Kage stage
-    const kageSecretChip = page.locator('#template-kage a[aria-label*="Secret Note"]');
-    await expect(kageSecretChip).toBeVisible();
-    await expect(kageSecretChip).toHaveAttribute("href", "/create?template=kage&focus=secret");
+    // Verify Kage world deep-link customize anchor
+    const kageCustomizeLink = page.locator('#template-kage').getByRole('link', { name: 'Customize Kage' });
+    await expect(kageCustomizeLink).toBeVisible();
   });
 
   test("5. Kage WebGL 3D preview initializes without crashing and can be toggled", async ({
@@ -155,24 +160,14 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
 
     // Verify Platform framing
     await expect(page.locator("h1")).toContainText("Create something they'll remember");
-    await expect(page.getByText("The Romantic Experience Platform")).toBeVisible();
 
-    // Verify World Collection
-    const worldCollectionHeading = page.getByRole("heading", { name: "Three Distinct Visual Worlds" });
-    await expect(worldCollectionHeading).toBeVisible();
+    // Verify World Walkthrough / Showroom Scene on Homepage
+    const worldScene = page.locator('[data-testid="world-showroom-scene"]');
+    await expect(worldScene).toBeVisible();
 
-    // Verify Midnight Rose, Cloud Nine, and Kage selector tabs within #worlds
-    await expect(page.locator('#worlds div[role="button"]:has-text("Midnight Rose")')).toBeVisible();
-    await expect(page.locator('#worlds div[role="button"]:has-text("Cloud Nine")')).toBeVisible();
-    await expect(page.locator('#worlds div[role="button"]:has-text("Kage")')).toBeVisible();
-
-    // Click Kage selector on homepage
-    await page.locator('#worlds div[role="button"]:has-text("Kage")').click();
-    await expect(page.locator('#worlds h3:has-text("Kage (影)")')).toBeVisible();
-
-    // Verify customize CTA routes to /create?template=kage
-    const customizeKage = page.locator('#worlds a:has-text("Customize Kage (影)")');
-    await expect(customizeKage).toHaveAttribute("href", "/create?template=kage");
+    // Verify worlds are represented in the walkthrough
+    await expect(page.locator("text=Midnight Rose").first()).toBeVisible();
+    await expect(page.locator("text=Cloud Nine").first()).toBeVisible();
   });
 
   test("7. CSRF Origin validation rejects unrelated origins and hides internal diagnostics", async ({

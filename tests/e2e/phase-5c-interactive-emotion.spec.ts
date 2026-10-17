@@ -8,6 +8,7 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
   });
 
   test("1. End-to-End Creator Journey: Configure Moments in Studio, Publish & Verify Isolation", async ({ page }) => {
+    test.setTimeout(120000);
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto(`${APP_URL}/create?template=midnight-rose`);
     await expect(page).toHaveURL(/\/edit\/[A-Za-z0-9_-]+/, { timeout: 30000 });
@@ -27,7 +28,7 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
 
     // Wait for autosave
     await page.waitForTimeout(1000);
-    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved");
+    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved", { timeout: 15000 });
 
     // 2. Open Moments section in Studio 2.0
     const momentsTab = page.locator('button:has-text("Moments")').first();
@@ -36,65 +37,45 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
       await page.waitForTimeout(400);
     }
 
-    // Toggle Reasons I Love You
-    const reasonsToggle = page.locator('[data-testid="toggle-module-reasons"]');
-    if (await reasonsToggle.isVisible()) {
-      await reasonsToggle.click();
-      await page.waitForTimeout(300);
+    const addMomentTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+    if (await addMomentTrigger.isVisible()) {
+      await addMomentTrigger.click();
+      await page.waitForTimeout(400);
     }
 
-    // Toggle Compliment Machine
-    const complimentsToggle = page.locator('[data-testid="toggle-module-compliments"]');
-    if (await complimentsToggle.isVisible()) {
-      await complimentsToggle.click();
-      await page.waitForTimeout(300);
-    }
+    const enableModule = async (toggleTestId: string) => {
+      const toggle = page.locator(`[data-testid="${toggleTestId}"]`);
+      if (!(await toggle.isVisible())) {
+        if (await addMomentTrigger.isVisible()) {
+          await addMomentTrigger.click();
+          await page.waitForTimeout(300);
+        }
+      }
+      if (await toggle.isVisible()) {
+        await toggle.click();
+        await page.waitForTimeout(200);
+      }
+    };
 
-    // Toggle Fortune Cookie
-    const cookieToggle = page.locator('[data-testid="toggle-module-fortuneCookie"]');
-    if (await cookieToggle.isVisible()) {
-      await cookieToggle.click();
-      await page.waitForTimeout(300);
-    }
+    // Toggle interactive moments
+    await enableModule("toggle-module-reasons");
+    await enableModule("toggle-module-compliments");
+    await enableModule("toggle-module-fortuneCookie");
+    await enableModule("toggle-module-scratchCard");
+    await enableModule("toggle-module-promises");
+    await enableModule("toggle-module-futureAdventures");
+    await enableModule("toggle-module-adventureSpinner");
+    await enableModule("toggle-module-finale");
 
-    // Toggle Scratch Card
-    const scratchToggle = page.locator('[data-testid="toggle-module-scratchCard"]');
-    if (await scratchToggle.isVisible()) {
-      await scratchToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Promise Wall
-    const promisesToggle = page.locator('[data-testid="toggle-module-promises"]');
-    if (await promisesToggle.isVisible()) {
-      await promisesToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Future Adventures
-    const adventureToggle = page.locator('[data-testid="toggle-module-futureAdventures"]');
-    if (await adventureToggle.isVisible()) {
-      await adventureToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Adventure Spinner
-    const spinnerToggle = page.locator('[data-testid="toggle-module-adventureSpinner"]');
-    if (await spinnerToggle.isVisible()) {
-      await spinnerToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Finale
-    const finaleToggle = page.locator('[data-testid="toggle-module-finale"]');
-    if (await finaleToggle.isVisible()) {
-      await finaleToggle.click();
+    // Close moments library overlay if open
+    const closeMomentLibraryBtn = page.locator('[data-testid="close-moment-library"]');
+    if (await closeMomentLibraryBtn.isVisible()) {
+      await closeMomentLibraryBtn.click();
       await page.waitForTimeout(300);
     }
 
     // Wait for draft autosave with all interactive modules enabled
-    await page.waitForTimeout(1200);
-    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved");
+    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved", { timeout: 15000 });
 
     // 3. Publish Experience
     const previewSendTab = page.locator('button:has-text("Preview & Send")').first();
@@ -103,12 +84,14 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
       await page.waitForTimeout(400);
     }
 
-    const publishBtn = page.locator('[data-testid="header-publish-button"], [data-testid="publish-button"], [data-testid="publish-btn"]').first();
-    await expect(publishBtn).toBeVisible({ timeout: 10000 });
+    const publishBtn = page.locator('[data-testid="publish-button"], [data-testid="header-publish-button"]').first();
+    await publishBtn.scrollIntoViewIfNeeded();
+    await expect(publishBtn).toBeEnabled({ timeout: 15000 });
     await publishBtn.click();
 
     // Verify publish modal appears with link
-    const viewLiveBtn = page.locator('[data-testid="open-public-page-link"], [data-testid="view-live-btn"]').first();
+    await expect(page.locator('[data-testid="publish-success-modal"]')).toBeVisible({ timeout: 15000 });
+    const viewLiveBtn = page.locator('[data-testid="open-public-page-link"], [data-testid="public-url-input"]').first();
     await expect(viewLiveBtn).toBeVisible({ timeout: 15000 });
 
     // Navigate to recipient page

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
+import fs from "fs";
 
 const VIEWPORTS = [
   { name: "desktop_1440x900", width: 1440, height: 900 },
@@ -10,15 +11,38 @@ const VIEWPORTS = [
   { name: "mobile_360x800", width: 360, height: 800 },
 ];
 
-const OUTPUT_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9d610088-6efa-4241-82b7-70b0cc3a4a13/phase7_captures";
+const OUTPUT_DIR = path.join(process.cwd(), "test-results", "screenshots", "phase7_captures");
 
 test.describe("Phase 7 Spatial Composition Reset Visual Gate", () => {
+  test.beforeAll(() => {
+    if (!fs.existsSync(OUTPUT_DIR)) {
+      fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    }
+  });
   for (const vp of VIEWPORTS) {
     test(`Visual capture at ${vp.name}`, async ({ page }) => {
       test.setTimeout(120000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto("/", { waitUntil: "load" });
       await page.waitForTimeout(1000);
+
+      const scrollToProgress = async (selector: string, progress: number) => {
+        await page.evaluate(
+          ({ sel, prog }) => {
+            const el = document.querySelector(sel);
+            if (!el) return;
+            const rect = el.getBoundingClientRect();
+            const scrollTop = window.scrollY || document.documentElement.scrollTop;
+            const elementTop = rect.top + scrollTop;
+            const elementHeight = rect.height;
+            const maxScroll = Math.max(0, elementHeight - window.innerHeight);
+            const targetY = elementTop + prog * maxScroll;
+            window.scrollTo({ top: targetY, behavior: "instant" });
+          },
+          { sel: selector, prog: progress }
+        );
+        await page.waitForTimeout(650);
+      };
 
       // 1. Protected Homepage Hero
       const hero = page.locator("#hero");
@@ -45,26 +69,20 @@ test.describe("Phase 7 Spatial Composition Reset Visual Gate", () => {
       });
 
       // 4. World Vista: Cloud Nine
-      const cloudNine = page.locator(".world-vista-scene").filter({ hasText: "Cloud Nine" });
-      await cloudNine.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(600);
-      await cloudNine.screenshot({
+      await scrollToProgress("#worlds-section", 0.15);
+      await page.screenshot({
         path: path.join(OUTPUT_DIR, `world_cloud_nine_${vp.name}.png`),
       });
 
       // 5. World Vista: Kage
-      const kage = page.locator(".world-vista-scene").filter({ hasText: "Kage" });
-      await kage.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(600);
-      await kage.screenshot({
+      await scrollToProgress("#worlds-section", 0.45);
+      await page.screenshot({
         path: path.join(OUTPUT_DIR, `world_kage_${vp.name}.png`),
       });
 
       // 6. World Vista: Wildflower Paper
-      const wildflower = page.locator(".world-vista-scene").filter({ hasText: "Wildflower Paper" });
-      await wildflower.scrollIntoViewIfNeeded();
-      await page.waitForTimeout(600);
-      await wildflower.screenshot({
+      await scrollToProgress("#worlds-section", 0.75);
+      await page.screenshot({
         path: path.join(OUTPUT_DIR, `world_wildflower_${vp.name}.png`),
       });
 
@@ -80,7 +98,7 @@ test.describe("Phase 7 Spatial Composition Reset Visual Gate", () => {
 
   test("Test interactive states on Discovered Objects (Desktop)", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "load" });
     await page.waitForTimeout(1000);
 
     const moments = page.locator("#moments");

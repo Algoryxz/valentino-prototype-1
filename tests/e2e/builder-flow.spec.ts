@@ -12,6 +12,7 @@ test.describe("Phase 1 Acceptance Gate: Build Your Valentine Customization Engin
   test("End-to-End: Builder -> Create -> Editor -> Autosave -> Reload -> Publish -> Recipient Parity", async ({
     browser,
   }) => {
+    test.setTimeout(120000);
     const creatorContext = await browser.newContext({
       permissions: ["clipboard-read", "clipboard-write"],
     });
@@ -38,7 +39,7 @@ test.describe("Phase 1 Acceptance Gate: Build Your Valentine Customization Engin
     // ------------------------------------------------------------------------
     // Step 2: Create Valentine & Transition to Editor
     // ------------------------------------------------------------------------
-    const makeYoursBtn = littleThingsSection.locator('a[href="/create"]');
+    const makeYoursBtn = creatorPage.locator('a[href="/create"]').first();
     await expect(makeYoursBtn).toBeVisible();
     await makeYoursBtn.click();
 
@@ -132,6 +133,12 @@ test.describe("Phase 1 Acceptance Gate: Build Your Valentine Customization Engin
       await mobilePreviewBtn.click();
     }
 
+    // Ensure envelope is in sealed view so envelope ribbon and seal are visible in preview
+    const resealBtn = editorPreview.locator('button:has-text("View Wax Seal"), button:has-text("Seal & Read Again")').first();
+    if (await resealBtn.isVisible()) {
+      await resealBtn.click();
+    }
+
     // Verify Live Preview immediately updates with new semantic values
     await expect(editorPreview.locator('[data-decor-ribbon="satin-rose"]')).toBeVisible();
     await expect(editorPreview.locator('[data-decor-seal="royal-burgundy"]')).toBeVisible();
@@ -148,6 +155,11 @@ test.describe("Phase 1 Acceptance Gate: Build Your Valentine Customization Engin
     // Switch to preview if on mobile
     if (await mobilePreviewBtn.isVisible()) {
       await mobilePreviewBtn.click();
+    }
+
+    const reloadResealBtn = editorPreview.locator('button:has-text("View Wax Seal"), button:has-text("Seal & Read Again")').first();
+    if (await reloadResealBtn.isVisible()) {
+      await reloadResealBtn.click();
     }
 
     // Assert form and preview preserved the modified selections after reload

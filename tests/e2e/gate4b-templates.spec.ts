@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import path from "path";
 
 const APP_URL = process.env.APP_URL || "http://localhost:3000";
-const ARTIFACTS_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/e5eae4f4-e648-40a2-9962-cbe0c413455d";
+const ARTIFACTS_DIR = path.join(process.cwd(), "test-results", "screenshots", "gate4b");
 
 test.describe("Gate 4B: Templates Showroom Renaissance", () => {
   test("Editorial Showroom composition, featured live stage, and data-driven metadata", async ({
