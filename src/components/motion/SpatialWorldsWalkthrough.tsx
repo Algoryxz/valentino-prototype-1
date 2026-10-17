@@ -802,29 +802,6 @@ export function SpatialWorldsWalkthrough() {
                   "radial-gradient(ellipse, rgba(251,191,36,0.14) 0%, rgba(225,29,72,0.14) 42%, transparent 70%)",
               }}
             />
-
-            {/* Prelude satin ribbon trailing into the candlelight glow as ocean dissolves */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none opacity-45"
-              viewBox="0 0 1000 480"
-              preserveAspectRatio="xMidYMid meet"
-              aria-hidden="true"
-            >
-              <defs>
-                <linearGradient id="trove-prelude-ribbon" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#BE123C" stopOpacity="0.75" />
-                  <stop offset="50%" stopColor="#9F1239" stopOpacity="0.85" />
-                  <stop offset="100%" stopColor="#4C0519" stopOpacity="0.65" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 50,45 C 130,90 220,165 310,140 C 410,115 480,250 580,225"
-                fill="none"
-                stroke="url(#trove-prelude-ribbon)"
-                strokeWidth="8"
-                strokeLinecap="round"
-              />
-            </svg>
           </div>
         </div>
 

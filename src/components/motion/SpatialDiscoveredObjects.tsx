@@ -12,21 +12,17 @@ if (typeof window !== "undefined") {
 }
 
 /**
- * SpatialDiscoveredObjects (Phase 8.7 Hidden Trove Spatial Enhancement):
- * A grounded, cinematic 3D tabletop environment on dark aged mahogany and warm espresso linen.
- * Features coherent directional candlelight, deep multi-layered contact shadows,
- * a continuous delicate satin ribbon threading the keepsakes, and subtle candlelight embers.
- * Fully integrated with bidirectional scroll scrubbing.
+ * SpatialDiscoveredObjects (Phase 8.8 Hidden Trove Composition & Material Correction):
+ * A restrained, believable keepsake still life resting on an intimate writing-desk surface.
+ * Removes failed decorative ribbons, isolated petals, and random particles.
+ * Establishes coherent directional candlelight, grounded multi-layer contact shadows,
+ * balanced object coordinates, and natural atmospheric integration.
  */
 export function SpatialDiscoveredObjects() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLDivElement | null>(null);
-  const candlelightRef = useRef<HTMLDivElement | null>(null);
-  const tabletopRef = useRef<HTMLDivElement | null>(null);
-  const ribbonPathRef = useRef<SVGPathElement | null>(null);
-  const ribbonShadowRef = useRef<SVGPathElement | null>(null);
-  const ribbonHighlightRef = useRef<SVGPathElement | null>(null);
-  const petalRef = useRef<HTMLDivElement | null>(null);
+  const deskLightRef = useRef<HTMLDivElement | null>(null);
+  const deskSurfaceRef = useRef<HTMLDivElement | null>(null);
 
   const [openEnvelope, setOpenEnvelope] = useState(false);
   const [openWhisper, setOpenWhisper] = useState(false);
@@ -40,45 +36,48 @@ export function SpatialDiscoveredObjects() {
       if (prefersReducedMotion) {
         gsap.set(headerRef.current, { opacity: 1, y: 0 });
         gsap.set(".spatial-discovered-artifact", { opacity: 1, y: 0, scale: 1 });
-        gsap.set(".spatial-particle", { opacity: 0.6 });
-        gsap.set([ribbonPathRef.current, ribbonShadowRef.current, ribbonHighlightRef.current], {
-          strokeDashoffset: 0,
-        });
-        gsap.set(candlelightRef.current, { opacity: 1, scale: 1 });
-        gsap.set(petalRef.current, { opacity: 0.7, scale: 1 });
+        gsap.set(deskLightRef.current, { opacity: 1 });
+        gsap.set(deskSurfaceRef.current, { opacity: 1 });
         return;
       }
 
       // 1. Initial posture before scroll reaches section
-      gsap.set(headerRef.current, { opacity: 0, y: 16 });
-      gsap.set(".spatial-discovered-artifact", { opacity: 0, y: 20, scale: 0.98 });
-      gsap.set(".spatial-particle", { opacity: 0 });
-      gsap.set([ribbonPathRef.current, ribbonShadowRef.current, ribbonHighlightRef.current], {
-        strokeDashoffset: 1450,
-      });
-      gsap.set(candlelightRef.current, { opacity: 0.45, scale: 0.92 });
-      gsap.set(petalRef.current, { opacity: 0, scale: 0.85 });
+      gsap.set(headerRef.current, { opacity: 0, y: 14 });
+      gsap.set(".spatial-discovered-artifact", { opacity: 0, y: 16, scale: 0.99 });
+      gsap.set(deskLightRef.current, { opacity: 0.45, scale: 0.95 });
+      gsap.set(deskSurfaceRef.current, { opacity: 0.55 });
 
       // 2. Coordinated Scroll Scrub Timeline across entrance and settlement
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top 85%",
-          end: "top 22%",
-          scrub: 0.65,
+          end: "top 25%",
+          scrub: 0.6,
         },
       });
 
-      // Directional Candlelight pool warms up
+      // Directional desk candlelight pool gently illuminates
       tl.to(
-        candlelightRef.current,
+        deskLightRef.current,
         {
           opacity: 1,
-          scale: 1.06,
+          scale: 1.04,
           duration: 0.5,
           ease: "power1.out",
         },
         0
+      );
+
+      // Desk surface presence clarifies smoothly
+      tl.to(
+        deskSurfaceRef.current,
+        {
+          opacity: 1,
+          duration: 0.5,
+          ease: "power1.out",
+        },
+        0.05
       );
 
       // Editorial Header gently clarifies
@@ -90,21 +89,10 @@ export function SpatialDiscoveredObjects() {
           duration: 0.4,
           ease: "power2.out",
         },
-        0.05
+        0.08
       );
 
-      // Continuous Satin Ribbon draws smoothly through the keepsakes
-      tl.to(
-        [ribbonShadowRef.current, ribbonPathRef.current, ribbonHighlightRef.current],
-        {
-          strokeDashoffset: 0,
-          duration: 0.75,
-          ease: "power2.inOut",
-        },
-        0.1
-      );
-
-      // Intimate keepsakes settle gently onto their contact shadows
+      // Intimate keepsakes settle naturally onto their resting shadows
       tl.to(
         ".spatial-discovered-artifact",
         {
@@ -115,42 +103,7 @@ export function SpatialDiscoveredObjects() {
           duration: 0.5,
           ease: "power2.out",
         },
-        0.18
-      );
-
-      // Gentle parallax on warm candlelight particles
-      tl.to(
-        ".spatial-particle-slow",
-        {
-          opacity: 0.7,
-          y: -18,
-          duration: 0.8,
-          ease: "none",
-        },
-        0.12
-      );
-
-      tl.to(
-        ".spatial-particle-fast",
-        {
-          opacity: 0.55,
-          y: -32,
-          duration: 0.8,
-          ease: "none",
-        },
-        0.12
-      );
-
-      // Subordinate pressed rose petal settles on tabletop
-      tl.to(
-        petalRef.current,
-        {
-          opacity: 0.75,
-          scale: 1,
-          duration: 0.4,
-          ease: "power1.out",
-        },
-        0.3
+        0.15
       );
     }, containerRef);
 
@@ -160,71 +113,35 @@ export function SpatialDiscoveredObjects() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-[#12040E] text-[#FAF8F5] pt-20 sm:pt-24 pb-16 sm:pb-20 px-4 sm:px-6 select-none overflow-hidden"
+      className="relative w-full bg-[#12040E] text-[#FAF8F5] pt-28 sm:pt-28 pb-14 sm:pb-18 px-4 sm:px-6 select-none overflow-hidden"
       style={{
         background:
-          "radial-gradient(ellipse at 50% 38%, #2A091A 0%, #170410 50%, #0E020A 100%)",
+          "radial-gradient(ellipse 90% 75% at 50% 36%, #28081A 0%, #170410 48%, #0C0208 100%)",
       }}
     >
       {/* Peripheral Botanical Edge Atmosphere */}
-      <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
+      <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.2} />
 
       {/* ========================================================================= */}
-      {/* 1. 3D SPATIAL TABLETOP DEPTH PLANE & DIRECTIONAL LIGHTING                 */}
+      {/* 1. DIRECTIONAL CANDLELIGHT POOL                                           */}
+      {/* Soft directional warm light cast from the upper-left across the desk      */}
       {/* ========================================================================= */}
       <div
-        ref={tabletopRef}
-        className="absolute inset-x-0 bottom-0 top-16 pointer-events-none select-none -z-10 [perspective:1000px] overflow-hidden"
-        aria-hidden="true"
-      >
-        {/* Angled dark mahogany & warm espresso linen tabletop surface */}
-        <div
-          className="absolute inset-x-[-15%] bottom-[-25%] h-[135%] origin-bottom [transform:rotateX(50deg)]"
-          style={{
-            background:
-              "linear-gradient(to top, rgba(16, 2, 12, 0.98) 0%, rgba(38, 8, 26, 0.76) 42%, rgba(18, 3, 14, 0.95) 100%)",
-            boxShadow: "inset 0 120px 140px -40px rgba(0,0,0,0.9)",
-          }}
-        >
-          {/* Subtle natural woodgrain & woven fiber texture overlay */}
-          <div
-            className="absolute inset-0 opacity-15 mix-blend-overlay"
-            style={{
-              backgroundImage:
-                "radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-              backgroundSize: "20px 20px",
-              backgroundPosition: "0 0, 10px 10px",
-            }}
-          />
-
-          {/* Candlelight specular sheen pool reflecting softly off polished surface */}
-          <div
-            className="absolute top-1/4 left-1/3 w-[55%] h-[45%] -translate-x-1/2 blur-3xl opacity-25 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(ellipse at center, rgba(254, 215, 170, 0.3) 0%, rgba(225, 29, 72, 0.15) 50%, transparent 75%)",
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Warm Ambient Tabletop Candlelight Glow Pool */}
-      <div
-        ref={candlelightRef}
-        className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[720px] h-[520px] pointer-events-none select-none -z-10 blur-3xl will-change-transform opacity-70"
+        ref={deskLightRef}
+        className="absolute top-[36%] left-[42%] -translate-x-1/2 -translate-y-1/2 w-[680px] sm:w-[840px] h-[460px] sm:h-[520px] pointer-events-none select-none -z-10 blur-3xl will-change-transform opacity-75"
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(ellipse, rgba(251, 191, 36, 0.14) 0%, rgba(225, 29, 72, 0.14) 42%, transparent 70%)",
+            "radial-gradient(ellipse 70% 60% at 38% 38%, rgba(251, 191, 36, 0.16) 0%, rgba(244, 114, 182, 0.09) 45%, transparent 75%)",
         }}
       />
 
       {/* Editorial Header */}
       <div
         ref={headerRef}
-        className="text-center max-w-2xl mx-auto mb-6 sm:mb-8 space-y-2 relative z-10 will-change-transform"
+        className="text-center max-w-2xl mx-auto mb-7 sm:mb-9 space-y-2 relative z-10 will-change-transform"
       >
-        <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-rose-300/90 font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+        <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-rose-300/85 font-semibold drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
           The Hidden Trove
         </p>
         <h2 className="text-3xl sm:text-5xl font-serif font-normal text-[#FFF5F8] tracking-tight leading-tight drop-shadow-[0_2px_16px_rgba(0,0,0,0.9)]">
@@ -238,138 +155,59 @@ export function SpatialDiscoveredObjects() {
       {/* ========================================================================= */}
       {/* 2. GROUNDED TABLETOP STILL LIFE: Intimate arrangement of 3 keepsakes       */}
       {/* ========================================================================= */}
-      <div className="max-w-4xl mx-auto relative z-10 min-h-[440px] sm:min-h-[460px] flex flex-col md:block items-center justify-center gap-6 md:gap-0 [perspective:1200px]">
-        {/* Soft Tabletop Directional Ambient Occlusion */}
+      <div className="max-w-4xl mx-auto relative z-10 min-h-[390px] sm:min-h-[410px] flex flex-col md:block items-center justify-center gap-7 md:gap-0">
+        {/* ======================================================================= */}
+        {/* SEAMLESS PHYSICAL DESK SURFACE (Organically feathered into atmosphere)   */}
+        {/* No card boundaries, no rounded rectangles, no visible panel edges       */}
+        {/* ======================================================================= */}
         <div
-          className="absolute inset-x-8 top-12 bottom-8 bg-gradient-to-tr from-black/75 via-rose-950/25 to-transparent rounded-full blur-3xl pointer-events-none -z-10"
+          ref={deskSurfaceRef}
+          className="absolute -inset-x-12 -inset-y-8 pointer-events-none select-none z-0 will-change-transform"
           aria-hidden="true"
-        />
-
-        {/* ======================================================================= */}
-        {/* 3. CONTINUOUS DELICATE SATIN RIBBON (Threads strictly behind keepsakes)  */}
-        {/* ======================================================================= */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none select-none z-0 overflow-visible"
-          viewBox="0 0 1000 480"
-          preserveAspectRatio="xMidYMid meet"
-          aria-hidden="true"
+          style={{
+            maskImage:
+              "radial-gradient(ellipse 65% 55% at 50% 50%, black 15%, rgba(0,0,0,0.7) 45%, transparent 75%)",
+            WebkitMaskImage:
+              "radial-gradient(ellipse 65% 55% at 50% 50%, black 15%, rgba(0,0,0,0.7) 45%, transparent 75%)",
+          }}
         >
-          <defs>
-            {/* Satin ribbon rich velvet-to-silk gradient */}
-            <linearGradient id="satin-ribbon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#BE123C" stopOpacity="0.85" />
-              <stop offset="25%" stopColor="#9F1239" stopOpacity="0.95" />
-              <stop offset="50%" stopColor="#E11D48" stopOpacity="0.9" />
-              <stop offset="75%" stopColor="#881337" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#4C0519" stopOpacity="0.85" />
-            </linearGradient>
-
-            {/* Specular crest highlight on silk edge */}
-            <linearGradient id="satin-crest-highlight" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FECDD3" stopOpacity="0.75" />
-              <stop offset="35%" stopColor="#FDE68A" stopOpacity="0.6" />
-              <stop offset="70%" stopColor="#FDA4AF" stopOpacity="0.7" />
-              <stop offset="100%" stopColor="#FECDD3" stopOpacity="0.45" />
-            </linearGradient>
-
-            {/* Drop shadow filter for ribbon onto tabletop surface */}
-            <filter id="ribbon-blur-shadow" x="-10%" y="-10%" width="130%" height="130%">
-              <feGaussianBlur stdDeviation="6" />
-            </filter>
-          </defs>
-
-          {/* Ribbon Physical Contact Shadow on Tabletop Surface */}
-          <path
-            ref={ribbonShadowRef}
-            d="M 30,40 C 120,80 210,155 310,140 C 410,120 480,165 570,150 C 660,135 750,95 840,120 C 910,140 940,200 965,270"
-            fill="none"
-            stroke="rgba(0,0,0,0.55)"
-            strokeWidth="15"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="1450"
-            strokeDashoffset="1450"
-            filter="url(#ribbon-blur-shadow)"
-            transform="translate(3, 8)"
-          />
-
-          {/* Ribbon Silken Body */}
-          <path
-            ref={ribbonPathRef}
-            d="M 30,40 C 120,80 210,155 310,140 C 410,120 480,165 570,150 C 660,135 750,95 840,120 C 910,140 940,200 965,270"
-            fill="none"
-            stroke="url(#satin-ribbon-gradient)"
-            strokeWidth="8.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="1450"
-            strokeDashoffset="1450"
-          />
-
-          {/* Delicate Specular Silk Highlight along Ribbon Crest */}
-          <path
-            ref={ribbonHighlightRef}
-            d="M 30,40 C 120,80 210,155 310,140 C 410,120 480,165 570,150 C 660,135 750,95 840,120 C 910,140 940,200 965,270"
-            fill="none"
-            stroke="url(#satin-crest-highlight)"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeDasharray="1450"
-            strokeDashoffset="1450"
-          />
-        </svg>
-
-        {/* ======================================================================= */}
-        {/* 4. MINIMAL SUPPORTING DETAILS: Candlelight Embers & Pressed Petal        */}
-        {/* ======================================================================= */}
-        {/* Candlelight Dust Motes / Warm Embers at distinct depths */}
-        <div
-          className="spatial-particle spatial-particle-slow absolute top-[22%] left-[16%] w-1.5 h-1.5 rounded-full bg-amber-300/60 blur-[0.5px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-        <div
-          className="spatial-particle spatial-particle-fast absolute top-[48%] left-[26%] w-1 h-1 rounded-full bg-rose-300/50 blur-[0.4px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-        <div
-          className="spatial-particle spatial-particle-slow absolute top-[32%] left-[54%] w-1.5 h-1.5 rounded-full bg-amber-200/70 blur-[0.5px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-        <div
-          className="spatial-particle spatial-particle-fast absolute top-[58%] left-[66%] w-1 h-1 rounded-full bg-rose-400/55 blur-[0.4px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-        <div
-          className="spatial-particle spatial-particle-slow absolute top-[18%] left-[84%] w-1.5 h-1.5 rounded-full bg-amber-300/65 blur-[0.5px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-        <div
-          className="spatial-particle spatial-particle-fast absolute top-[68%] left-[40%] w-1 h-1 rounded-full bg-rose-200/50 blur-[0.4px] pointer-events-none -z-5"
-          aria-hidden="true"
-        />
-
-        {/* Subordinate Tiny Pressed Botanical Petal on Tabletop Surface */}
-        <div
-          ref={petalRef}
-          className="absolute bottom-6 left-[18%] md:left-[22%] pointer-events-none select-none z-10 transform rotate-[-16deg] opacity-70 will-change-transform"
-          aria-hidden="true"
-        >
-          <svg viewBox="0 0 24 28" className="w-5 h-6 text-[#881337] filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.85)]">
-            <path
-              d="M12 2 C16 6, 22 14, 18 22 C14 28, 8 26, 5 20 C2 14, 8 6, 12 2 Z"
-              fill="#9F1239"
-              fillOpacity="0.85"
-              stroke="#BE123C"
-              strokeWidth="0.8"
+          {/* Base Polished Dark Rosewood Desk Hue */}
+          <div
+            className="w-full h-full"
+            style={{
+              background:
+                "radial-gradient(ellipse 80% 60% at 46% 48%, rgba(68, 16, 42, 0.9) 0%, rgba(42, 9, 26, 0.75) 45%, transparent 80%)",
+            }}
+          >
+            {/* Fine Longitudinal Woodgrain Texture (Organic, no repeating patterns) */}
+            <div
+              className="absolute inset-0 opacity-[0.11] mix-blend-overlay"
+              style={{
+                backgroundImage:
+                  "linear-gradient(92deg, rgba(255,255,255,0.06) 0%, transparent 4%, rgba(255,255,255,0.04) 9%, transparent 16%, rgba(255,255,255,0.07) 24%, transparent 34%, rgba(255,255,255,0.05) 44%, transparent 54%, rgba(255,255,255,0.08) 64%, transparent 74%, rgba(255,255,255,0.05) 86%, transparent 100%)",
+              }}
             />
-          </svg>
+
+            {/* Directional Candlelight Pool Sheen (Cast from Upper-Left) */}
+            <div
+              className="absolute top-[28%] left-[36%] w-[58%] h-[50%] -translate-x-1/2 blur-2xl opacity-30 pointer-events-none"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, rgba(252, 211, 77, 0.45) 0%, rgba(244, 63, 94, 0.2) 48%, transparent 72%)",
+              }}
+            />
+
+            {/* Continuous Grounding Shadow Bed Uniting All Three Keepsakes */}
+            <div
+              className="absolute inset-x-8 bottom-6 h-28 bg-gradient-to-t from-black/75 via-black/40 to-transparent rounded-full blur-2xl pointer-events-none opacity-85"
+            />
+          </div>
         </div>
 
         {/* ============================================================== */}
-        {/* OBJECT 01: REAL VELVET WAX-SEALED ENVELOPE (Upper-Left)        */}
+        {/* OBJECT 01: REAL VELVET WAX-SEALED ENVELOPE (Primary - Left)    */}
         {/* ============================================================== */}
-        <div className="spatial-discovered-artifact w-full max-w-[240px] sm:max-w-[290px] md:max-w-[310px] md:absolute md:top-4 md:left-6 lg:left-12 z-30 flex flex-col items-center md:items-start will-change-transform">
+        <div className="spatial-discovered-artifact w-full max-w-[240px] sm:max-w-[280px] md:max-w-[300px] md:absolute md:top-4 md:left-6 lg:left-10 z-20 flex flex-col items-center md:items-start will-change-transform">
           <button
             type="button"
             onClick={() => setOpenEnvelope(!openEnvelope)}
@@ -380,21 +218,22 @@ export function SpatialDiscoveredObjects() {
             <div
               className={`relative w-full aspect-[4/3] rounded-xs transition-all duration-500 will-change-transform ${
                 openEnvelope
-                  ? "rotate-0 -translate-y-2 drop-shadow-[0_26px_40px_rgba(0,0,0,0.9)]"
-                  : "rotate-[-1.5deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_20px_35px_rgba(0,0,0,0.75)]"
+                  ? "rotate-0 -translate-y-2 drop-shadow-[0_24px_38px_rgba(0,0,0,0.85)]"
+                  : "rotate-[-1.5deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_16px_30px_rgba(0,0,0,0.7)]"
               }`}
             >
-              {/* Natural Physical Contact Shadows on Tabletop Surface */}
+              {/* Coherent Directional Cast Shadow (Light from upper-left) */}
               <div
-                className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[84%] h-4 bg-black/75 rounded-full blur-[4px] pointer-events-none -z-10 translate-y-1"
+                className="absolute bottom-1 left-[10%] w-[84%] h-5 bg-black/70 rounded-full blur-[8px] pointer-events-none -z-10 translate-x-3 translate-y-4"
                 aria-hidden="true"
               />
+              {/* Tight Ambient Occlusion Contact Line */}
               <div
-                className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[98%] h-8 bg-black/40 rounded-full blur-[10px] pointer-events-none -z-10 translate-y-2"
+                className="absolute bottom-2 left-[14%] w-[76%] h-2.5 bg-black/90 rounded-full blur-[2px] pointer-events-none -z-10 translate-x-1.5 translate-y-1.5"
                 aria-hidden="true"
               />
 
-              {/* Authentic Deep Burgundy Velvet Envelope with Wax Seal (Real Alpha Cutout) */}
+              {/* Authentic Deep Burgundy Velvet Envelope with Wax Seal */}
               <Image
                 src="/assets/stationery/velvet_envelope.png"
                 alt="Burgundy velvet envelope with molten wax seal"
@@ -402,6 +241,7 @@ export function SpatialDiscoveredObjects() {
                 sizes="(max-width: 640px) 280px, 320px"
                 className="object-contain pointer-events-none select-none"
                 priority
+                unoptimized
               />
 
               {/* Revealed Secret Letter / Cue */}
@@ -425,17 +265,17 @@ export function SpatialDiscoveredObjects() {
           </button>
 
           {/* High-Contrast Curator Marginalia */}
-          <div className="mt-2 ml-3 text-left select-none transform rotate-[-1deg]">
-            <span className="font-serif italic text-xs sm:text-[13px] text-rose-200 font-medium tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+          <div className="mt-2.5 ml-3 text-left select-none transform rotate-[-1deg]">
+            <span className="font-serif italic text-xs sm:text-[13px] text-rose-200/90 font-medium tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               sealed for hard days
             </span>
           </div>
         </div>
 
         {/* ============================================================== */}
-        {/* OBJECT 02: REAL FOLDED VELLUM WHISPER NOTE (Lower-Center)      */}
+        {/* OBJECT 02: REAL FOLDED VELLUM WHISPER NOTE (Secondary - Center)*/}
         {/* ============================================================== */}
-        <div className="spatial-discovered-artifact w-full max-w-[220px] sm:max-w-[260px] md:max-w-[280px] md:absolute md:top-24 md:left-[35%] lg:left-[37%] z-20 flex flex-col items-center md:items-start will-change-transform">
+        <div className="spatial-discovered-artifact w-full max-w-[220px] sm:max-w-[250px] md:max-w-[270px] md:absolute md:top-20 md:left-[35%] lg:left-[37%] z-20 flex flex-col items-center md:items-start will-change-transform">
           <button
             type="button"
             onClick={() => setOpenWhisper(!openWhisper)}
@@ -446,21 +286,22 @@ export function SpatialDiscoveredObjects() {
             <div
               className={`relative w-full aspect-[4/3] rounded-xs transition-all duration-500 will-change-transform ${
                 openWhisper
-                  ? "rotate-0 -translate-y-2 drop-shadow-[0_22px_36px_rgba(0,0,0,0.8)]"
-                  : "rotate-[1.2deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_18px_30px_rgba(0,0,0,0.65)]"
+                  ? "rotate-0 -translate-y-2 drop-shadow-[0_20px_34px_rgba(0,0,0,0.75)]"
+                  : "rotate-[1.2deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_14px_26px_rgba(0,0,0,0.6)]"
               }`}
             >
-              {/* Natural Physical Contact Shadows on Tabletop Surface */}
+              {/* Coherent Directional Cast Shadow */}
               <div
-                className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[76%] h-3.5 bg-black/75 rounded-full blur-[4px] pointer-events-none -z-10 translate-y-1"
+                className="absolute bottom-3 left-[8%] w-[82%] h-4.5 bg-black/65 rounded-full blur-[7px] pointer-events-none -z-10 translate-x-2.5 translate-y-3"
                 aria-hidden="true"
               />
+              {/* Tight Ambient Occlusion Contact Line */}
               <div
-                className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[90%] h-6 bg-black/35 rounded-full blur-[8px] pointer-events-none -z-10 translate-y-1"
+                className="absolute bottom-4 left-[12%] w-[72%] h-2 bg-black/85 rounded-full blur-[2px] pointer-events-none -z-10 translate-x-1 translate-y-1"
                 aria-hidden="true"
               />
 
-              {/* Authentic Folded Origami Vellum Note (Real Alpha Cutout) */}
+              {/* Authentic Folded Origami Vellum Note */}
               <Image
                 src="/assets/stationery/folded_whisper.png"
                 alt="Origami folded cream cotton vellum note"
@@ -468,6 +309,7 @@ export function SpatialDiscoveredObjects() {
                 sizes="(max-width: 640px) 260px, 280px"
                 className="object-contain pointer-events-none select-none"
                 priority
+                unoptimized
               />
 
               {/* Revealed Secret Whisper */}
@@ -481,8 +323,8 @@ export function SpatialDiscoveredObjects() {
                   </span>
                 </div>
               ) : (
-                <div className="absolute bottom-3 inset-x-2 text-center z-10 pointer-events-none">
-                  <span className="font-serif italic text-[11px] sm:text-xs text-[#1C0412] font-semibold tracking-wide drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]">
+                <div className="absolute top-[48%] inset-x-3 text-center z-10 pointer-events-none">
+                  <span className="font-serif italic text-xs sm:text-[13px] text-[#4A0825] font-semibold tracking-wide drop-shadow-[0_1px_1px_rgba(255,255,255,0.7)]">
                     A secret whisper
                   </span>
                 </div>
@@ -491,17 +333,18 @@ export function SpatialDiscoveredObjects() {
           </button>
 
           {/* High-Contrast Curator Marginalia */}
-          <div className="mt-2 ml-4 text-left select-none transform rotate-[1deg]">
-            <span className="font-serif italic text-xs sm:text-[13px] text-rose-200 font-medium tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+          <div className="mt-2.5 ml-4 text-left select-none transform rotate-[1deg]">
+            <span className="font-serif italic text-xs sm:text-[13px] text-rose-200/90 font-medium tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               guarded by a fold
             </span>
           </div>
         </div>
 
         {/* ============================================================== */}
-        {/* OBJECT 03: REAL AGED HAMMERED BRASS KEEPSAKE (Upper-Right)     */}
+        {/* OBJECT 03: REAL AGED HAMMERED BRASS KEEPSAKE (Tertiary - Right)*/}
+        {/* Positioned on the same physical desk surface as other keepsakes*/}
         {/* ============================================================== */}
-        <div className="spatial-discovered-artifact w-full max-w-[180px] sm:max-w-[210px] md:max-w-[220px] md:absolute md:top-6 md:right-8 lg:right-16 z-20 flex flex-col items-center md:items-start will-change-transform">
+        <div className="spatial-discovered-artifact w-full max-w-[180px] sm:max-w-[200px] md:max-w-[210px] md:absolute md:top-20 md:right-8 lg:right-14 z-20 flex flex-col items-center md:items-start will-change-transform">
           <button
             type="button"
             onClick={() => setOpenKeepsake(!openKeepsake)}
@@ -510,36 +353,38 @@ export function SpatialDiscoveredObjects() {
             aria-expanded={openKeepsake}
           >
             <div
-              className={`relative w-24 sm:w-28 md:w-32 aspect-square transition-all duration-500 will-change-transform ${
+              className={`relative w-24 sm:w-28 aspect-square transition-all duration-500 will-change-transform ${
                 openKeepsake
-                  ? "rotate-6 -translate-y-2 drop-shadow-[0_24px_42px_rgba(0,0,0,0.9)]"
-                  : "rotate-[-2deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_18px_32px_rgba(0,0,0,0.75)]"
+                  ? "rotate-6 -translate-y-2 drop-shadow-[0_20px_36px_rgba(0,0,0,0.85)]"
+                  : "rotate-[-2deg] group-hover:rotate-0 group-hover:-translate-y-1.5 drop-shadow-[0_15px_28px_rgba(0,0,0,0.7)]"
               }`}
             >
-              {/* Natural Physical Contact Shadows on Tabletop Surface */}
+              {/* Coherent Directional Cast Shadow */}
               <div
-                className="absolute bottom-1 left-1/2 -translate-x-1/2 w-24 h-3.5 bg-black/85 rounded-full blur-[3px] pointer-events-none -z-10 translate-y-1"
+                className="absolute bottom-0 left-1/2 -translate-x-[42%] w-24 h-4 bg-black/70 rounded-full blur-[6px] pointer-events-none -z-10 translate-y-2.5"
                 aria-hidden="true"
               />
+              {/* Tight Ambient Occlusion Contact Line */}
               <div
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-28 h-6 bg-amber-950/35 rounded-full blur-[8px] pointer-events-none -z-10 translate-y-1"
+                className="absolute bottom-1 left-1/2 -translate-x-[46%] w-16 h-2 bg-black/90 rounded-full blur-[1.5px] pointer-events-none -z-10 translate-y-0.5"
                 aria-hidden="true"
               />
 
-              {/* Authentic Heavy Hammered Aged Brass Talisman (Real Alpha Cutout) */}
+              {/* Authentic Heavy Hammered Aged Brass Talisman */}
               <Image
                 src="/assets/stationery/brass_talisman.png"
                 alt="Aged hand-hammered brass talisman token"
                 fill
-                sizes="128px"
+                sizes="112px"
                 className="object-contain pointer-events-none select-none"
                 priority
+                unoptimized
               />
             </div>
 
             {/* Revealed Keepsake Slip resting beside the token */}
             {openKeepsake ? (
-              <div className="mt-3 py-2 px-3.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-center shadow-[0_8px_20px_rgba(0,0,0,0.4)] animate-fade-in max-w-[220px]">
+              <div className="mt-3 py-2 px-3.5 bg-[#FAF3E8] rounded-xs border border-amber-900/30 text-center shadow-[0_8px_20px_rgba(0,0,0,0.4)] animate-fade-in max-w-[210px]">
                 <p className="font-serif italic text-xs text-[#2A0802] font-semibold leading-relaxed">
                   “Every morning with you is my favorite thing on earth.”
                 </p>
@@ -548,7 +393,7 @@ export function SpatialDiscoveredObjects() {
           </button>
 
           {/* High-Contrast Curator Marginalia */}
-          <div className="mt-2 ml-2 text-left select-none transform rotate-[-0.8deg]">
+          <div className="mt-2.5 ml-2 text-left select-none transform rotate-[-0.8deg]">
             <span className="font-serif italic text-xs sm:text-[13px] text-amber-200/90 font-medium tracking-wide drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
               turned in the palm
             </span>
@@ -556,17 +401,20 @@ export function SpatialDiscoveredObjects() {
         </div>
       </div>
 
-      {/* Integrated Atmospheric Navigation Ending */}
-      <div className="w-full text-center pt-8 sm:pt-10 pb-2 relative z-20 flex flex-col items-center">
-        <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-rose-300/80 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
+      {/* ========================================================================= */}
+      {/* 3. INTEGRATED ATMOSPHERIC NAVIGATION ENDING                               */}
+      {/* Tightened deliberate spacing connected directly to the keepsake scene     */}
+      {/* ========================================================================= */}
+      <div className="w-full text-center pt-8 sm:pt-10 pb-4 relative z-20 flex flex-col items-center">
+        <p className="text-[10px] sm:text-[11px] font-mono tracking-widest uppercase text-rose-300/75 mb-2.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
           Six living worlds to hold your words
         </p>
         <Link
           href="/templates"
-          className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-serif text-[#FAF5EE] bg-[#220616] hover:bg-[#2F081E] border border-rose-500/35 hover:border-rose-400/60 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-all duration-300 hover:-translate-y-0.5"
+          className="group inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full text-xs sm:text-sm font-serif text-[#FAF5EE] bg-[#1C0512] hover:bg-[#28081B] border border-rose-400/25 hover:border-rose-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-rose-400/50"
         >
           <span>Explore all six atmospheres</span>
-          <span className="inline-block transition-transform duration-300 group-hover:translate-x-1.5 text-[#F3A5BC]">
+          <span className="inline-block transition-transform duration-300 group-hover:translate-x-1 text-[#F3A5BC]">
             →
           </span>
         </Link>
