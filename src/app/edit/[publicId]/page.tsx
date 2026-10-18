@@ -30,8 +30,6 @@ import { StudioStageStepper, StudioStageId } from "@/components/studio/StudioSta
 import { StoryChaptersVisualizer } from "@/components/studio/StoryChaptersVisualizer";
 import { WorldSelectorModal } from "@/components/studio/WorldSelectorModal";
 import { FeatureDiscoveryDrawer } from "@/components/studio/FeatureDiscoveryDrawer";
-import { ContextualSuggestion } from "@/components/studio/ContextualSuggestion";
-import { ContentReadinessBar } from "@/components/studio/ContentReadinessBar";
 import { ModuleManager } from "@/modules/editor/ModuleManager";
 import { MultimediaStorySection } from "@/components/studio/MultimediaStorySection";
 import { PreviewAndSendSection } from "@/components/studio/PreviewAndSendSection";
@@ -39,21 +37,20 @@ import { MobileWorkspaceSwitcher } from "@/components/studio/MobileWorkspaceSwit
 import { FeatureDefinition } from "@/features/types";
 
 const STAGE_ORDER: StudioStageId[] = [
+  "personalize",
   "world",
   "story",
-  "moments",
-  "personalize",
   "mood",
   "preview",
 ];
 
 const STAGE_NEXT_LABELS: Record<StudioStageId, string> = {
-  world: "Continue to Story",
-  story: "Continue to Moments",
-  moments: "Continue to Letter",
-  personalize: "Continue to Mood & Styling",
-  mood: "Continue to Preview & Send",
-  preview: "Publish Valentine 💌",
+  personalize: "Continue to Atmosphere",
+  world: "Continue to Story & Keepsakes",
+  story: "Continue to Stationery & Styling",
+  mood: "Continue to Delivery & Keepsakes",
+  preview: "Publish Valentine",
+  moments: "Continue to Stationery & Styling",
 };
 
 // World-derived subtle accent tokens for inspector controls
@@ -216,7 +213,7 @@ function EditExperienceContent() {
   const [publicUrl, setPublicUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [mobileTab, setMobileTab] = useState<"form" | "preview">("form");
-  const [activeSection, setActiveSection] = useState<StudioStageId>("world");
+  const [activeSection, setActiveSection] = useState<StudioStageId>("personalize");
   const [previewDeviceMode, setPreviewDeviceMode] = useState<"phone" | "tablet" | "expanded">("phone");
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showAdvancedStory, setShowAdvancedStory] = useState(false);
@@ -315,7 +312,7 @@ function EditExperienceContent() {
     if (!inspectorRef.current) return;
     const containerTop = inspectorRef.current.getBoundingClientRect().top;
 
-    let candidate: StudioStageId = "world";
+    let candidate: StudioStageId = "personalize";
     for (const id of STAGE_ORDER) {
       const el = document.getElementById(`section-${id}`);
       if (el) {
@@ -739,12 +736,12 @@ function EditExperienceContent() {
 
   const currentTemplateDef = getTemplateDefinition(templateMeta.id, templateMeta.version);
 
-  // Completion calculation for 6 stages
+  // Completion calculation for stages
   const stageCompletion: Record<StudioStageId, boolean> = {
-    world: Boolean(templateMeta.id),
-    story: Boolean((config as any).narrative?.welcome?.enabled || (config as any).narrative?.pacing),
-    moments: activeMomentsCount > 0,
     personalize: Boolean(config.partnerName?.trim() && config.senderName?.trim() && config.message?.trim()),
+    world: Boolean(templateMeta.id),
+    story: Boolean((config as any).narrative?.welcome?.enabled || (config as any).narrative?.pacing || activeMomentsCount > 0),
+    moments: activeMomentsCount > 0,
     mood: Boolean(config.decor?.paper && config.decor?.waxSeal),
     preview: Boolean(config.partnerName?.trim() && config.message?.trim()),
   };
@@ -949,233 +946,29 @@ function EditExperienceContent() {
 
             {/* Workbench Body */}
             <div className="p-5 sm:p-7 space-y-9 flex-1 pb-32 sm:pb-24">
-              {/* Advisory Content Readiness Bar */}
-              <ContentReadinessBar
-                partnerName={config.partnerName}
-                senderName={config.senderName}
-                message={config.message}
-                activeMomentsCount={activeMomentsCount}
-              />
-
-              {/* Contextual Discovery Guidance */}
-              <ContextualSuggestion
-                messageLength={(config.message || "").length}
-                activeMomentCount={activeMomentsCount}
-                hasTimeline={Boolean(config.modules?.timeline?.enabled)}
-                hasQuiz={Boolean(config.modules?.quiz?.enabled)}
-                hasSecret={Boolean(config.modules?.secret?.enabled)}
-                hasOpenWhen={Boolean(config.modules?.openWhen?.enabled)}
-                hasCustomDecor={
-                  config.decor?.paper !== "handmade-cream" ||
-                  config.decor?.waxSeal !== "crimson-rose"
-                }
-                onAction={(action) => {
-                  if (action.type === "scroll") {
-                    scrollToSection(action.target as any);
-                  } else if (action.type === "module") {
-                    const modKey = action.target as any;
-                    handleModulesChange((prev) => ({
-                      ...prev,
-                      [modKey]: {
-                        ...(prev?.[modKey] || {}),
-                        enabled: true,
-                      },
-                    }));
-                    setActiveMomentKey(modKey);
-                    scrollToSection("moments");
-                  }
-                }}
-              />
-
               {/* ------------------------------------------------------------- */}
-              {/* STAGE 01: Visual World (Tactile Material Rail)                */}
+              {/* STAGE 01: Dedication & Love Letter                            */}
               {/* ------------------------------------------------------------- */}
-              <section id="section-world" className="space-y-4 scroll-mt-20">
+              <section id="section-personalize" className="space-y-5 scroll-mt-20">
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span className={`text-xs font-mono ${accents.text}`}>01</span>
-                      <h2 className="text-sm font-serif uppercase tracking-widest text-white">Visual World</h2>
+                      <h2 className="text-sm font-serif uppercase tracking-widest text-white">Dedication & Love Letter</h2>
                     </div>
-                    <button
-                      type="button"
-                      data-testid="section-change-world-trigger"
-                      onClick={() => setWorldModalOpen(true)}
-                      className="min-h-[36px] py-1 px-2.5 text-[11px] font-mono text-white/50 hover:text-white underline cursor-pointer flex items-center"
-                    >
-                      All Worlds ⇄
-                    </button>
+                    {config.partnerName?.trim() && config.message?.trim() ? (
+                      <span className="text-[10px] font-mono text-emerald-400 flex items-center gap-1">
+                        <span>✓</span>
+                        <span>Inscribed</span>
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-mono text-rose-300/80">
+                        Required to publish
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs font-serif italic text-white/50">
-                    &ldquo;The atmosphere they step into&rdquo;
-                  </p>
-                </div>
-
-                {/* Active World Spotlight */}
-                <div className="pt-1 pb-1 space-y-1 border-b border-white/[0.04] pb-3">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xs font-mono uppercase tracking-wider text-white/40">Active:</span>
-                    <span className="text-lg font-serif text-white font-normal">{templateMeta.name}</span>
-                  </div>
-                  <p className="text-xs font-serif italic text-white/70">
-                    &ldquo;{currentTemplateDef?.tagline || "For the love that feels like starlight"}&rdquo;
-                  </p>
-                  <p className="text-xs text-white/50 font-light leading-relaxed">
-                    {currentTemplateDef?.atmosphere}
-                  </p>
-                </div>
-
-                {/* Tactile World Material Rail */}
-                <div className="space-y-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">
-                    Living Atmospheres
-                  </span>
-                  <div className="flex flex-wrap gap-2 py-1">
-                    {[
-                      { id: "cloud-nine", icon: "☁️", name: "Cloud Nine", sample: "Sky Aerogramme" },
-                      { id: "midnight-rose", icon: "🌹", name: "Midnight Rose", sample: "Velvet Seal" },
-                      { id: "kage", icon: "🏮", name: "Kage", sample: "Washi Scroll" },
-                      { id: "apricot-film", icon: "🎞️", name: "Apricot Film", sample: "16mm Celluloid" },
-                      { id: "wildflower-paper", icon: "🌿", name: "Wildflower Paper", sample: "Cotton Rag" },
-                      { id: "ocean-letter", icon: "🌊", name: "Ocean Letter", sample: "Sea-Glass Bottle" },
-                    ].map((w) => {
-                      const isSelected = templateMeta.id === w.id;
-                      return (
-                        <button
-                          key={w.id}
-                          type="button"
-                          data-testid={`world-sample-${w.id}`}
-                          onClick={() => handleSelectWorld(w.id, "v1")}
-                          className={`py-1.5 px-3 rounded-full border text-xs flex items-center gap-2 transition-all cursor-pointer group select-none ${
-                            isSelected
-                              ? `${accents.border} bg-white/[0.08] text-white font-medium shadow-xs`
-                              : "border-white/[0.06] bg-transparent text-white/60 hover:text-white hover:border-white/15"
-                          }`}
-                        >
-                          <span className="text-sm select-none">{w.icon}</span>
-                          <span className="font-serif tracking-wide">{w.name}</span>
-                          {isSelected && <span className={`w-1.5 h-1.5 rounded-full ${accents.dot} shrink-0`} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
-
-              {/* ------------------------------------------------------------- */}
-              {/* STAGE 02: Story Chapters & Pacing                             */}
-              {/* ------------------------------------------------------------- */}
-              <section id="section-story" className="space-y-4 scroll-mt-20 border-t border-white/[0.06] pt-8">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-mono ${accents.text}`}>02</span>
-                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Story Chapters & Pacing</h2>
-                  </div>
-                  <p className="text-xs font-serif italic text-white/50">
-                    &ldquo;The emotional 7-part narrative journey&rdquo;
-                  </p>
-                </div>
-
-                <StoryChaptersVisualizer
-                  welcomeEnabled={Boolean((config as any).narrative?.welcome?.enabled)}
-                  onToggleWelcome={() =>
-                    handleConfigChange((prev: any) => {
-                      const cur = prev.narrative?.welcome || { enabled: false };
-                      return {
-                        ...prev,
-                        narrative: {
-                          ...(prev.narrative || {}),
-                          welcome: {
-                            ...cur,
-                            enabled: !cur.enabled,
-                            recipientName: cur.recipientName || prev.partnerName || "",
-                            greeting: cur.greeting || "Welcome, My Love",
-                            message: cur.message || "A private story made only for you.",
-                          },
-                        },
-                      };
-                    })
-                  }
-                  welcomeGreeting={(config as any).narrative?.welcome?.greeting || ""}
-                  welcomeMessage={(config as any).narrative?.welcome?.message || ""}
-                  onWelcomeGreetingChange={(val) =>
-                    handleConfigChange((prev: any) => ({
-                      ...prev,
-                      narrative: {
-                        ...(prev.narrative || {}),
-                        welcome: {
-                          ...(prev.narrative?.welcome || {}),
-                          greeting: val,
-                        },
-                      },
-                    }))
-                  }
-                  onWelcomeMessageChange={(val) =>
-                    handleConfigChange((prev: any) => ({
-                      ...prev,
-                      narrative: {
-                        ...(prev.narrative || {}),
-                        welcome: {
-                          ...(prev.narrative?.welcome || {}),
-                          message: val,
-                        },
-                      },
-                    }))
-                  }
-                  pacing={(config as any).narrative?.pacing || "balanced"}
-                  onPacingChange={(newPacing) =>
-                    handleConfigChange((prev: any) => ({
-                      ...prev,
-                      narrative: {
-                        ...(prev.narrative || {}),
-                        pacing: newPacing,
-                      },
-                    }))
-                  }
-                  activeMomentsCount={activeMomentsCount}
-                />
-              </section>
-
-              {/* ------------------------------------------------------------- */}
-              {/* STAGE 03: Moments (Interactive Keepsakes)                     */}
-              {/* ------------------------------------------------------------- */}
-              <section id="section-moments" className="space-y-4 scroll-mt-20 border-t border-white/[0.06] pt-8">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs font-mono ${accents.text}`}>03</span>
-                      <h2 className="text-sm font-serif uppercase tracking-widest text-white">Interactive Moments</h2>
-                    </div>
-                    <p className="text-xs font-serif italic text-white/50">
-                      &ldquo;Little surprises they discover inside your world&rdquo;
-                    </p>
-                  </div>
-                  <Badge variant="neutral" size="sm" className={`text-[10px] font-mono ${accents.text} ${accents.border}`}>
-                    {activeMomentsCount} Active
-                  </Badge>
-                </div>
-
-                <ModuleManager
-                  modules={config.modules}
-                  hasHeroMedia={Boolean(config.heroMediaId)}
-                  onChange={handleModulesChange}
-                  onOpenFeatureDrawer={() => setFeatureDrawerOpen(true)}
-                  onSelectFeature={handleSelectFeature}
-                  externalActiveMoment={activeMomentKey}
-                />
-              </section>
-
-              {/* ------------------------------------------------------------- */}
-              {/* STAGE 04: Personalize & Love Letter                           */}
-              {/* ------------------------------------------------------------- */}
-              <section id="section-personalize" className="space-y-5 scroll-mt-20 border-t border-white/[0.06] pt-8">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`text-xs font-mono ${accents.text}`}>04</span>
-                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Personalize & Love Letter</h2>
-                  </div>
-                  <p className="text-xs font-serif italic text-white/50">
-                    &ldquo;The core words and devotion that make this uniquely theirs&rdquo;
+                    &ldquo;The personal words and devotion meant for their eyes only&rdquo;
                   </p>
                 </div>
 
@@ -1369,16 +1162,189 @@ function EditExperienceContent() {
               </section>
 
               {/* ------------------------------------------------------------- */}
-              {/* STAGE 05: Mood & Physical Styling                             */}
+              {/* STAGE 02: Visual Atmosphere                                   */}
+              {/* ------------------------------------------------------------- */}
+              <section id="section-world" className="space-y-4 scroll-mt-20 border-t border-white/[0.06] pt-8">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs font-mono ${accents.text}`}>02</span>
+                      <h2 className="text-sm font-serif uppercase tracking-widest text-white">Visual Atmosphere</h2>
+                    </div>
+                    <button
+                      type="button"
+                      data-testid="section-change-world-trigger"
+                      onClick={() => setWorldModalOpen(true)}
+                      className="min-h-[36px] py-1 px-2.5 text-[11px] font-mono text-white/50 hover:text-white underline cursor-pointer flex items-center"
+                    >
+                      All Worlds ⇄
+                    </button>
+                  </div>
+                  <p className="text-xs font-serif italic text-white/50">
+                    &ldquo;The atmosphere and realm they step into&rdquo;
+                  </p>
+                </div>
+
+                {/* Active World Spotlight */}
+                <div className="pt-1 pb-1 space-y-1 border-b border-white/[0.04] pb-3">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xs font-mono uppercase tracking-wider text-white/40">Active:</span>
+                    <span className="text-lg font-serif text-white font-normal">{templateMeta.name}</span>
+                  </div>
+                  <p className="text-xs font-serif italic text-white/70">
+                    &ldquo;{currentTemplateDef?.tagline || "For the love that feels like starlight"}&rdquo;
+                  </p>
+                  <p className="text-xs text-white/50 font-light leading-relaxed">
+                    {currentTemplateDef?.atmosphere}
+                  </p>
+                </div>
+
+                {/* Tactile World Material Rail */}
+                <div className="space-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-white/40 block">
+                    Living Atmospheres
+                  </span>
+                  <div className="flex flex-wrap gap-2 py-1">
+                    {[
+                      { id: "cloud-nine", icon: "☁️", name: "Cloud Nine", sample: "Sky Aerogramme" },
+                      { id: "midnight-rose", icon: "🌹", name: "Midnight Rose", sample: "Velvet Seal" },
+                      { id: "kage", icon: "🏮", name: "Kage", sample: "Washi Scroll" },
+                      { id: "apricot-film", icon: "🎞️", name: "Apricot Film", sample: "16mm Celluloid" },
+                      { id: "wildflower-paper", icon: "🌿", name: "Wildflower Paper", sample: "Cotton Rag" },
+                      { id: "ocean-letter", icon: "🌊", name: "Ocean Letter", sample: "Sea-Glass Bottle" },
+                    ].map((w) => {
+                      const isSelected = templateMeta.id === w.id;
+                      return (
+                        <button
+                          key={w.id}
+                          type="button"
+                          data-testid={`world-sample-${w.id}`}
+                          onClick={() => handleSelectWorld(w.id, "v1")}
+                          className={`py-1.5 px-3 rounded-full border text-xs flex items-center gap-2 transition-all cursor-pointer group select-none ${
+                            isSelected
+                              ? `${accents.border} bg-white/[0.08] text-white font-medium shadow-xs`
+                              : "border-white/[0.06] bg-transparent text-white/60 hover:text-white hover:border-white/15"
+                          }`}
+                        >
+                          <span className="text-sm select-none">{w.icon}</span>
+                          <span className="font-serif tracking-wide">{w.name}</span>
+                          {isSelected && <span className={`w-1.5 h-1.5 rounded-full ${accents.dot} shrink-0`} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+
+              {/* ------------------------------------------------------------- */}
+              {/* STAGE 03: Story & Keepsakes                                   */}
+              {/* ------------------------------------------------------------- */}
+              <section id="section-story" className="space-y-4 scroll-mt-20 border-t border-white/[0.06] pt-8">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`text-xs font-mono ${accents.text}`}>03</span>
+                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Story & Keepsakes</h2>
+                  </div>
+                  <p className="text-xs font-serif italic text-white/50">
+                    &ldquo;Narrative chapters, photo memories & discovered moments&rdquo;
+                  </p>
+                </div>
+
+                <StoryChaptersVisualizer
+                  welcomeEnabled={Boolean((config as any).narrative?.welcome?.enabled)}
+                  onToggleWelcome={() =>
+                    handleConfigChange((prev: any) => {
+                      const cur = prev.narrative?.welcome || { enabled: false };
+                      return {
+                        ...prev,
+                        narrative: {
+                          ...(prev.narrative || {}),
+                          welcome: {
+                            ...cur,
+                            enabled: !cur.enabled,
+                            recipientName: cur.recipientName || prev.partnerName || "",
+                            greeting: cur.greeting || "Welcome, My Love",
+                            message: cur.message || "A private story made only for you.",
+                          },
+                        },
+                      };
+                    })
+                  }
+                  welcomeGreeting={(config as any).narrative?.welcome?.greeting || ""}
+                  welcomeMessage={(config as any).narrative?.welcome?.message || ""}
+                  onWelcomeGreetingChange={(val) =>
+                    handleConfigChange((prev: any) => ({
+                      ...prev,
+                      narrative: {
+                        ...(prev.narrative || {}),
+                        welcome: {
+                          ...(prev.narrative?.welcome || {}),
+                          greeting: val,
+                        },
+                      },
+                    }))
+                  }
+                  onWelcomeMessageChange={(val) =>
+                    handleConfigChange((prev: any) => ({
+                      ...prev,
+                      narrative: {
+                        ...(prev.narrative || {}),
+                        welcome: {
+                          ...(prev.narrative?.welcome || {}),
+                          message: val,
+                        },
+                      },
+                    }))
+                  }
+                  pacing={(config as any).narrative?.pacing || "balanced"}
+                  onPacingChange={(newPacing) =>
+                    handleConfigChange((prev: any) => ({
+                      ...prev,
+                      narrative: {
+                        ...(prev.narrative || {}),
+                        pacing: newPacing,
+                      },
+                    }))
+                  }
+                  activeMomentsCount={activeMomentsCount}
+                />
+              </section>
+
+              {/* Keepsakes Module Subsection */}
+              <section id="section-moments" className="space-y-4 scroll-mt-20 border-t border-white/[0.04] pt-6">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <h3 className="text-xs font-serif uppercase tracking-wider text-white/90">Interactive Keepsakes</h3>
+                    <p className="text-xs font-serif italic text-white/50">
+                      &ldquo;Little surprises they discover inside your world&rdquo;
+                    </p>
+                  </div>
+                  <Badge variant="neutral" size="sm" className={`text-[10px] font-mono ${accents.text} ${accents.border}`}>
+                    {activeMomentsCount} Active
+                  </Badge>
+                </div>
+
+                <ModuleManager
+                  modules={config.modules}
+                  hasHeroMedia={Boolean(config.heroMediaId)}
+                  onChange={handleModulesChange}
+                  onOpenFeatureDrawer={() => setFeatureDrawerOpen(true)}
+                  onSelectFeature={handleSelectFeature}
+                  externalActiveMoment={activeMomentKey}
+                />
+              </section>
+
+              {/* ------------------------------------------------------------- */}
+              {/* STAGE 04: Stationery & Seals                                  */}
               {/* ------------------------------------------------------------- */}
               <section id="section-mood" className="space-y-5 scroll-mt-20 border-t border-white/[0.06] pt-8">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-mono ${accents.text}`}>05</span>
-                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Mood & Physical Styling</h2>
+                    <span className={`text-xs font-mono ${accents.text}`}>04</span>
+                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Stationery & Seals</h2>
                   </div>
                   <p className="text-xs font-serif italic text-white/50">
-                    &ldquo;Tactile craft: stationery paper, velvet ribbon, wax seal, bouquet, and charms&rdquo;
+                    &ldquo;Tactile craft: stationery paper, velvet ribbon, wax seal monogram, bouquet & charms&rdquo;
                   </p>
                 </div>
 
@@ -1739,13 +1705,13 @@ function EditExperienceContent() {
               </section>
 
               {/* ------------------------------------------------------------- */}
-              {/* STAGE 06: Preview & Send (Final Review & Seal)                */}
+              {/* STAGE 05: Delivery & Keepsakes                                */}
               {/* ------------------------------------------------------------- */}
               <section id="section-preview" className="space-y-6 scroll-mt-20 border-t border-white/[0.06] pt-8 pb-10">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs font-mono ${accents.text}`}>06</span>
-                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Preview & Send</h2>
+                    <span className={`text-xs font-mono ${accents.text}`}>05</span>
+                    <h2 className="text-sm font-serif uppercase tracking-widest text-white">Delivery & Keepsakes</h2>
                   </div>
                   <p className="text-xs font-serif italic text-white/50">
                     &ldquo;Your Valentine is ready to become a private world&rdquo;
@@ -1756,17 +1722,17 @@ function EditExperienceContent() {
                 <div className="py-3 border-y border-white/[0.06] space-y-3">
                   <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-white/[0.06] text-left">
                     <div className="py-2 sm:py-0 sm:pr-4">
-                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">World</span>
-                      <span className="font-serif text-white text-sm">{templateMeta.name}</span>
-                    </div>
-                    <div className="py-2 sm:py-0 sm:px-4">
                       <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Letter</span>
                       <span className="font-serif text-white text-sm">
                         {config.partnerName?.trim() && config.message?.trim() ? "Inscribed" : "Incomplete"}
                       </span>
                     </div>
                     <div className="py-2 sm:py-0 sm:px-4">
-                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Moments</span>
+                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">World</span>
+                      <span className="font-serif text-white text-sm">{templateMeta.name}</span>
+                    </div>
+                    <div className="py-2 sm:py-0 sm:px-4">
+                      <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest block">Story & Moments</span>
                       <span className="font-serif text-white text-sm">{activeMomentsCount} Active</span>
                     </div>
                     <div className="py-2 sm:py-0 sm:pl-4">
@@ -1801,15 +1767,22 @@ function EditExperienceContent() {
 
                 {/* Validation Errors */}
                 {publishErrors.length > 0 && (
-                  <div className="p-4 rounded-xl bg-rose-950/70 border border-rose-800/60 text-xs text-rose-200 space-y-1.5 animate-fadeIn">
+                  <div className="p-4 rounded-xl bg-rose-950/70 border border-rose-800/60 text-xs text-rose-200 space-y-2 animate-fadeIn">
                     <span className="font-semibold block text-rose-300 font-ui">
-                      Please complete the following to publish:
+                      Please complete the following before publishing:
                     </span>
                     {publishErrors.map((err, i) => (
                       <p key={i} className="flex items-center gap-1.5 font-ui">
                         <span>•</span> {err}
                       </p>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection("personalize")}
+                      className="pt-1 text-xs font-serif italic text-rose-300 hover:text-white underline cursor-pointer inline-flex items-center gap-1"
+                    >
+                      <span>Inscribe Dedication & Letter in Step 01 →</span>
+                    </button>
                   </div>
                 )}
 
@@ -1834,7 +1807,7 @@ function EditExperienceContent() {
                     onClick={handlePublish}
                     className="flex-1 min-h-[44px] text-xs rounded-full font-serif shadow-lg shadow-rose-950/50 cursor-pointer"
                   >
-                    {isPublishing ? "Publishing…" : "Publish Valentine 💌"}
+                    {isPublishing ? "Publishing…" : "Publish Valentine"}
                   </Button>
                 </div>
               </section>

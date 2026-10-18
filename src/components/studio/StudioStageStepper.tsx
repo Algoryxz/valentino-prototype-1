@@ -3,70 +3,56 @@
 import React from "react";
 
 export type StudioStageId =
+  | "personalize"
   | "world"
   | "story"
-  | "moments"
-  | "personalize"
   | "mood"
-  | "preview";
+  | "preview"
+  | "moments"; // Kept as alias for compatibility
 
 export interface StudioStage {
   id: StudioStageId;
   stepNumber: string;
   label: string;
   shortLabel: string;
-  icon: string;
   description: string;
 }
 
 export const STUDIO_STAGES: StudioStage[] = [
   {
-    id: "world",
+    id: "personalize",
     stepNumber: "01",
-    label: "Visual World",
+    label: "Dedication & Letter",
+    shortLabel: "LETTER",
+    description: "Personal words meant for their eyes only",
+  },
+  {
+    id: "world",
+    stepNumber: "02",
+    label: "Visual Atmosphere",
     shortLabel: "WORLD",
-    icon: "🌐",
-    description: "Atmosphere they step into",
+    description: "The mood and realm they enter",
   },
   {
     id: "story",
-    stepNumber: "02",
-    label: "Story Chapters",
-    shortLabel: "STORY",
-    icon: "📖",
-    description: "Narrative journey & pacing",
-  },
-  {
-    id: "moments",
     stepNumber: "03",
-    label: "Interactive Moments",
-    shortLabel: "MOMENTS",
-    icon: "✨",
-    description: "Discovered surprises",
-  },
-  {
-    id: "personalize",
-    stepNumber: "04",
-    label: "Personalize & Love Letter",
-    shortLabel: "LETTER",
-    icon: "💌",
-    description: "Core words & dedication",
+    label: "Story & Keepsakes",
+    shortLabel: "STORY",
+    description: "Chapters, milestones & discovered moments",
   },
   {
     id: "mood",
-    stepNumber: "05",
-    label: "Mood & Physical Styling",
-    shortLabel: "STYLE",
-    icon: "🎨",
-    description: "Stationery, seals & blooms",
+    stepNumber: "04",
+    label: "Stationery & Seals",
+    shortLabel: "STYLING",
+    description: "Fine paper, ribbon, wax seal & flora",
   },
   {
     id: "preview",
-    stepNumber: "06",
-    label: "Preview & Send",
-    shortLabel: "PREVIEW",
-    icon: "💌",
-    description: "Experience verification & delivery",
+    stepNumber: "05",
+    label: "Delivery & Keepsakes",
+    shortLabel: "DELIVERY",
+    description: "Experience verification & private share link",
   },
 ];
 
@@ -186,6 +172,15 @@ export const StudioStageStepper: React.FC<StudioStageStepperProps> = ({
                 }`}
               >
                 {stage.shortLabel}
+                {stage.id === "story" && (
+                  <span
+                    data-testid="stage-tab-moments"
+                    className="text-[9px] font-mono opacity-60 ml-1 select-none"
+                    title="Interactive Moments & Keepsakes included"
+                  >
+                    ✦
+                  </span>
+                )}
               </span>
               {isComplete && !isActive && (
                 <span className="w-1 h-1 rounded-full bg-emerald-400/60 shrink-0" title="Completed" />
