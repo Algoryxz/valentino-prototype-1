@@ -32,6 +32,7 @@ export const midnightRoseV1: TemplateDefinition<
   atmosphere: "Intimate, starlight-themed love letter sealed with digital wax.",
   signature: "Physical envelope + interactive wax seal reveal",
   availability: "available",
+  active: true,
   category: "Cinematic",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "timeline", "quiz", "secret", "openWhen"],
   draftSchema: midnightRoseDraftSchema,
@@ -62,6 +63,7 @@ export const cloudNineV1: TemplateDefinition<
   atmosphere: "Luminous pastel dreamscape of soft clouds and celestial devotion.",
   signature: "Celestial star blessing + pearl wax seal",
   availability: "available",
+  active: true,
   category: "Dreamy",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "timeline", "quiz", "openWhen"],
   draftSchema: cloudNineDraftSchema,
@@ -103,6 +105,7 @@ export const kageV1: TemplateDefinition<
   atmosphere: "Tranquil Kyoto mountain temple after dark, mist & sacred stone lanterns.",
   signature: "Exact-source ThreeUI shaders + spatial temple path",
   availability: "available",
+  active: true,
   category: "Immersive",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "secret"],
   draftSchema: kageDraftSchema,
@@ -143,6 +146,7 @@ export const apricotFilmV1: TemplateDefinition<
   atmosphere: "16mm golden memory reel, sunbeams, tobacco amber, warm grain, and nostalgic warmth.",
   signature: "Analog film slide + golden hour light leak",
   availability: "available",
+  active: true,
   category: "Analog",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "timeline", "quiz", "openWhen"],
   draftSchema: apricotFilmDraftSchema,
@@ -182,6 +186,7 @@ export const wildflowerPaperV1: TemplateDefinition<
   atmosphere: "Deckled cotton fibers, pressed meadow botanicals, sage, and dried lilac.",
   signature: "Botanical twine unbind + pressed floral reveal",
   availability: "available",
+  active: true,
   category: "Botanical",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "timeline", "secret", "openWhen"],
   draftSchema: wildflowerPaperDraftSchema,
@@ -221,6 +226,7 @@ export const oceanLetterV1: TemplateDefinition<
   atmosphere: "Coastal twilight horizon, frosted sea glass, deep oceanic teal, and tidal foam.",
   signature: "Sea glass message in a bottle + tidal ripple",
   availability: "available",
+  active: true,
   category: "Oceanic",
   supportedModules: ["letter", "memories", "voiceNote", "videoMemory", "timeline", "quiz", "secret", "openWhen"],
   draftSchema: oceanLetterDraftSchema,
@@ -292,14 +298,33 @@ templates.set(getKey(apricotFilmV1.id, apricotFilmV1.version), apricotFilmV1);
 templates.set(getKey(wildflowerPaperV1.id, wildflowerPaperV1.version), wildflowerPaperV1);
 templates.set(getKey(oceanLetterV1.id, oceanLetterV1.version), oceanLetterV1);
 
-export function getTemplateDefinition(
+export function getTemplate(
   id: string,
   version: string
 ): TemplateDefinition<any, any> | null {
   return templates.get(getKey(id, version)) || null;
 }
 
+export const getTemplateDefinition = getTemplate;
+
+export function listActiveTemplates(): TemplateDefinition<any, any>[] {
+  return Array.from(templates.values()).filter((t) => t.active !== false);
+}
+
 export function getAllTemplates(): TemplateDefinition<any, any>[] {
   return Array.from(templates.values());
+}
+
+export function registerTemplate(template: TemplateDefinition<any, any>): void {
+  if (!template?.id || !template?.version) {
+    throw new Error("Template must provide valid non-empty id and version");
+  }
+  templates.set(getKey(template.id, template.version), template);
+}
+
+export function unregisterTemplate(id: string, version: string): void {
+  if (id && version) {
+    templates.delete(getKey(id, version));
+  }
 }
 
