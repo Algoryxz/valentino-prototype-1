@@ -5,7 +5,7 @@ description: "Milestone 3 for Valentino Prototype 1. Builds the safe image uploa
 
 # M3 — Media pipeline
 
-**Blocked until decision D3 (hosting and storage provider) is made.** If it is still open in `docs/decisions.md`, stop and ask the owner. Meanwhile a local-disk adapter is fine for development.
+**Media storage provider settled in ADR-0007 (Cloudinary for production, local-disk adapter for dev/test; application and database hosting remain deferred).** See `docs/decisions.md`. Implementation requires explicit owner authorization.
 
 ## Do
 1. **Storage abstraction**: an interface (`put`, `getUrl`, `delete`) with a local-disk adapter for dev and one adapter for the chosen provider. Never store binary files in the database. Store metadata in `MediaAsset` (random `storageKey`, mime, bytes, width, height, `altText`, status).
