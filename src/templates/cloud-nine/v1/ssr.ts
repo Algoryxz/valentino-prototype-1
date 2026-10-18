@@ -90,6 +90,8 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
       background-image: radial-gradient(ellipse at 50% 15%, rgba(251, 207, 232, 0.7) 0%, rgba(240, 249, 255, 0.5) 50%, #FFF5F7 100%);
       color: #4A1D2F;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
     }
     .wrapper {
       position: relative;
@@ -438,6 +440,9 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
     }
     .hidden { display: none !important; }
     @media (prefers-reduced-motion: reduce) {
+      html, body {
+        scroll-behavior: auto !important;
+      }
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
@@ -448,6 +453,13 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
     }
     ${PRINT_MEDIA_STYLES}
   </style>
+  <noscript>
+    <style>
+      .seal-box { display: none !important; }
+      .letter-box { display: flex !important; opacity: 1 !important; transform: none !important; }
+      #reseal-btn { display: none !important; }
+    </style>
+  </noscript>
 </head>
 <body>
   <div class="wrapper" data-dimensional-world="cloud-nine" data-scene="welcome" data-testid="experience-container" data-decor-paper="${paper.id}" data-decor-ribbon="${ribbon.id}" data-decor-seal="${waxSeal.id}">

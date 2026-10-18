@@ -16,43 +16,111 @@ export function SmoothScrollProvider({ children }: { children: React.ReactNode }
   const lenisRef = useRef<Lenis | null>(null);
 
   useEffect(() => {
-    // Lenis is for marketing and public reading pages only.
-    // Studio (/edit/*) uses native controlled canvas scrolling.
+    // Lenis is for marketing and showroom/public reading pages only.
+    // Studio (/edit/*) strictly uses native controlled canvas scrolling.
     if (pathname?.startsWith("/edit/")) {
       return;
     }
 
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) {
-      return;
-    }
+    let lenisInstance: Lenis | null = null;
+    let tickerCallback: ((time: number) => void) | null = null;
 
-    const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 0.95,
-      touchMultiplier: 1.2,
-      infinite: false,
-    });
-    lenisRef.current = lenis;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    // Connect Lenis to GSAP ScrollTrigger
-    lenis.on("scroll", ScrollTrigger.update);
+    const setupLenis = () => {
+      // Respect user's reduced motion preference: if reduced, use instant native scroll
+      if (motionQuery.matches) {
+        if (lenisInstance) {
+          if (tickerCallback) gsap.ticker.remove(tickerCallback);
+          lenisInstance.destroy();
+          lenisInstance = null;
+          lenisRef.current = null;
+          if (typeof window !== "undefined") {
+            delete (window as unknown as { __valentinoLenis?: Lenis }).__valentinoLenis;
+          }
+        }
+        return;
+      }
 
-    const tickerCallback = (time: number) => {
-      lenis.raf(time * 1000);
+      if (lenisInstance) return;
+
+      const isHomepage = pathname === "/";
+
+      // Homepage: PRESERVE EXACT ORIGINAL CONFIGURATION AND BEHAVIOR
+      // Non-homepage: Calm, responsive, user-controlled scroll with natural touch
+      const lenis = isHomepage
+        ? new Lenis({
+            duration: 1.15,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            orientation: "vertical",
+            gestureOrientation: "vertical",
+            smoothWheel: true,
+            wheelMultiplier: 0.95,
+            touchMultiplier: 1.2,
+            infinite: false,
+          })
+        : new Lenis({
+            duration: 0.8,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -8 * t)),
+            orientation: "vertical",
+            gestureOrientation: "vertical",
+            smoothWheel: true,
+            wheelMultiplier: 1.0,
+            touchMultiplier: 1.0,
+            syncTouch: false,
+            infinite: false,
+          });
+
+      lenisInstance = lenis;
+      lenisRef.current = lenis;
+      if (typeof window !== "undefined") {
+        (window as unknown as { __valentinoLenis?: Lenis }).__valentinoLenis = lenis;
+      }
+
+      // Connect Lenis to GSAP ScrollTrigger
+      lenis.on("scroll", ScrollTrigger.update);
+
+      tickerCallback = (time: number) => {
+        lenis.raf(time * 1000);
+      };
+
+      gsap.ticker.add(tickerCallback);
+      gsap.ticker.lagSmoothing(0);
     };
 
-    gsap.ticker.add(tickerCallback);
-    gsap.ticker.lagSmoothing(0);
+    setupLenis();
+
+    const handleMotionChange = () => {
+      if (motionQuery.matches) {
+        if (lenisInstance) {
+          if (tickerCallback) gsap.ticker.remove(tickerCallback);
+          lenisInstance.destroy();
+          lenisInstance = null;
+          lenisRef.current = null;
+          if (typeof window !== "undefined") {
+            delete (window as unknown as { __valentinoLenis?: Lenis }).__valentinoLenis;
+          }
+        }
+      } else {
+        setupLenis();
+      }
+    };
+
+    motionQuery.addEventListener("change", handleMotionChange);
 
     return () => {
-      gsap.ticker.remove(tickerCallback);
-      lenis.destroy();
+      motionQuery.removeEventListener("change", handleMotionChange);
+      if (tickerCallback) {
+        gsap.ticker.remove(tickerCallback);
+      }
+      if (lenisInstance) {
+        lenisInstance.destroy();
+        lenisInstance = null;
+      }
       lenisRef.current = null;
+      if (typeof window !== "undefined") {
+        delete (window as unknown as { __valentinoLenis?: Lenis }).__valentinoLenis;
+      }
     };
   }, [pathname]);
 

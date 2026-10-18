@@ -206,10 +206,10 @@ export function Envelope3D({
               initial={
                 shouldReduceMotion
                   ? { opacity: 1, y: 0 }
-                  : { opacity: 0, y: 24, scale: 0.96, rotateX: 6 }
+                  : { opacity: 0, y: 10, scale: 0.99 }
               }
-              animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
               data-testid="unsealed-letter"
               className="w-full"
             >

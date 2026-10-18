@@ -1259,7 +1259,12 @@ export default function TemplatesPage() {
                     onClick={() => {
                       setActiveWorldId(worldKey);
                       setActiveKagePreview(false);
-                      document.getElementById("showroom-stage")?.scrollIntoView({ behavior: "smooth" });
+                      const lenis = (window as unknown as { __valentinoLenis?: { scrollTo: (target: string | HTMLElement, opts?: { duration?: number; offset?: number }) => void } }).__valentinoLenis;
+                      if (lenis && !shouldReduceMotion) {
+                        lenis.scrollTo("#showroom-stage", { duration: 0.8, offset: -24 });
+                      } else {
+                        document.getElementById("showroom-stage")?.scrollIntoView({ behavior: shouldReduceMotion ? "auto" : "smooth" });
+                      }
                     }}
                     className="text-xs font-serif italic text-rose-200/80 hover:text-white transition-colors cursor-pointer"
                   >

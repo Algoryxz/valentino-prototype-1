@@ -32,25 +32,29 @@ export const DimensionalEntrance: React.FC<DimensionalEntranceProps> = ({
       return;
     }
 
-    // Soft, cinematic entrance sequence timer
+    // Soft, cinematic entrance sequence timer — brief, calm, and never blocks user
     const settleTimer = setTimeout(() => {
       setStage("settled");
       onSettled?.();
-    }, 2400);
+    }, 1400);
 
-    // Instant settle on user scroll or touch interaction
+    // Instant settle on any user navigation action (scroll, wheel, touch, keydown)
     const handleEarlySettle = () => {
       setStage("settled");
       onSettled?.();
     };
 
     window.addEventListener("scroll", handleEarlySettle, { once: true, passive: true });
+    window.addEventListener("wheel", handleEarlySettle, { once: true, passive: true });
     window.addEventListener("touchstart", handleEarlySettle, { once: true, passive: true });
+    window.addEventListener("keydown", handleEarlySettle, { once: true, passive: true });
 
     return () => {
       clearTimeout(settleTimer);
       window.removeEventListener("scroll", handleEarlySettle);
+      window.removeEventListener("wheel", handleEarlySettle);
       window.removeEventListener("touchstart", handleEarlySettle);
+      window.removeEventListener("keydown", handleEarlySettle);
     };
   }, [isReducedMotion, onSettled]);
 
