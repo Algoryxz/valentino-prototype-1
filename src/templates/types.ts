@@ -31,5 +31,15 @@ export interface TemplateDefinition<TDraft = any, TPublished = any> {
   normalizeConfig: (raw: unknown, isPublic?: boolean) => TPublished;
   Component: React.ComponentType<TemplateRenderProps<TPublished>>;
 
+  /**
+   * Flag indicating if the template is active and selectable by creators in the studio/gallery.
+   * Defaults to true if omitted or undefined.
+   * If explicitly false, the template remains resolvable via getTemplate for existing experiences
+   * but is excluded from listActiveTemplates().
+   */
+  active?: boolean;
+  previewAsset?: string;
+  migrateConfig?: (fromVersion: string, toVersion: string, rawConfig: unknown) => unknown;
+
   renderSsrHtml?: (config: TPublished, publicId?: string) => string;
 }
