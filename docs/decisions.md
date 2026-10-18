@@ -32,13 +32,30 @@
 - **Decision**: In M1, `/v/*`, `/edit/*`, and `/api/*` send `Cache-Control: no-store`. No public caching, ISR, revalidation, or CDN caching is introduced in M1.
 - **Reason**: Eliminates the risk of serving stale recipient content following a republish, disable, or deletion. Public caching and CDN revalidation will be evaluated during M5 and decided in M6 after a thorough privacy and invalidation review. LCP measurements in M1 are informational evidence only.
 
+### ADR-0007 — Media Storage Provider (Decision D3)
+- **Decision**:
+  - **Production Media Storage**: Cloudinary is the decided production media-storage provider.
+  - **Development and Test Storage**: A local-disk storage adapter is approved for local development and automated testing environments.
+  - **Application Hosting**: Deferred. Selecting Cloudinary for media storage does not select, assume, or couple to an application hosting provider.
+  - **Database Hosting**: Deferred. No database hosting provider is selected; remains undecided.
+  - **Implementation Authorization**: M3 implementation is not yet authorized. This record formalizes the architectural provider selection only.
+- **Context**: Milestone 3 builds the media pipeline allowing creators to upload photos to their romantic experiences. The pipeline requires a storage abstraction (`put`, `getUrl`, `delete`) that decouples application business logic from physical storage providers.
+- **Consequences & Architecture Constraints**:
+  - **Decoupled Storage Abstraction**: Application business logic and template renderers interact strictly with an abstract storage interface (`put`, `getUrl`, `delete`); neither templates nor routes couple directly to Cloudinary-specific APIs.
+  - **Dual Adapter Strategy**: A local-disk adapter supports offline local development, CI pipelines, and unit/integration tests without external network dependencies or credentials. A Cloudinary adapter serves production delivery.
+  - **Database Binary Isolation**: Raw image binary files are never stored in the database. PostgreSQL stores only metadata in `MediaAsset` records (random `storageKey`, MIME type, byte size, width, height, `altText`, and status).
+  - **Uncompromised Server-Side Validation**: Selecting Cloudinary does not eliminate or reduce application-side security obligations. The application server remains authoritative: validating magic bytes (JPEG, PNG, WebP; no SVG/GIF uploads), enforcing byte size and pixel dimension limits prior to decoding, stripping all metadata including GPS EXIF, and ignoring user-supplied filenames.
+  - **Lifecycle and Cleanup**: The pipeline must provide deterministic cleanup of media when experiences or draft images are removed, alongside an orphaned-upload cleanup strategy.
+  - **Resilient Fallbacks**: Renderers receive explicit dimensions, and missing or deleted media must fall back gracefully with zero broken-image icons reaching recipients.
+- **Reason**: Cloudinary provides reliable, managed media delivery and optimization for production without managing raw object-storage buckets, while the local-disk adapter guarantees hermetic, dependency-free local development and automated testing.
+
 ## Open (owner decides; agent asks, never guesses)
 
 | ID | Decision | Recommended default | Needed by |
 |----|----------|---------------------|-----------|
 | D1 | Public product name. "Valentino" is also a well-known fashion brand, so consider a different public name later. Repo codename is fine. | Keep codename for the prototype | Before any public launch |
 | D2 | Creator identity: accounts vs. no accounts | **Settled in ADR-0004** (No accounts; cookie-based session per experience) | Settled M1 |
-| D3 | Hosting, database host, media storage provider | Decide after M2 | M3 |
+| D3 | Hosting, database host, media storage provider | **Partially settled in ADR-0007** (Production media: Cloudinary; Dev/test media: local-disk adapter. Application and database hosting remain deferred.) | Media: Settled M3; Hosting: M6 |
 | D4 | Personalized link previews (name in Open Graph) | Generic previews only (privacy: crawlers and chat apps cache them) | M5 |
 | D5 | Link lifetime | Live until the creator deletes; optional expiry later | M1/M6 |
 | D6 | License | None currently (repo is public; open source license to be selected) | Before M6 / release |
