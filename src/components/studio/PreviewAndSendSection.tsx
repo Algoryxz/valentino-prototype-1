@@ -36,8 +36,10 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
   return (
     <div className={`space-y-6 ${className}`} data-testid="preview-send-section">
       <div className="space-y-1">
-        <h3 className="text-base font-display font-medium text-white flex items-center gap-2">
-          <span>🚀</span>
+        <h3 className="text-base font-serif font-normal text-white flex items-center gap-2.5">
+          <svg className="w-4 h-4 text-rose-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
           <span>Delivery, Keepsakes & Responses</span>
         </h3>
         <p className="text-xs text-white/60 font-ui font-light">
@@ -48,10 +50,12 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
       {/* 1. Background Music (Creator-Uploaded Only) */}
       <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base select-none">🎵</span>
+          <div className="flex items-center gap-2.5">
+            <svg className="w-4 h-4 text-rose-300/80 select-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66a.75.75 0 00.542-.721V6.9m0 0a2.25 2.25 0 00-1.632-2.163l-7.5-2.143A2.25 2.25 0 006 4.757v11.046a2.25 2.25 0 01-1.632 2.163l-1.32.377a1.803 1.803 0 11-.99-3.467l2.31-.66A.75.75 0 004.91 13.5V4.757" />
+            </svg>
             <div>
-              <span className="text-xs font-display font-medium text-white block">
+              <span className="text-xs font-serif font-normal text-white block">
                 Background Music (Creator Soundtrack)
               </span>
               <span className="text-[11px] text-white/50 font-ui">
@@ -93,10 +97,12 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
       {/* 2. Scheduled Reveal (Server-Enforced) */}
       <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-base select-none">⏰</span>
+          <div className="flex items-center gap-2.5">
+            <svg className="w-4 h-4 text-rose-300/80 select-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
             <div>
-              <span className="text-xs font-display font-medium text-white block">
+              <span className="text-xs font-serif font-normal text-white block">
                 Scheduled Reveal (Time-Lock)
               </span>
               <span className="text-[11px] text-white/50 font-ui">
@@ -150,7 +156,7 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
               className="text-xs px-3 py-2 rounded-xl bg-black/40 border border-white/[0.12] text-white font-mono focus:outline-none focus:border-rose-400"
             />
             <p className="text-[10px] text-rose-300/70 font-ui font-light">
-              🔒 Server-enforced: Even if client clocks or local storage are modified, our server will render the countdown until this timestamp.
+              Server-enforced: Even if client clocks or local storage are modified, our server will render the countdown until this timestamp.
             </p>
           </div>
         )}
@@ -158,10 +164,12 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
 
       {/* 3. Keepsakes & Sharing Suite */}
       <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] space-y-3">
-        <div className="flex items-center gap-2">
-          <span className="text-base select-none">🖨️</span>
+        <div className="flex items-center gap-2.5">
+          <svg className="w-4 h-4 text-rose-300/80 select-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.72 13.829c-.24-1.076-.672-2.14-1.28-3.048M21.75 12a9.75 9.75 0 11-19.5 0 9.75 9.75 0 0119.5 0z" />
+          </svg>
           <div>
-            <span className="text-xs font-display font-medium text-white block">
+            <span className="text-xs font-serif font-normal text-white block">
               Keepsakes & Physical Gifting
             </span>
             <span className="text-[11px] text-white/50 font-ui">
@@ -175,13 +183,13 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
             type="button"
             data-testid="show-qr-keepsake-btn"
             onClick={() => setActiveKeepsakeView(activeKeepsakeView === "qr" ? null : "qr")}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-ui border transition-all cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-serif border transition-all cursor-pointer ${
               activeKeepsakeView === "qr"
                 ? "bg-rose-950/60 border-rose-500/40 text-rose-200"
                 : "bg-white/[0.04] border-white/[0.1] text-white/80 hover:text-white"
             }`}
           >
-            📱 QR Code Keepsake Card
+            QR Keepsake Card
           </button>
 
           <PrintKeepsakeButton />

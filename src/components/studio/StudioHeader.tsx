@@ -52,9 +52,9 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             title="Return to Valentino Home"
           >
             <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white/[0.06] border border-white/[0.12] flex items-center justify-center text-xs sm:text-sm group-hover:border-white/25 transition-colors">
-              💌
+              <span className="font-serif text-sm font-normal text-rose-200 select-none">V</span>
             </div>
-            <span className="font-display font-medium text-sm tracking-wide hidden md:inline text-white">
+            <span className="font-serif font-normal text-sm tracking-wide hidden md:inline text-white">
               Studio
             </span>
           </Link>
@@ -173,8 +173,8 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             onClick={onPublishClick}
             className="inline-flex text-xs px-3 sm:px-4 py-1.5 min-h-[36px] rounded-full font-ui shadow-lg shadow-rose-950/40 shrink-0"
           >
-            <span className="hidden sm:inline">{isPublishing ? "Publishing…" : "Publish Valentine 💌"}</span>
-            <span className="sm:hidden">{isPublishing ? "…" : "Publish 💌"}</span>
+            <span className="hidden sm:inline">{isPublishing ? "Publishing…" : "Publish Valentine"}</span>
+            <span className="sm:hidden">{isPublishing ? "…" : "Publish"}</span>
           </Button>
         </div>
       </div>
