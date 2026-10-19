@@ -1,5 +1,8 @@
 import fs from "fs";
 import path from "path";
+import { CloudinaryStorageAdapter } from "./cloudinary";
+
+export { CloudinaryStorageAdapter } from "./cloudinary";
 
 export interface MediaStorageAdapter {
   write(key: string, buffer: Buffer, meta: { mimeType: string }): Promise<void>;
@@ -17,6 +20,7 @@ export class LocalFileSystemStorageAdapter implements MediaStorageAdapter {
     this.baseDir =
       baseDir ||
       process.env.MEDIA_STORAGE_DIR ||
+      process.env.MEDIA_LOCAL_DIR ||
       path.join(process.cwd(), "storage", "media");
     this.ensureDir();
   }
@@ -118,9 +122,14 @@ export class ConfigurableMediaStorageService {
     if (adapter) {
       this.adapter = adapter;
     } else {
-      const provider = process.env.STORAGE_PROVIDER || "local";
+      const provider =
+        process.env.STORAGE_PROVIDER ||
+        process.env.MEDIA_STORAGE_DRIVER ||
+        "local";
       if (provider === "memory") {
         this.adapter = new MemoryStorageAdapter();
+      } else if (provider === "cloudinary") {
+        this.adapter = new CloudinaryStorageAdapter();
       } else {
         this.adapter = new LocalFileSystemStorageAdapter();
       }

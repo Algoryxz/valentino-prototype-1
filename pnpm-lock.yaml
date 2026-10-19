@@ -172,6 +172,9 @@ importers:
       animejs:
         specifier: ^4.5.0
         version: 4.5.0
+      cloudinary:
+        specifier: ^2.11.0
+        version: 2.11.0
       gsap:
         specifier: ^3.15.0
         version: 3.15.0
@@ -1501,6 +1504,10 @@ packages:
   cliui@6.0.0:
     resolution: {integrity: sha512-t6wbgtoCXvAzst7QgXxJYqPt0usEfbgQdftEPbLL/cvv6HPE5VgvqCuAIDR0NgU52ds6rFwqrgakNLrHEjCbrQ==}
 
+  cloudinary@2.11.0:
+    resolution: {integrity: sha512-o2pAkDDqrzPFE/mn9GCfFjBIGQmPs++Ts6rtkFl4vY528DNHiMovKWjH16HBjeGa9iwI7eAad24aWN2emT0aww==}
+    engines: {node: '>=9'}
+
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
@@ -2223,6 +2230,9 @@ packages:
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
+
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
@@ -4043,6 +4053,10 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 6.2.0
 
+  cloudinary@2.11.0:
+    dependencies:
+      lodash: 4.18.1
+
   color-convert@2.0.1:
     dependencies:
       color-name: 1.1.4
@@ -4913,6 +4927,8 @@ snapshots:
       p-locate: 5.0.0
 
   lodash.merge@4.6.2: {}
+
+  lodash@4.18.1: {}
 
   loose-envify@1.4.0:
     dependencies:
