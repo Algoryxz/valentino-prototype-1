@@ -17,7 +17,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   fileType,
   label = "Upload file",
   accept,
-  maxSizeMb = 10,
+  maxSizeMb,
   onUploaded,
   className = "",
 }) => {
@@ -25,9 +25,12 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const effectiveMaxMb =
+    maxSizeMb ?? (fileType === "photo" ? 5 : fileType === "audio" ? 10 : 25);
+
   const defaultAccept =
     fileType === "photo"
-      ? "image/jpeg,image/png,image/webp,image/gif"
+      ? "image/jpeg,image/png,image/webp"
       : fileType === "audio"
       ? "audio/mpeg,audio/wav,audio/ogg,audio/mp4,audio/webm"
       : "video/mp4,video/webm,video/quicktime";
@@ -35,9 +38,9 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   const handleFile = async (file: File) => {
     setError(null);
 
-    const maxBytes = maxSizeMb * 1024 * 1024;
+    const maxBytes = effectiveMaxMb * 1024 * 1024;
     if (file.size > maxBytes) {
-      setError(`File size exceeds limit (${maxSizeMb} MB).`);
+      setError(`File size exceeds limit (${effectiveMaxMb} MB).`);
       return;
     }
 
@@ -97,7 +100,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
           <span>{isUploading ? "Uploading..." : label}</span>
         </button>
         <span className="text-[10px] text-white/40 font-ui">
-          Max {maxSizeMb} MB
+          Max {effectiveMaxMb} MB
         </span>
       </div>
       {error && (

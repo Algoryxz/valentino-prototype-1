@@ -1,16 +1,20 @@
 import fs from "fs";
 import path from "path";
 import crypto from "crypto";
+import sharp from "sharp";
 import { db } from "@/lib/db";
+import { serverLogger } from "@/lib/logger";
 import { MediaType, MediaStatus, ExperienceMedia } from "@prisma/client";
 
 // Private storage directory outside public/
 export const PRIVATE_MEDIA_DIR =
-  process.env.MEDIA_STORAGE_DIR || path.join(process.cwd(), "storage", "media");
+  process.env.MEDIA_STORAGE_DIR || process.env.MEDIA_LOCAL_DIR || path.join(process.cwd(), "storage", "media");
 
 export const MAX_PHOTO_SIZE = 5 * 1024 * 1024;   // 5 MB
 export const MAX_AUDIO_SIZE = 10 * 1024 * 1024;  // 10 MB
 export const MAX_VIDEO_SIZE = 25 * 1024 * 1024;  // 25 MB
+export const DEFAULT_MAX_PIXELS = 25_000_000;    // 25 megapixels (approx 5000x5000)
+export const MAX_MEDIA_PER_EXPERIENCE = 20;      // 20 media items per experience
 
 export const MAX_SIZES: Record<MediaType, number> = {
   PHOTO: MAX_PHOTO_SIZE,
@@ -223,10 +227,83 @@ export function validateMediaBuffer(
   };
 }
 
+export interface ProcessedPhotoResult {
+  buffer: Buffer;
+  mimeType: string;
+  width: number;
+  height: number;
+}
+
+/**
+ * Validates dimensions, enforces pixel ceilings, auto-orients,
+ * resizes to bounds (2560x2560), and strips all metadata including GPS EXIF using sharp.
+ */
+export async function processAndStripPhoto(
+  buffer: Buffer,
+  detectedMime: string,
+  maxPixels: number = Number(process.env.MEDIA_MAX_PIXELS) || DEFAULT_MAX_PIXELS
+): Promise<ProcessedPhotoResult> {
+  // Use sharp with limitInputPixels to prevent decompression bombs before decoding
+  const pipeline = sharp(buffer, {
+    limitInputPixels: maxPixels,
+  });
+
+  const metadata = await pipeline.metadata();
+  if (!metadata.width || !metadata.height) {
+    throw new Error("Unable to determine image dimensions or corrupt image payload");
+  }
+
+  const totalPixels = metadata.width * metadata.height;
+  if (totalPixels > maxPixels) {
+    throw new Error(`Image pixel count (${totalPixels}) exceeds maximum allowed limit of ${maxPixels} pixels`);
+  }
+
+  // Determine target output format
+  let format: "jpeg" | "png" | "webp" = "jpeg";
+  let outputMime = "image/jpeg";
+  if (detectedMime === "image/png") {
+    format = "png";
+    outputMime = "image/png";
+  } else if (detectedMime === "image/webp") {
+    format = "webp";
+    outputMime = "image/webp";
+  }
+
+  // Auto-orient based on EXIF tag before stripping, resize inside 2560x2560
+  let transformer = sharp(buffer, { limitInputPixels: maxPixels })
+    .rotate()
+    .resize({
+      width: 2560,
+      height: 2560,
+      fit: "inside",
+      withoutEnlargement: true,
+    });
+
+  if (format === "jpeg") {
+    transformer = transformer.jpeg({ quality: 85, mozjpeg: true });
+  } else if (format === "png") {
+    transformer = transformer.png({ quality: 85, compressionLevel: 8 });
+  } else if (format === "webp") {
+    transformer = transformer.webp({ quality: 85 });
+  }
+
+  // sharp strips all EXIF and GPS metadata by default unless .withMetadata() is chained
+  const processedBuffer = await transformer.toBuffer();
+  const processedMeta = await sharp(processedBuffer).metadata();
+
+  return {
+    buffer: processedBuffer,
+    mimeType: outputMime,
+    width: processedMeta.width || metadata.width,
+    height: processedMeta.height || metadata.height,
+  };
+}
+
 import { mediaStorage } from "@/lib/storage";
 
 /**
  * Saves media file to private storage (via MediaStorageService adapter) and registers in DB.
+ * Implements immediate compensating cleanup if database insert fails.
  */
 export async function savePrivateMedia(
   experienceId: string,
@@ -246,25 +323,45 @@ export async function savePrivateMedia(
   const safeExt = getSafeExtension(meta.mimeType);
   const storageKey = `${meta.mediaType.toLowerCase()}_${Date.now()}_${highEntropySuffix}${safeExt}`;
 
-  // Persist via decoupled storage service
+  // 1. Persist via decoupled storage service first
   await mediaStorage.write(storageKey, buffer, { mimeType: meta.mimeType });
 
-  const record = await db.experienceMedia.create({
-    data: {
-      experienceId,
-      mediaType: meta.mediaType,
-      filename: path.basename(meta.filename).slice(0, 100),
-      storageKey,
-      mimeType: meta.mimeType,
-      sizeBytes: buffer.length,
-      caption: meta.caption?.slice(0, 500) || null,
-      altText: meta.altText?.slice(0, 200) || null,
-      displayOrder: meta.displayOrder ?? 0,
-      status: "DRAFT",
-    },
-  });
+  // 2. Persist to database; if DB insert fails, execute compensating cleanup of the stored file
+  try {
+    const record = await db.experienceMedia.create({
+      data: {
+        experienceId,
+        mediaType: meta.mediaType,
+        filename: path.basename(meta.filename).slice(0, 100),
+        storageKey,
+        mimeType: meta.mimeType,
+        sizeBytes: buffer.length,
+        caption: meta.caption?.slice(0, 500) || null,
+        altText: meta.altText?.slice(0, 200) || null,
+        displayOrder: meta.displayOrder ?? 0,
+        status: "DRAFT",
+      },
+    });
 
-  return record;
+    return record;
+  } catch (dbError: any) {
+    serverLogger.error("Database insert failed in savePrivateMedia; executing compensating cleanup", {
+      experienceId,
+      storageKey,
+      error: dbError?.message,
+    });
+
+    try {
+      await mediaStorage.delete(storageKey);
+    } catch (cleanupError: any) {
+      serverLogger.error("Compensating cleanup failed to delete stored file", {
+        storageKey,
+        error: cleanupError?.message,
+      });
+    }
+
+    throw dbError;
+  }
 }
 
 export function getPrivateMediaFilePath(storageKey: string): string {
@@ -291,7 +388,7 @@ export async function verifyMediaOwnership(
 }
 
 /**
- * Soft-deletes a media record and marks file as DELETED.
+ * Soft-deletes a media record and removes file from storage.
  */
 export async function deletePrivateMedia(
   mediaId: string,
@@ -305,7 +402,15 @@ export async function deletePrivateMedia(
     data: { status: "DELETED" },
   });
 
-  await mediaStorage.delete(media.storageKey);
+  try {
+    await mediaStorage.delete(media.storageKey);
+  } catch (err: any) {
+    serverLogger.error("Storage deletion failed during media delete", {
+      mediaId,
+      storageKey: media.storageKey,
+      error: err?.message,
+    });
+  }
 
   return true;
 }
