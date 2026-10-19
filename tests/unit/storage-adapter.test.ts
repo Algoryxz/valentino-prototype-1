@@ -147,4 +147,3 @@ describe("Media Storage Service & Adapters", () => {
     });
   });
 });
-
