@@ -213,7 +213,7 @@ describe("Phase 5B Integration Tests - Multimedia, Media Isolation, Secret Lock 
         params: Promise.resolve({ publicId, mediaId }),
       });
       expect(publicMediaRes.status).toBe(200);
-      expect(publicMediaRes.headers.get("cache-control")).toContain("public");
+      expect(publicMediaRes.headers.get("cache-control")).toContain("no-store");
 
       // 4. Edit draft after publishing: delete the memory in draft
       const mutateDraftReq = new NextRequest(`${APP_URL}/api/experiences/${publicId}/draft`, {
