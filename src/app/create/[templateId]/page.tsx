@@ -21,66 +21,63 @@ function CreateTemplateExperienceContent() {
   }, [rawTemplateId]);
 
   const [error, setError] = useState<string | null>(null);
-  const hasInitiatedRef = useRef(false);
+  const creationPromiseRef = useRef<Promise<string> | null>(null);
 
   useEffect(() => {
     // If template is invalid, do not attempt to POST to API; show friendly not-found UI
     if (!templateDef) {
       return;
     }
-    // Prevent duplicate draft creation on repeated effect execution / StrictMode
-    if (hasInitiatedRef.current) {
-      return;
-    }
-    hasInitiatedRef.current = true;
     const currentDef = templateDef;
-
-    let isMounted = true;
-    const controller = new AbortController();
+    let isCurrentEffect = true;
 
     async function initExperience() {
       try {
-        let initialDecor = null;
-        try {
-          const decorParam = searchParams.get("decor");
-          if (decorParam) {
-            initialDecor = decodeDecorParam(decorParam);
-          }
-          if (!initialDecor) {
-            const stored = sessionStorage.getItem("valentino_custom_decor");
-            if (stored) {
-              initialDecor = normalizeValentineDecor(JSON.parse(stored));
+        if (!creationPromiseRef.current) {
+          let initialDecor = null;
+          try {
+            const decorParam = searchParams.get("decor");
+            if (decorParam) {
+              initialDecor = decodeDecorParam(decorParam);
             }
+            if (!initialDecor) {
+              const stored = sessionStorage.getItem("valentino_custom_decor");
+              if (stored) {
+                initialDecor = normalizeValentineDecor(JSON.parse(stored));
+              }
+            }
+          } catch {
+            // Gracefully fallback
           }
-        } catch {
-          // Gracefully fallback
+
+          const payload: Record<string, unknown> = {
+            templateId: currentDef.id,
+            templateVersion: currentDef.version || "v1",
+          };
+          if (initialDecor) {
+            payload.initialDecor = initialDecor;
+          }
+
+          creationPromiseRef.current = fetch("/api/experiences", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }).then(async (res) => {
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}));
+              console.error("Create experience error details:", data);
+              throw new Error("We couldn't initialize your experience. Please try again.");
+            }
+            const { publicId } = await res.json();
+            return publicId as string;
+          });
         }
 
-        const payload: Record<string, unknown> = {
-          templateId: currentDef.id,
-          templateVersion: currentDef.version || "v1",
-        };
-        if (initialDecor) {
-          payload.initialDecor = initialDecor;
-        }
+        const publicId = await creationPromiseRef.current;
 
-        const res = await fetch("/api/experiences", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          console.error("Create experience error details:", data);
-          throw new Error("We couldn't initialize your experience. Please try again.");
-        }
-
-        const { publicId } = await res.json();
-        if (isMounted) {
+        if (isCurrentEffect) {
           const focus = searchParams.get("focus");
           const targetUrl = focus
             ? `/edit/${publicId}?focus=${encodeURIComponent(focus)}`
@@ -88,10 +85,8 @@ function CreateTemplateExperienceContent() {
           router.replace(targetUrl);
         }
       } catch (err: any) {
-        if (err?.name === "AbortError") {
-          return;
-        }
-        if (isMounted) {
+        if (isCurrentEffect) {
+          creationPromiseRef.current = null;
           console.error("Create experience initialization failed:", err);
           setError("We couldn't initialize your experience right now. Please try again.");
         }
@@ -101,8 +96,7 @@ function CreateTemplateExperienceContent() {
     initExperience();
 
     return () => {
-      isMounted = false;
-      controller.abort();
+      isCurrentEffect = false;
     };
   }, [templateDef, router, searchParams]);
 

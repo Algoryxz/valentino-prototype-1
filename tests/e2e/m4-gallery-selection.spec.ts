@@ -130,4 +130,28 @@ test.describe("Milestone 4: Template Gallery, Live Preview, and Direct Selection
     // Verify exactly one POST request was initiated
     expect(postRequests.length).toBe(1);
   });
+
+  test("6. Generic /create?template=kage route initializes selected atmosphere and enters editor", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    const postRequests: string[] = [];
+    page.on("request", (req) => {
+      if (req.url().includes("/api/experiences") && req.method() === "POST") {
+        postRequests.push(req.url());
+      }
+    });
+
+    // Navigate to /create?template=kage
+    await page.goto(`${APP_URL}/create?template=kage`);
+
+    // Wait until transition completes and editor is loaded
+    await page.waitForURL(/\/edit\/[a-zA-Z0-9_-]+/, { timeout: 15000 });
+    expect(page.url()).toMatch(/\/edit\/[a-zA-Z0-9_-]+/);
+
+    // Verify exactly one POST request was initiated
+    expect(postRequests.length).toBe(1);
+    await expect(page.getByText(/Kage|Atmosphere|Studio/i).first()).toBeVisible();
+  });
 });
