@@ -206,6 +206,7 @@ export function SpatialStationeryUnfold() {
         [
           letterWrapperRef.current,
           sectionRef.current?.querySelector(".stationery-editorial-header") || {},
+          sectionRef.current?.querySelector(".stationery-ambient-frame") || {},
         ],
         {
           opacity: 0,
@@ -228,7 +229,7 @@ export function SpatialStationeryUnfold() {
         data-testid="little-things-scene"
         className="sticky top-0 w-full h-[100dvh] min-h-[640px] flex flex-col justify-between items-center bg-transparent text-[#240412] pt-24 sm:pt-28 pb-8 sm:pb-10 px-4 select-none overflow-hidden"
       >
-        <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
+        <AmbientBotanicalFrame className="stationery-ambient-frame" variant="dusk" density="sparse" intensity={0.25} />
 
         {/* Editorial Header */}
         <div className="stationery-editorial-header text-center max-w-xl mx-auto space-y-1 relative z-10 will-change-transform">

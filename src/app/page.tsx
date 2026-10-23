@@ -91,7 +91,7 @@ export default function HomePage() {
       <section
         id="worlds-section"
         data-testid="world-showroom-scene"
-        className="w-full bg-transparent text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
+        className="w-full -mt-[100dvh] bg-transparent text-[#FAF8F5] relative z-20 z-content scroll-mt-24"
       >
         <SpatialWorldsWalkthrough />
       </section>
