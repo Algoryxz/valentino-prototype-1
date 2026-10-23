@@ -124,4 +124,37 @@ test.describe("Phase 5F: Public Landing Page Renaissance Visual QA", () => {
       fullPage: false,
     });
   });
+
+  test("Homepage bidirectional scroll continuity (regression: no split screen or blank gaps on scroll-up)", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(`${APP_URL}/`, { waitUntil: "networkidle" });
+    await page.waitForTimeout(500);
+
+    // Scroll down past stationery into worlds section
+    await page.evaluate(() => window.scrollTo({ top: 3500, behavior: "instant" }));
+    await page.waitForTimeout(400);
+
+    // Scroll back up into transition region
+    await page.evaluate(() => window.scrollTo({ top: 2300, behavior: "instant" }));
+    await page.waitForTimeout(400);
+
+    // Assert that worlds-section stage is pinned at top 0 rather than pushed down like a slide
+    const stageBox = await page.locator("#worlds-section > div > div.sticky").boundingBox();
+    expect(stageBox).not.toBeNull();
+    if (stageBox) {
+      expect(stageBox.y).toBeLessThanOrEqual(0);
+    }
+
+    // Scroll further up into stationery section
+    await page.evaluate(() => window.scrollTo({ top: 1800, behavior: "instant" }));
+    await page.waitForTimeout(400);
+
+    // Verify stationery scene and header are visible and smoothly restored
+    const stationeryScene = page.locator('[data-testid="little-things-scene"]');
+    await expect(stationeryScene).toBeVisible();
+    const header = page.locator(".stationery-editorial-header");
+    await expect(header).toBeVisible();
+    const opacity = await header.evaluate((el) => window.getComputedStyle(el).opacity);
+    expect(parseFloat(opacity)).toBeGreaterThan(0.5);
+  });
 });

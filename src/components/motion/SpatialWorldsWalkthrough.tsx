@@ -38,6 +38,7 @@ export function SpatialWorldsWalkthrough() {
   const bg4Ref = useRef<HTMLDivElement | null>(null); // Wildflower Paper
   const bg5Ref = useRef<HTMLDivElement | null>(null); // Ocean Letter
   const bgTroveRef = useRef<HTMLDivElement | null>(null); // The Hidden Trove Transition Plate
+  const vignetteRef = useRef<HTMLDivElement | null>(null); // Global Atmospheric Edge Vignette
 
   // Chapter 01 intro headline ref
   const chapterIntroRef = useRef<HTMLDivElement | null>(null);
@@ -83,7 +84,7 @@ export function SpatialWorldsWalkthrough() {
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set([bg0Ref.current, bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current, bgTroveRef.current], { opacity: 1 });
+        gsap.set([bg0Ref.current, bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current, bgTroveRef.current, vignetteRef.current], { opacity: 1 });
         gsap.set([world0Ref.current, world1Ref.current, world2Ref.current, world3Ref.current, world4Ref.current, world5Ref.current], { opacity: 1 });
         return;
       }
@@ -91,6 +92,7 @@ export function SpatialWorldsWalkthrough() {
       // Initial resting posture: Single authoritative viewport
       // Backgrounds: Start transparent for seamless crossfade with stationery atmosphere
       gsap.set(bg0Ref.current, { opacity: 0, scale: 1.0 });
+      gsap.set(vignetteRef.current, { opacity: 0 });
       gsap.set([bg1Ref.current, bg2Ref.current, bg3Ref.current, bg4Ref.current, bg5Ref.current, bgTroveRef.current], {
         opacity: 0,
         scale: 1.0,
@@ -144,7 +146,7 @@ export function SpatialWorldsWalkthrough() {
       // -------------------------------------------------------------------------
       // Cloud Nine sky & Beanstalk background plate crossfades in smoothly over the dawn atmosphere (0.00 -> 0.08)
       tl.to(
-        bg0Ref.current,
+        [bg0Ref.current, vignetteRef.current],
         {
           opacity: 1,
           ease: "power1.inOut",
@@ -830,7 +832,8 @@ export function SpatialWorldsWalkthrough() {
 
         {/* Global Atmospheric Edge Vignette */}
         <div
-          className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/55 pointer-events-none -z-10"
+          ref={vignetteRef}
+          className="absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/55 pointer-events-none -z-10 opacity-0 will-change-transform"
           aria-hidden="true"
         />
 
