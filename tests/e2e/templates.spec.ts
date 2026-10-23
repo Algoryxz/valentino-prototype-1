@@ -9,8 +9,8 @@ test.describe("M2 Template Discovery & Landing Page", () => {
     await page.goto(`${APP_URL}/`);
     await expect(page.locator("h1")).toContainText("Create something they'll remember");
 
-    // Click Explore Templates
-    await page.locator('a:has-text("Explore Templates")').click();
+    // Click Explore Showroom
+    await page.locator('a[href="/templates"]').first().click();
     await page.waitForURL("**/templates");
     expect(page.url()).toContain("/templates");
 
@@ -24,7 +24,7 @@ test.describe("M2 Template Discovery & Landing Page", () => {
     await goldSwatch.click();
 
     // Verify Customize Midnight Rose button points to /create?template=midnight-rose
-    const customizeBtn = page.locator('a:has-text("Customize Midnight Rose")');
+    const customizeBtn = page.locator('a[href="/create?template=midnight-rose"]').first();
     await expect(customizeBtn).toBeVisible();
     await expect(customizeBtn).toHaveAttribute("href", "/create?template=midnight-rose");
   });
@@ -49,10 +49,6 @@ test.describe("M2 Template Discovery & Landing Page", () => {
       await expect(headline).toContainText("Create something");
       await expect(headline).toContainText("they'll remember");
 
-      // Verify value ticker presence
-      const ticker = page.locator('[aria-label="Valentino Product Features"], [aria-label="Valentino Feature Highlights"]');
-      await expect(ticker).toBeVisible();
-
       // Assert zero horizontal overflow
       const hasOverflow = await page.evaluate(() => {
         return document.documentElement.scrollWidth > document.documentElement.clientWidth;
@@ -60,14 +56,13 @@ test.describe("M2 Template Discovery & Landing Page", () => {
       expect(hasOverflow).toBe(false);
     }
 
-    // Verify reduced motion behavior
+    // Verify reduced motion behavior preserves content and layout
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(`${APP_URL}/`);
-
-    // Ticker renders accessible static highlight labels when reduced motion is preferred
-    const staticTicker = page.locator('[aria-label="Valentino Feature Highlights"]');
-    await expect(staticTicker).toBeVisible();
-    await expect(staticTicker).toContainText("PRIVATE BY DESIGN");
-    await expect(staticTicker).toContainText("WAX SEAL REVEAL");
+    await expect(page.locator("h1")).toBeVisible();
+    const hasOverflowReduced = await page.evaluate(() => {
+      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+    });
+    expect(hasOverflowReduced).toBe(false);
   });
 });

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import sharp from "sharp";
 import { db } from "@/lib/db";
 import { POST as createExperience } from "@/app/api/experiences/route";
 import { PUT as saveDraft } from "@/app/api/experiences/[publicId]/draft/route";
@@ -23,6 +24,19 @@ describe("Phase 5B Integration Tests - Multimedia, Media Isolation, Secret Lock 
     await db.experienceMedia.deleteMany({});
     await db.experience.deleteMany({});
   });
+
+  async function createValidJpegBuffer() {
+    return sharp({
+      create: {
+        width: 20,
+        height: 20,
+        channels: 3,
+        background: { r: 255, g: 0, b: 0 },
+      },
+    })
+      .jpeg()
+      .toBuffer();
+  }
 
   // Helper to create an experience and return publicId & cookie header
   async function createTestExperience() {
@@ -59,10 +73,10 @@ describe("Phase 5B Integration Tests - Multimedia, Media Isolation, Secret Lock 
     it("POST /api/experiences/[publicId]/media: validates magic bytes and persists media", async () => {
       const { publicId, cookieName, cookieVal } = await createTestExperience();
 
-      // Valid JPEG header
-      const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+      // Valid JPEG image buffer
+      const jpegBuffer = await createValidJpegBuffer();
       const formData = new FormData();
-      formData.append("file", new Blob([jpegBytes], { type: "image/jpeg" }), "romantic.jpg");
+      formData.append("file", new Blob([jpegBuffer], { type: "image/jpeg" }), "romantic.jpg");
       formData.append("type", "photo");
 
       const req = new NextRequest(`${APP_URL}/api/experiences/${publicId}/media`, {
@@ -117,9 +131,9 @@ describe("Phase 5B Integration Tests - Multimedia, Media Isolation, Secret Lock 
       const { publicId, cookieName, cookieVal } = await createTestExperience();
 
       // 1. Upload a photo
-      const jpegBytes = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+      const jpegBuffer = await createValidJpegBuffer();
       const formData = new FormData();
-      formData.append("file", new Blob([jpegBytes], { type: "image/jpeg" }), "photo.jpg");
+      formData.append("file", new Blob([jpegBuffer], { type: "image/jpeg" }), "photo.jpg");
       formData.append("type", "photo");
 
       const uploadReq = new NextRequest(`${APP_URL}/api/experiences/${publicId}/media`, {
@@ -199,7 +213,7 @@ describe("Phase 5B Integration Tests - Multimedia, Media Isolation, Secret Lock 
         params: Promise.resolve({ publicId, mediaId }),
       });
       expect(publicMediaRes.status).toBe(200);
-      expect(publicMediaRes.headers.get("cache-control")).toContain("public");
+      expect(publicMediaRes.headers.get("cache-control")).toContain("no-store");
 
       // 4. Edit draft after publishing: delete the memory in draft
       const mutateDraftReq = new NextRequest(`${APP_URL}/api/experiences/${publicId}/draft`, {

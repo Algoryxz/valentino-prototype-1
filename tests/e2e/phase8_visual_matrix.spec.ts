@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import path from "path";
 import fs from "fs";
 
@@ -24,7 +24,7 @@ test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", 
     test(`Visual verification at ${vp.name}`, async ({ page }) => {
       test.setTimeout(300000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await page.goto("http://localhost:3000/", { waitUntil: "networkidle" });
+      await page.goto("/", { waitUntil: "networkidle" });
       await page.waitForTimeout(1000);
 
       // Helper function to scroll to exact progress inside any scroll-driven section
@@ -189,4 +189,38 @@ test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", 
       });
     });
   }
+
+  test("Test interactive states on Discovered Objects (Desktop)", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1000);
+
+    const moments = page.locator("#moments");
+    await moments.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(600);
+
+    // Open envelope
+    const envBtn = moments.locator('button[aria-label="Folded velvet envelope with wax seal"]');
+    await envBtn.click();
+    await page.waitForTimeout(600);
+
+    // Open whisper note
+    const whisperBtn = moments.locator('button[aria-label="Origami folded secret whisper note"]');
+    await whisperBtn.click();
+    await page.waitForTimeout(600);
+
+    // Open brass keepsake
+    const brassBtn = moments.locator('button[aria-label="Heavy aged hammered brass talisman"]');
+    await brassBtn.click();
+    await page.waitForTimeout(600);
+
+    await moments.screenshot({
+      path: path.join(OUTPUT_DIR, "moments_interactive_revealed_desktop.png"),
+    });
+
+    // Verify all revealed contents are visible in the DOM
+    await expect(page.locator("text=Close your eyes. Take a breath. I am right here with you.")).toBeVisible();
+    await expect(page.locator("text=Where did we share our very first secret?")).toBeVisible();
+    await expect(page.locator("text=Every morning with you is my favorite thing on earth.")).toBeVisible();
+  });
 });

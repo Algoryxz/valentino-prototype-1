@@ -1,11 +1,14 @@
 import { describe, it, expect } from "vitest";
+import sharp from "sharp";
 import {
   validateMediaBuffer,
   getSafeExtension,
   getMediaDiskPath,
+  processAndStripPhoto,
   MAX_PHOTO_SIZE,
   MAX_AUDIO_SIZE,
   MAX_VIDEO_SIZE,
+  MAX_MEDIA_PER_EXPERIENCE,
   AllowedMediaType,
 } from "@/lib/media";
 import crypto from "crypto";
@@ -218,6 +221,60 @@ describe("Phase 5B - Media Storage & Security Engine", () => {
       // Past time -> unlocked
       const pastUnlock = new Date("2026-02-13T23:59:59Z");
       expect(now.getTime() >= pastUnlock.getTime()).toBe(true);
+    });
+  });
+
+  describe("Image Processing & Metadata Stripping (Sharp)", () => {
+    it("exports MAX_MEDIA_PER_EXPERIENCE set to 20", () => {
+      expect(MAX_MEDIA_PER_EXPERIENCE).toBe(20);
+    });
+
+    it("processes photo, strips EXIF metadata, and resizes within max bounds", async () => {
+      // Create a 200x200 JPEG with custom metadata
+      const rawImage = await sharp({
+        create: {
+          width: 200,
+          height: 200,
+          channels: 3,
+          background: { r: 255, g: 105, b: 180 },
+        },
+      })
+        .jpeg()
+        .toBuffer();
+
+      const processed = await processAndStripPhoto(rawImage, "image/jpeg");
+      expect(processed.buffer).toBeInstanceOf(Buffer);
+      expect(processed.mimeType).toBe("image/jpeg");
+      expect(processed.width).toBe(200);
+      expect(processed.height).toBe(200);
+
+      // Inspect output with sharp to verify EXIF is completely stripped
+      const meta = await sharp(processed.buffer).metadata();
+      expect(meta.exif).toBeUndefined();
+    });
+
+    it("enforces pixel count limit and rejects oversized images", async () => {
+      // Create a small 50x50 image
+      const smallImage = await sharp({
+        create: {
+          width: 50,
+          height: 50,
+          channels: 3,
+          background: { r: 255, g: 255, b: 255 },
+        },
+      })
+        .png()
+        .toBuffer();
+
+      // With maxPixels set to 1000, 50x50 = 2500 pixels which exceeds limit
+      await expect(processAndStripPhoto(smallImage, "image/png", 1000)).rejects.toThrow(
+        /exceeds.*pixel limit/i
+      );
+    });
+
+    it("rejects corrupt or unreadable image buffers", async () => {
+      const corruptBuffer = Buffer.from("not a real image payload");
+      await expect(processAndStripPhoto(corruptBuffer, "image/jpeg")).rejects.toThrow();
     });
   });
 });

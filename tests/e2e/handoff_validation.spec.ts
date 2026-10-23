@@ -2,7 +2,11 @@ import { test } from "@playwright/test";
 import path from "path";
 import fs from "fs";
 
-const OUTPUT_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9d610088-6efa-4241-82b7-70b0cc3a4a13/handoff_frames";
+const OUTPUT_DIR =
+  process.env.OUTPUT_DIR ||
+  (process.platform === "win32" && fs.existsSync("C:/Users/AYUSH")
+    ? "C:/Users/AYUSH/.gemini/antigravity-ide/brain/9d610088-6efa-4241-82b7-70b0cc3a4a13/handoff_frames"
+    : path.join(process.cwd(), "test-results", "handoff_frames"));
 const REVIEW_DIR = "phase8_review_images/handoff";
 
 test.beforeAll(() => {

@@ -71,7 +71,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         "Content-Type": media.mimeType,
         "Content-Length": media.sizeBytes.toString(),
         "X-Content-Type-Options": "nosniff",
-        "Cache-Control": "private, no-cache, no-store",
+        "Cache-Control": "no-store",
       },
     });
   }
@@ -79,7 +79,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
   // Fallback to adapter read (e.g. Memory, S3, or non-filesystem storage)
   const buffer = await mediaStorage.read(media.storageKey);
   if (!buffer) {
-    return new NextResponse("File missing", { status: 404 });
+    return new NextResponse("File missing", { status: 404, headers: { "Cache-Control": "no-store" } });
   }
 
   return new NextResponse(new Uint8Array(buffer), {
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       "Content-Type": media.mimeType,
       "Content-Length": buffer.length.toString(),
       "X-Content-Type-Options": "nosniff",
-      "Cache-Control": "private, no-cache, no-store",
+      "Cache-Control": "no-store",
     },
   });
 }
