@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { ValentinoAtmosphere } from "@/components/ui/ValentinoAtmosphere";
@@ -11,9 +11,17 @@ function CreateExperienceContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [templateId, setTemplateId] = useState("midnight-rose");
+  const hasInitiatedRef = useRef(false);
 
   useEffect(() => {
+    // Prevent duplicate draft creation on repeated effect execution / StrictMode
+    if (hasInitiatedRef.current) {
+      return;
+    }
+    hasInitiatedRef.current = true;
+
     let isMounted = true;
+    const controller = new AbortController();
 
     async function initExperience() {
       try {
@@ -56,6 +64,7 @@ function CreateExperienceContent() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
+          signal: controller.signal,
         });
 
         if (!res.ok) {
@@ -73,6 +82,9 @@ function CreateExperienceContent() {
           router.replace(targetUrl);
         }
       } catch (err: any) {
+        if (err?.name === "AbortError") {
+          return;
+        }
         if (isMounted) {
           console.error("Create experience initialization failed:", err);
           setError("We couldn't complete that action right now. Please try again.");
@@ -84,6 +96,7 @@ function CreateExperienceContent() {
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [router, searchParams]);
 

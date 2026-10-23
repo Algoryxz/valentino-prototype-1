@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, Suspense } from "react";
+import React, { useEffect, useState, useMemo, useRef, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
@@ -21,15 +21,22 @@ function CreateTemplateExperienceContent() {
   }, [rawTemplateId]);
 
   const [error, setError] = useState<string | null>(null);
+  const hasInitiatedRef = useRef(false);
 
   useEffect(() => {
     // If template is invalid, do not attempt to POST to API; show friendly not-found UI
     if (!templateDef) {
       return;
     }
+    // Prevent duplicate draft creation on repeated effect execution / StrictMode
+    if (hasInitiatedRef.current) {
+      return;
+    }
+    hasInitiatedRef.current = true;
     const currentDef = templateDef;
 
     let isMounted = true;
+    const controller = new AbortController();
 
     async function initExperience() {
       try {
@@ -63,6 +70,7 @@ function CreateTemplateExperienceContent() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(payload),
+          signal: controller.signal,
         });
 
         if (!res.ok) {
@@ -80,6 +88,9 @@ function CreateTemplateExperienceContent() {
           router.replace(targetUrl);
         }
       } catch (err: any) {
+        if (err?.name === "AbortError") {
+          return;
+        }
         if (isMounted) {
           console.error("Create experience initialization failed:", err);
           setError("We couldn't initialize your experience right now. Please try again.");
@@ -91,6 +102,7 @@ function CreateTemplateExperienceContent() {
 
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [templateDef, router, searchParams]);
 

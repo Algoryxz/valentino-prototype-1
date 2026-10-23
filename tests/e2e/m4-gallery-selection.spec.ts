@@ -107,4 +107,27 @@ test.describe("Milestone 4: Template Gallery, Live Preview, and Direct Selection
     await page.waitForURL(/\/templates/, { timeout: 10000 });
     await expect(page.locator("h1")).toContainText("Choose Your Atmosphere");
   });
+
+  test("5. Selection journey dispatches exactly one draft creation POST request", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+
+    const postRequests: string[] = [];
+    page.on("request", (req) => {
+      if (req.url().includes("/api/experiences") && req.method() === "POST") {
+        postRequests.push(req.url());
+      }
+    });
+
+    // Navigate to /create/ocean-letter
+    await page.goto(`${APP_URL}/create/ocean-letter`);
+
+    // Wait until transition completes and editor is loaded
+    await page.waitForURL(/\/edit\/[a-zA-Z0-9_-]+/, { timeout: 15000 });
+    expect(page.url()).toMatch(/\/edit\/[a-zA-Z0-9_-]+/);
+
+    // Verify exactly one POST request was initiated
+    expect(postRequests.length).toBe(1);
+  });
 });
