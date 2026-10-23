@@ -79,10 +79,9 @@ test.describe("Gate 4C: Experience Studio 2.0 (Creative Builder Renaissance)", (
     await expect(signoffInput).toBeVisible();
     await signoffInput.fill("Forever & always, Julian");
 
-    // 5. Verify Advisory Content Readiness Bar
-    const readinessBar = page.locator('[data-testid="content-readiness-bar"]');
-    await expect(readinessBar).toBeVisible();
-    await expect(readinessBar).toContainText("ready to seal");
+    // 5. Verify Dedication Completion & Stage Continuation
+    await expect(page.locator("#section-personalize").getByText("Inscribed")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Continue to Atmosphere/i })).toBeVisible();
 
     // 6. Compose Moments (Module Engine)
     const moduleManager = page.locator('[data-testid="experience-module-manager"]');

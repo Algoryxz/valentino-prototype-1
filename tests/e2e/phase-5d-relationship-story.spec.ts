@@ -17,6 +17,8 @@ test.describe("Phase 5D: Relationship Story & Personalization Renaissance E2E", 
 
     // 1. Author core story
     const partnerInput = page.locator('[data-testid="input-partner-name"]');
+    await expect(partnerInput).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(600);
     await partnerInput.fill("Maya");
 
     const senderInput = page.locator('[data-testid="input-sender-name"]');
@@ -50,13 +52,21 @@ test.describe("Phase 5D: Relationship Story & Personalization Renaissance E2E", 
     }
 
     // 3. Open Moments section to configure Timeline & Milestones
-    const momentsTab = page.locator('button:has-text("Moments")').first();
+    const momentsTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await momentsTab.isVisible()) {
       await momentsTab.click();
       await page.waitForTimeout(400);
     }
 
-    const timelineToggle = page.locator('[data-testid="toggle-module-timeline"]');
+    let timelineToggle = page.locator('[data-testid="toggle-module-timeline"]');
+    if (!await timelineToggle.isVisible()) {
+      const addMomentBtn = page.locator('[data-testid="add-moment-trigger"]').first();
+      if (await addMomentBtn.isVisible()) {
+        await addMomentBtn.click();
+        await page.waitForTimeout(300);
+      }
+    }
+
     if (await timelineToggle.isVisible()) {
       await timelineToggle.click();
       await page.waitForTimeout(400);
@@ -117,11 +127,22 @@ test.describe("Phase 5D: Relationship Story & Personalization Renaissance E2E", 
     const publicId = currentUrl.split("/edit/")[1];
 
     // Configure Cloud Nine
-    await page.locator('[data-testid="input-partner-name"]').fill("Celeste");
+    const partnerInput = page.locator('[data-testid="input-partner-name"]');
+    await expect(partnerInput).toBeVisible({ timeout: 10000 });
+    await page.waitForTimeout(600);
+    await partnerInput.fill("Celeste");
     await page.locator('[data-testid="input-sender-name"]').fill("Leo");
     await page.locator('[data-testid="input-message"]').fill("Higher than the softest clouds in the celestial sky.");
 
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(1200);
+    await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved");
+
+    const saveBtn = page.locator('[data-testid="save-draft-button"]');
+    if (await saveBtn.isVisible()) {
+      await saveBtn.click();
+      await page.waitForTimeout(500);
+    }
+
     const publishBtn = page.locator('[data-testid="publish-button"]');
     await expect(publishBtn).toBeEnabled({ timeout: 10000 });
     await publishBtn.click();

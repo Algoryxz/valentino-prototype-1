@@ -28,7 +28,7 @@ test.describe("Phase 5B: Multimedia, Delivery, Secret Lock & Recipient Interacti
 
     // Step 2: Story Section - Multimedia controls
     // Verify Story section is present and activate multimedia items
-    const storyTab = page.locator('button:has-text("Story")').first();
+    const storyTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await storyTab.isVisible()) {
       await storyTab.click();
     }
@@ -69,7 +69,7 @@ test.describe("Phase 5B: Multimedia, Delivery, Secret Lock & Recipient Interacti
     }
 
     // Step 3: Moments Section - Secret Question
-    const momentsTab = page.locator('button:has-text("Moments")').first();
+    const momentsTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await momentsTab.isVisible()) {
       await momentsTab.click();
       await page.waitForTimeout(400);
@@ -96,20 +96,20 @@ test.describe("Phase 5B: Multimedia, Delivery, Secret Lock & Recipient Interacti
     }
 
     // Step 4: Preview & Send Section
-    const previewSendTab = page.locator('button:has-text("Preview & Send")').first();
+    const previewSendTab = page.locator('[data-testid="stage-tab-preview"]').first();
     if (await previewSendTab.isVisible()) {
       await previewSendTab.click();
       await page.waitForTimeout(400);
 
       // Verify QR Code Share drawer/button
-      const qrBtn = page.locator('[data-testid="qr-share-trigger"]');
+      const qrBtn = page.locator('[data-testid="show-qr-keepsake-btn"]');
       if (await qrBtn.isVisible()) {
         await qrBtn.click();
         await expect(page.locator('[data-testid="qr-code-image"]')).toBeVisible();
       }
 
       // Verify Printable Keepsake preview trigger
-      const printBtn = page.locator('[data-testid="printable-keepsake-trigger"]');
+      const printBtn = page.locator('[data-testid="save-keepsake-btn"]');
       if (await printBtn.isVisible()) {
         await expect(printBtn).toBeVisible();
       }
@@ -211,7 +211,7 @@ test.describe("Phase 5B: Multimedia, Delivery, Secret Lock & Recipient Interacti
     const storage = await request.storageState();
     await context.addCookies(storage.cookies);
     await page.goto(`${APP_URL}/edit/${publicId}`);
-    const previewSendTab = page.locator('button:has-text("Preview & Send")').first();
+    const previewSendTab = page.locator('[data-testid="stage-tab-preview"]').first();
     if (await previewSendTab.isVisible()) {
       await previewSendTab.click();
       await page.waitForTimeout(400);

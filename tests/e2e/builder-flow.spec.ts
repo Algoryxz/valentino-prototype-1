@@ -30,15 +30,10 @@ test.describe("Phase 1 Acceptance Gate: Build Your Valentine Customization Engin
     await creatorPage.goto(`${APP_URL}/`);
     await expect(creatorPage.locator("h1")).toContainText(/Create (something they'll remember|a world made for someone you love)/);
 
-    // Scroll to the Little Things editorial craft scene
-    const littleThingsSection = creatorPage.locator("#how-it-works");
-    await expect(littleThingsSection).toBeVisible();
-    await littleThingsSection.scrollIntoViewIfNeeded();
-
     // ------------------------------------------------------------------------
     // Step 2: Create Valentine & Transition to Editor
     // ------------------------------------------------------------------------
-    const makeYoursBtn = littleThingsSection.locator('a[href="/create"]');
+    const makeYoursBtn = creatorPage.locator('a[href="/create"]').first();
     await expect(makeYoursBtn).toBeVisible();
     await makeYoursBtn.click();
 

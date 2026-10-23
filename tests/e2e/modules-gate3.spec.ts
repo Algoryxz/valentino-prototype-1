@@ -46,6 +46,10 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
     await expect(moduleManager.getByText("Memory Photo")).toBeVisible();
 
     // Enable Timeline
+    const addTimelineTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+    await addTimelineTrigger.scrollIntoViewIfNeeded();
+    await addTimelineTrigger.click();
+
     const timelineBtn = page.locator('[data-testid="toggle-module-timeline"]');
     await expect(timelineBtn).toBeVisible();
     await timelineBtn.click();
@@ -59,6 +63,10 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
     await timelineTitleInput.blur();
 
     // Enable Secret Note
+    const addSecretTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+    await addSecretTrigger.scrollIntoViewIfNeeded();
+    await addSecretTrigger.click();
+
     const secretBtn = page.locator('[data-testid="toggle-module-secret"]');
     await expect(secretBtn).toBeVisible();
     await secretBtn.click();
@@ -75,6 +83,10 @@ test.describe("Gate 3: Experience Module Engine & Kage Exact-Source Visual World
     await secretContentInput.blur();
 
     // Enable Love Quiz
+    const addQuizTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+    await addQuizTrigger.scrollIntoViewIfNeeded();
+    await addQuizTrigger.click();
+
     const quizBtn = page.locator('[data-testid="toggle-module-quiz"]');
     await expect(quizBtn).toBeVisible();
     await quizBtn.click();

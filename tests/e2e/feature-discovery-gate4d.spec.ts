@@ -101,18 +101,22 @@ test.describe("Gate 4D: Feature Discovery & Capability Renaissance", () => {
     await messageInput.fill("I loved the gentle winter walks we took through the quiet city streets.");
     await messageInput.blur();
 
-    // 3. Verify Contextual Suggestion appears
-    const suggestionCard = page.locator('[data-testid="contextual-suggestion-card"]');
-    await expect(suggestionCard).toBeVisible();
-    await expect(suggestionCard).toContainText("Your words are in place.");
+    // 3. Verify Discovery Guidance Drawer can be opened
+    const exploreTrigger = page.locator('[data-testid="explore-features-trigger"]');
+    await expect(exploreTrigger).toBeVisible();
+    await exploreTrigger.click();
+
+    const drawer = page.locator('[data-testid="feature-discovery-drawer"]');
+    await expect(drawer).toBeVisible();
+    await expect(drawer).toContainText("Explore More For Your Story");
 
     // 4. Test Dismiss button
-    const dismissBtn = page.locator('[data-testid="dismiss-contextual-suggestion"]');
+    const dismissBtn = page.locator('[data-testid="close-feature-drawer"]');
     await expect(dismissBtn).toBeVisible();
     await dismissBtn.click();
 
     // Should disappear cleanly
-    await expect(suggestionCard).not.toBeVisible();
+    await expect(drawer).not.toBeVisible();
   });
 
   test("Surprise Me Spark: deterministic suggestion and application", async ({

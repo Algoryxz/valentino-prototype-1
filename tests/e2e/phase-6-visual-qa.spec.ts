@@ -146,8 +146,7 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
       fullPage: false,
     });
 
-    // C. Story Editor Section
-    const storyTab = page.locator('button:has-text("Story")').first();
+    const storyTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await storyTab.isVisible()) {
       await storyTab.click();
       await page.waitForTimeout(500);
@@ -157,8 +156,7 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
       });
     }
 
-    // D. Moments Editor Section
-    const momentsTab = page.locator('button:has-text("Moments")').first();
+    const momentsTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await momentsTab.isVisible()) {
       await momentsTab.click();
       await page.waitForTimeout(500);
@@ -168,8 +166,7 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
       });
     }
 
-    // E. Mood / Decor Editor Section
-    const moodTab = page.locator('button:has-text("Mood & Decor")').first();
+    const moodTab = page.locator('[data-testid="stage-tab-mood"]').first();
     if (await moodTab.isVisible()) {
       await moodTab.click();
       await page.waitForTimeout(500);
@@ -180,6 +177,11 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
     }
 
     // F. Preview Mode (Focus mode)
+    const closeFeatureDrawer = page.locator('[data-testid="close-feature-drawer"]').first();
+    if (await closeFeatureDrawer.isVisible()) {
+      await closeFeatureDrawer.click();
+      await page.waitForTimeout(300);
+    }
     const focusBtn = page.locator('button[title*="Focus mode"], button:has-text("Focus Mode")').first();
     if (await focusBtn.isVisible()) {
       await focusBtn.click();

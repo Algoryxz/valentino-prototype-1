@@ -1,7 +1,12 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
+import fs from "fs";
 
-const ARTIFACTS_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/e5eae4f4-e648-40a2-9962-cbe0c413455d";
+const ARTIFACTS_DIR = process.env.OUTPUT_DIR || path.join(process.cwd(), "test-results", "gate4a_shell");
+
+if (!fs.existsSync(ARTIFACTS_DIR)) {
+  fs.mkdirSync(ARTIFACTS_DIR, { recursive: true });
+}
 
 test.describe("Gate 4A: Design System & Core Shell Verification", () => {
   test("verifies neutral luxury FloatingNavbar on desktop and captures visual QA", async ({ page }) => {
@@ -63,7 +68,7 @@ test.describe("Gate 4A: Design System & Core Shell Verification", () => {
     const templatesHeading = page.locator("h1");
     await expect(templatesHeading).toContainText("Choose Your Atmosphere");
 
-    const cta = page.locator("header a[href^='/create'] button");
+    const cta = page.locator("header a[href^='/create']");
     await expect(cta).toBeVisible();
     await expect(cta).toHaveText("Create Experience");
 

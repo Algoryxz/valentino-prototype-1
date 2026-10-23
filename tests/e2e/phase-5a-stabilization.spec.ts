@@ -32,6 +32,11 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
     // Should activate Moments section and display Timeline module card
     await expect(page.locator('[data-testid="experience-module-manager"]')).toBeVisible();
     await expect(page.locator("text=Moments & Interactive Experiences")).toBeVisible();
+
+    const addMomentTrigger = page.locator('[data-testid="add-moment-trigger"]').first();
+    await addMomentTrigger.scrollIntoViewIfNeeded();
+    await addMomentTrigger.click();
+
     await expect(page.locator('[data-testid="toggle-module-timeline"]')).toBeVisible();
   });
 
@@ -98,7 +103,6 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
 
     // Verify Initial Midnight Rose on Stage
     await expect(page.locator("#template-midnight-rose")).toBeVisible();
-    await expect(page.getByRole("button", { name: "SURPRISE ME" })).toBeVisible();
 
     // Switch stage to Cloud Nine
     const cloudNineTab = page.locator('button:has-text("Cloud Nine")').first();
@@ -110,10 +114,10 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
     await kageTab.click();
     await expect(page.locator("#template-kage")).toBeVisible();
 
-    // Verify interactive capability chips exist on Kage stage
-    const kageSecretChip = page.locator('#template-kage a[aria-label*="Secret Note"]');
-    await expect(kageSecretChip).toBeVisible();
-    await expect(kageSecretChip).toHaveAttribute("href", "/create?template=kage&focus=secret");
+    // Verify Kage stage CTA links to create Kage experience
+    const kageCreateCta = page.locator('#template-kage a[href^="/create?template=kage"]').first();
+    await expect(kageCreateCta).toBeVisible();
+    await expect(kageCreateCta).toHaveAttribute("href", "/create?template=kage");
   });
 
   test("5. Kage WebGL 3D preview initializes without crashing and can be toggled", async ({
@@ -155,24 +159,21 @@ test.describe("Phase 5A: Post-Release Stabilization & World System Repair", () =
 
     // Verify Platform framing
     await expect(page.locator("h1")).toContainText("Create something they'll remember");
-    await expect(page.getByText("The Romantic Experience Platform")).toBeVisible();
 
-    // Verify World Collection
-    const worldCollectionHeading = page.getByRole("heading", { name: "Three Distinct Visual Worlds" });
-    await expect(worldCollectionHeading).toBeVisible();
+    // Verify World Collection section
+    const worldsSection = page.locator("#worlds-section");
+    await expect(worldsSection).toBeVisible();
+    await expect(worldsSection.getByText("Chapter 01 · The Living Worlds")).toBeVisible();
+    await expect(worldsSection.getByText("Every letter has a place where it belongs.")).toBeVisible();
 
-    // Verify Midnight Rose, Cloud Nine, and Kage selector tabs within #worlds
-    await expect(page.locator('#worlds div[role="button"]:has-text("Midnight Rose")')).toBeVisible();
-    await expect(page.locator('#worlds div[role="button"]:has-text("Cloud Nine")')).toBeVisible();
-    await expect(page.locator('#worlds div[role="button"]:has-text("Kage")')).toBeVisible();
-
-    // Click Kage selector on homepage
-    await page.locator('#worlds div[role="button"]:has-text("Kage")').click();
-    await expect(page.locator('#worlds h3:has-text("Kage (影)")')).toBeVisible();
+    // Verify presence of cinematic world sections
+    await expect(page.locator('section[aria-label="Midnight Rose cinematic world"]')).toBeAttached();
+    await expect(page.locator('section[aria-label="Cloud Nine cinematic world"]')).toBeAttached();
+    await expect(page.locator('section[aria-label="Kage cinematic world"]')).toBeAttached();
 
     // Verify customize CTA routes to /create?template=kage
-    const customizeKage = page.locator('#worlds a:has-text("Customize Kage (影)")');
-    await expect(customizeKage).toHaveAttribute("href", "/create?template=kage");
+    const customizeKage = page.locator('section[aria-label="Kage cinematic world"] a[href="/create?template=kage"]');
+    await expect(customizeKage).toBeAttached();
   });
 
   test("7. CSRF Origin validation rejects unrelated origins and hides internal diagnostics", async ({

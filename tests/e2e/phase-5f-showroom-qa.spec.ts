@@ -1,10 +1,20 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
+import fs from "fs";
 
 const APP_URL = process.env.APP_URL || "http://localhost:3000";
-const QA_DIR = "C:/Users/AYUSH/.gemini/antigravity-ide/brain/5b3d85b7-f4f3-4d6f-88c9-6f46f38b3788/visual_qa";
+const QA_DIR =
+  process.env.QA_DIR ||
+  (process.platform === "win32" && fs.existsSync("C:/Users/AYUSH")
+    ? "C:/Users/AYUSH/.gemini/antigravity-ide/brain/5b3d85b7-f4f3-4d6f-88c9-6f46f38b3788/visual_qa"
+    : path.join(process.cwd(), "test-results", "visual_qa_5f"));
 
 test.describe("Phase 5F Step 4: World Showroom Visual QA & Responsive Validation", () => {
+  test.beforeAll(() => {
+    if (!fs.existsSync(QA_DIR)) {
+      fs.mkdirSync(QA_DIR, { recursive: true });
+    }
+  });
   test("Desktop (1440x900): Cloud Nine, Midnight Rose, and Kage dominant stages", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(`${APP_URL}/templates`);

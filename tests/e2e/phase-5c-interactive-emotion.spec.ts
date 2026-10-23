@@ -30,65 +30,48 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
     await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved");
 
     // 2. Open Moments section in Studio 2.0
-    const momentsTab = page.locator('button:has-text("Moments")').first();
+    const momentsTab = page.locator('[data-testid="stage-tab-story"]').first();
     if (await momentsTab.isVisible()) {
       await momentsTab.click();
       await page.waitForTimeout(400);
+
+      const addMomentBtn = page.locator('[data-testid="add-moment-trigger"]').first();
+      if (await addMomentBtn.isVisible()) {
+        await addMomentBtn.click();
+        await page.waitForTimeout(300);
+      }
     }
 
-    // Toggle Reasons I Love You
-    const reasonsToggle = page.locator('[data-testid="toggle-module-reasons"]');
-    if (await reasonsToggle.isVisible()) {
-      await reasonsToggle.click();
-      await page.waitForTimeout(300);
-    }
+    const enableModule = async (moduleId: string) => {
+      let toggle = page.locator(`[data-testid="toggle-module-${moduleId}"]`);
+      if (!await toggle.isVisible()) {
+        const addMomentBtn = page.locator('[data-testid="add-moment-trigger"]').first();
+        if (await addMomentBtn.isVisible()) {
+          await addMomentBtn.click();
+          await page.waitForTimeout(300);
+        }
+      }
+      toggle = page.locator(`[data-testid="toggle-module-${moduleId}"]`);
+      if (await toggle.isVisible()) {
+        await toggle.click();
+        await page.waitForTimeout(300);
+      }
+    };
 
-    // Toggle Compliment Machine
-    const complimentsToggle = page.locator('[data-testid="toggle-module-compliments"]');
-    if (await complimentsToggle.isVisible()) {
-      await complimentsToggle.click();
-      await page.waitForTimeout(300);
-    }
+    // Toggle interactive modules for the test
+    await enableModule("reasons");
+    await enableModule("compliments");
+    await enableModule("fortuneCookie");
+    await enableModule("scratchCard");
+    await enableModule("promises");
+    await enableModule("futureAdventures");
+    await enableModule("adventureSpinner");
+    await enableModule("finale");
 
-    // Toggle Fortune Cookie
-    const cookieToggle = page.locator('[data-testid="toggle-module-fortuneCookie"]');
-    if (await cookieToggle.isVisible()) {
-      await cookieToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Scratch Card
-    const scratchToggle = page.locator('[data-testid="toggle-module-scratchCard"]');
-    if (await scratchToggle.isVisible()) {
-      await scratchToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Promise Wall
-    const promisesToggle = page.locator('[data-testid="toggle-module-promises"]');
-    if (await promisesToggle.isVisible()) {
-      await promisesToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Future Adventures
-    const adventureToggle = page.locator('[data-testid="toggle-module-futureAdventures"]');
-    if (await adventureToggle.isVisible()) {
-      await adventureToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Adventure Spinner
-    const spinnerToggle = page.locator('[data-testid="toggle-module-adventureSpinner"]');
-    if (await spinnerToggle.isVisible()) {
-      await spinnerToggle.click();
-      await page.waitForTimeout(300);
-    }
-
-    // Toggle Finale
-    const finaleToggle = page.locator('[data-testid="toggle-module-finale"]');
-    if (await finaleToggle.isVisible()) {
-      await finaleToggle.click();
+    // Close library drawer if open
+    const closeLibraryBtn = page.locator('[data-testid="close-moment-library"]').first();
+    if (await closeLibraryBtn.isVisible()) {
+      await closeLibraryBtn.click();
       await page.waitForTimeout(300);
     }
 
@@ -97,7 +80,7 @@ test.describe("Phase 5C: Interactive Emotion & Storytelling Renaissance E2E", ()
     await expect(page.locator('[data-testid="save-status-pill"]')).toContainText("Saved");
 
     // 3. Publish Experience
-    const previewSendTab = page.locator('button:has-text("Preview & Send")').first();
+    const previewSendTab = page.locator('[data-testid="stage-tab-preview"]').first();
     if (await previewSendTab.isVisible()) {
       await previewSendTab.click();
       await page.waitForTimeout(400);
