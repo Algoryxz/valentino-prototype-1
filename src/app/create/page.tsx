@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { ValentinoAtmosphere } from "@/components/ui/ValentinoAtmosphere";
@@ -11,61 +11,67 @@ function CreateExperienceContent() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [templateId, setTemplateId] = useState("midnight-rose");
+  const creationPromiseRef = useRef<Promise<string> | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    let isCurrentEffect = true;
 
     async function initExperience() {
       try {
-        // Read decor and template from query params or sessionStorage fallback
-        let initialDecor = null;
-        let selectedTemplateId = "midnight-rose";
-        try {
-          const tParam = searchParams.get("template") || searchParams.get("templateId");
-          if (tParam) {
-            selectedTemplateId = tParam;
-            if (isMounted) setTemplateId(tParam);
-          }
-
-          const decorParam = searchParams.get("decor");
-          if (decorParam) {
-            initialDecor = decodeDecorParam(decorParam);
-          }
-          if (!initialDecor) {
-            const stored = sessionStorage.getItem("valentino_custom_decor");
-            if (stored) {
-              initialDecor = normalizeValentineDecor(JSON.parse(stored));
+        if (!creationPromiseRef.current) {
+          // Read decor and template from query params or sessionStorage fallback
+          let initialDecor = null;
+          let selectedTemplateId = "midnight-rose";
+          try {
+            const tParam = searchParams.get("template") || searchParams.get("templateId");
+            if (tParam) {
+              selectedTemplateId = tParam;
+              if (isCurrentEffect) setTemplateId(tParam);
             }
+
+            const decorParam = searchParams.get("decor");
+            if (decorParam) {
+              initialDecor = decodeDecorParam(decorParam);
+            }
+            if (!initialDecor) {
+              const stored = sessionStorage.getItem("valentino_custom_decor");
+              if (stored) {
+                initialDecor = normalizeValentineDecor(JSON.parse(stored));
+              }
+            }
+          } catch {
+            // Gracefully fallback
           }
-        } catch {
-          // Gracefully fallback
+
+          const payload: Record<string, unknown> = {
+            templateId: selectedTemplateId,
+            templateVersion: "v1",
+          };
+          if (initialDecor) {
+            payload.initialDecor = initialDecor;
+          }
+
+          // Initiate the single asynchronous draft creation
+          creationPromiseRef.current = fetch("/api/experiences", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          }).then(async (res) => {
+            if (!res.ok) {
+              const data = await res.json().catch(() => ({}));
+              console.error("Create experience error details:", data);
+              throw new Error("We couldn't complete that action right now. Please try again.");
+            }
+            const { publicId } = await res.json();
+            return publicId as string;
+          });
         }
 
-        const payload: Record<string, unknown> = {
-          templateId: selectedTemplateId,
-          templateVersion: "v1",
-        };
-        if (initialDecor) {
-          payload.initialDecor = initialDecor;
-        }
+        const publicId = await creationPromiseRef.current;
 
-        // POST immediately - no artificial delays or fake staged loaders
-        const res = await fetch("/api/experiences", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          console.error("Create experience error details:", data);
-          throw new Error("We couldn't complete that action right now. Please try again.");
-        }
-
-        const { publicId } = await res.json();
-        if (isMounted) {
+        if (isCurrentEffect) {
           const focus = searchParams.get("focus");
           const targetUrl = focus
             ? `/edit/${publicId}?focus=${encodeURIComponent(focus)}`
@@ -73,7 +79,8 @@ function CreateExperienceContent() {
           router.replace(targetUrl);
         }
       } catch (err: any) {
-        if (isMounted) {
+        if (isCurrentEffect) {
+          creationPromiseRef.current = null;
           console.error("Create experience initialization failed:", err);
           setError("We couldn't complete that action right now. Please try again.");
         }
@@ -83,7 +90,7 @@ function CreateExperienceContent() {
     initExperience();
 
     return () => {
-      isMounted = false;
+      isCurrentEffect = false;
     };
   }, [router, searchParams]);
 

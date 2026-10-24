@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           }
           const targetVersion = typeof body.templateVersion === "string" && body.templateVersion.trim() ? body.templateVersion.trim() : "v1";
           const found = getTemplateDefinition(body.templateId.trim(), targetVersion);
-          if (!found) {
+          if (!found || found.active === false) {
             return NextResponse.json(
               { error: `Invalid or unsupported template: ${body.templateId} (${targetVersion})` },
               { status: 400 }

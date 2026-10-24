@@ -385,4 +385,40 @@ describe("API Integration Tests", () => {
     const body = await createRes.json();
     expect(body.error).toContain("Invalid or unsupported template");
   });
+
+  it("POST /api/experiences: rejects inactive template with 400 Bad Request and creates no draft", async () => {
+    const { registerTemplate, unregisterTemplate, midnightRoseV1 } = await import("@/templates/registry");
+    const inactiveTemplate = {
+      ...midnightRoseV1,
+      id: "inactive-test-template",
+      active: false,
+    };
+    registerTemplate(inactiveTemplate);
+
+    try {
+      const createReq = new NextRequest(`${APP_URL}/api/experiences`, {
+        method: "POST",
+        headers: {
+          origin: APP_URL,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          templateId: "inactive-test-template",
+          templateVersion: "v1",
+        }),
+      });
+
+      const createRes = await createExperience(createReq);
+      expect(createRes.status).toBe(400);
+      const body = await createRes.json();
+      expect(body.error).toContain("Invalid or unsupported template");
+
+      const count = await db.experience.count({
+        where: { templateId: "inactive-test-template" },
+      });
+      expect(count).toBe(0);
+    } finally {
+      unregisterTemplate("inactive-test-template", "v1");
+    }
+  });
 });

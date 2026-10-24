@@ -7,12 +7,14 @@ import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { ValentinoMonogram } from "@/components/motion/ValentinoMonogram";
 import { ValentinePlasmaButton, type ValentinePlasmaTheme } from "@/components/ui/ValentinePlasmaButton";
 import { AtmosphericButton } from "@/components/ui/AtmosphericButton";
-import { ROADMAP_WORLDS, type RoadmapWorld } from "@/templates/registry";
+import { ROADMAP_WORLDS, type RoadmapWorld, listActiveTemplates } from "@/templates/registry";
 import { AtmosphericCanvas } from "@/worlds/AtmosphericCanvas";
 import { ValentinoAtmosphere } from "@/components/ui/ValentinoAtmosphere";
 import { useDeviceTier } from "@/worlds/useDeviceTier";
 import { WorldTheme } from "@/worlds/types";
 import { AmbientBotanicalFrame, type BotanicalTone } from "@/components/motion/AmbientBotanicalFrame";
+import { ExperienceRenderer } from "@/templates/ExperienceRenderer";
+import { getTemplateSampleData } from "@/templates/sampleData";
 
 const SHOWROOM_BOTANICAL_TONE: Record<WorldTheme, BotanicalTone> = {
   "cloud-nine": "light",
@@ -384,6 +386,72 @@ export default function TemplatesPage() {
   const [activeOceanRevealed, setActiveOceanRevealed] = useState(false);
   const [activeKagePreview, setActiveKagePreview] = useState(false);
   const [isFullPreviewOpen, setIsFullPreviewOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [previewView, setPreviewView] = useState<"live" | "essence">("live");
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
+
+  const CATEGORIES = [
+    "All",
+    "Cinematic",
+    "Dreamy",
+    "Immersive",
+    "Analog",
+    "Botanical",
+    "Oceanic",
+  ] as const;
+
+  const activeTemplateDefs = useMemo(() => listActiveTemplates(), []);
+
+  const filteredWorldKeys = useMemo(() => {
+    if (selectedCategory === "All") {
+      return ORDERED_WORLD_KEYS;
+    }
+    return ORDERED_WORLD_KEYS.filter((id) => {
+      const def = activeTemplateDefs.find((t) => t.id === id);
+      return def?.category?.toLowerCase() === selectedCategory.toLowerCase();
+    });
+  }, [selectedCategory, activeTemplateDefs]);
+
+  const handleSelectCategory = (category: string) => {
+    setSelectedCategory(category);
+    if (category === "All") return;
+    const matchingKeys = ORDERED_WORLD_KEYS.filter((id) => {
+      const def = activeTemplateDefs.find((t) => t.id === id);
+      return def?.category?.toLowerCase() === category.toLowerCase();
+    });
+    if (matchingKeys.length > 0 && !matchingKeys.includes(activeWorldId)) {
+      setActiveWorldId(matchingKeys[0]);
+    }
+  };
+
+  const currentSampleConfig = useMemo(() => {
+    const base = getTemplateSampleData(activeWorldId, "v1");
+    const activeAccent =
+      activeWorldId === "midnight-rose"
+        ? selectedMidnightTheme
+        : activeWorldId === "cloud-nine"
+        ? selectedCloudTheme
+        : activeWorldId === "kage"
+        ? selectedKageTheme
+        : activeWorldId === "apricot-film"
+        ? selectedApricotTheme
+        : activeWorldId === "wildflower-paper"
+        ? selectedWildflowerTheme
+        : selectedOceanTheme;
+
+    return {
+      ...base,
+      accentTheme: activeAccent,
+    };
+  }, [
+    activeWorldId,
+    selectedMidnightTheme,
+    selectedCloudTheme,
+    selectedKageTheme,
+    selectedApricotTheme,
+    selectedWildflowerTheme,
+    selectedOceanTheme,
+  ]);
 
   const currentProfile = WORLD_PROFILES[activeWorldId];
 
@@ -561,13 +629,41 @@ export default function TemplatesPage() {
             </span>
           </div>
 
+          {/* Category Filter Pills (Milestone 4 Atmospheric Categories) */}
+          <div
+            role="tablist"
+            aria-label="Filter atmosphere categories"
+            className="flex flex-wrap items-center justify-center gap-2 mb-6"
+          >
+            {CATEGORIES.map((category) => {
+              const isSelected = selectedCategory === category;
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  role="tab"
+                  aria-selected={isSelected}
+                  data-testid={`filter-${category.toLowerCase()}`}
+                  onClick={() => handleSelectCategory(category)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider transition-all cursor-pointer ${
+                    isSelected
+                      ? "bg-rose-500/80 text-white border border-rose-400/50 shadow-md scale-105"
+                      : "bg-white/[0.06] text-rose-200/70 border border-white/10 hover:bg-white/15 hover:text-white"
+                  }`}
+                >
+                  {category}
+                </button>
+              );
+            })}
+          </div>
+
           {/* Freely Breathing Keepsake Tokens (Spatial Constellation - World Selection) */}
           <div
             role="radiogroup"
             aria-label="Living atmosphere selection"
             className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 py-2"
           >
-            {ORDERED_WORLD_KEYS.map((worldKey) => {
+            {filteredWorldKeys.map((worldKey) => {
               const isActive = activeWorldId === worldKey;
               const profile = WORLD_PROFILES[worldKey];
 
@@ -1328,7 +1424,7 @@ export default function TemplatesPage() {
       </section>
 
       {/* ========================================================================= */}
-      {/* 7. IMMERSIVE LIVING SANCTUARY ENVIRONMENT (Zero Modal Box)                 */}
+      {/* 7. IMMERSIVE LIVING SANCTUARY ENVIRONMENT (Shared ExperienceRenderer Preview) */}
       {/* ========================================================================= */}
       <AnimatePresence>
         {isFullPreviewOpen && (
@@ -1341,15 +1437,88 @@ export default function TemplatesPage() {
             {/* Ambient vignette */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.85)_100%)]" />
 
+            {/* TOP BANNER: Clearly labels sample preview */}
+            <div className="relative z-10 w-full bg-gradient-to-r from-rose-950/90 via-amber-950/90 to-rose-950/90 border-b border-rose-500/20 px-4 py-2 flex items-center justify-between text-xs font-mono text-rose-200">
+              <div className="flex items-center gap-2 mx-auto sm:mx-0">
+                <span className="w-2 h-2 rounded-full bg-rose-400 animate-pulse" />
+                <span className="tracking-wide">✦ Sample Preview — Fictional Data ✦</span>
+                <span className="hidden sm:inline text-rose-200/60 font-sans italic text-[11px]">
+                  (Showing authentic recipient experience with sample data)
+                </span>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 text-[11px] text-rose-200/60">
+                <span>Press</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white font-mono text-[10px]">
+                  ESC
+                </kbd>
+                <span>to return</span>
+              </div>
+            </div>
+
             {/* Top Bar: Floating directly on atmosphere */}
-            <header className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-6 flex items-center justify-between">
+            <header className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-10 py-4 flex items-center justify-between gap-4">
               <div className="space-y-0.5">
                 <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-rose-300/80 block">
                   Immersive Sanctuary Preview
                 </span>
                 <span className="text-xs font-serif italic text-rose-200/60">
-                  Living Atmospheric Environment
+                  {currentProfile.name} · Living Atmospheric Environment
                 </span>
+              </div>
+
+              {/* Center Mode & Viewport Switcher */}
+              <div className="hidden md:flex items-center gap-2">
+                <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full border border-white/15">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewView("live")}
+                    className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                      previewView === "live"
+                        ? "bg-rose-500/80 text-white shadow-sm"
+                        : "text-rose-200/70 hover:text-white"
+                    }`}
+                  >
+                    ✦ Live Experience
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewView("essence")}
+                    className={`px-3 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                      previewView === "essence"
+                        ? "bg-rose-500/80 text-white shadow-sm"
+                        : "text-rose-200/70 hover:text-white"
+                    }`}
+                  >
+                    Atmosphere Essence
+                  </button>
+                </div>
+
+                {previewView === "live" && (
+                  <div className="flex items-center gap-1 bg-white/10 p-1 rounded-full border border-white/15">
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDevice("desktop")}
+                      className={`px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                        previewDevice === "desktop"
+                          ? "bg-white/20 text-white"
+                          : "text-rose-200/70 hover:text-white"
+                      }`}
+                    >
+                      🖥 Full
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPreviewDevice("mobile")}
+                      className={`px-2.5 py-1 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                        previewDevice === "mobile"
+                          ? "bg-white/20 text-white"
+                          : "text-rose-200/70 hover:text-white"
+                      }`}
+                    >
+                      📱 Mobile
+                    </button>
+                  </div>
+                )}
               </div>
 
               <button
@@ -1362,52 +1531,91 @@ export default function TemplatesPage() {
               </button>
             </header>
 
-            {/* Center Stage: The World's Voice Living in Deep Space */}
-            <main className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-12 my-auto text-center space-y-8 animate-fade-in">
-              <div className="space-y-3">
-                <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center text-rose-200/90">
-                  <WorldArtifactMark worldId={currentProfile.id} className="w-10 h-10" />
-                </div>
-                <h3 className="text-4xl sm:text-6xl md:text-7xl font-serif font-normal text-white tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
-                  {currentProfile.name}
-                </h3>
-                {currentProfile.jpName && (
-                  <p className="text-2xl text-emerald-300/80 font-serif font-light">
-                    {currentProfile.jpName}
-                  </p>
+            {/* Center Stage: Live ExperienceRenderer or Essence */}
+            {previewView === "live" ? (
+              <main className="relative z-10 w-full flex-1 overflow-y-auto px-4 py-2 flex flex-col items-center justify-start">
+                {previewDevice === "mobile" ? (
+                  <div className="w-full max-w-[390px] my-auto bg-black border-[5px] border-neutral-800 rounded-[36px] shadow-2xl overflow-hidden relative min-h-[680px] max-h-[75vh] flex flex-col">
+                    <div className="w-full h-5 bg-neutral-900 flex items-center justify-center select-none shrink-0">
+                      <div className="w-16 h-3 bg-black rounded-full" />
+                    </div>
+                    <div className="flex-1 overflow-y-auto bg-black text-white relative">
+                      <ExperienceRenderer
+                        templateId={activeWorldId}
+                        templateVersion="v1"
+                        mode="preview"
+                        rawConfig={currentSampleConfig}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full max-w-4xl my-auto bg-black/60 rounded-2xl border border-white/15 shadow-2xl overflow-hidden relative max-h-[75vh] overflow-y-auto">
+                    <ExperienceRenderer
+                      templateId={activeWorldId}
+                      templateVersion="v1"
+                      mode="preview"
+                      rawConfig={currentSampleConfig}
+                    />
+                  </div>
                 )}
-                <p className="text-base sm:text-xl font-serif italic text-rose-200/90 max-w-xl mx-auto">
-                  &ldquo;{currentProfile.tagline}&rdquo;
-                </p>
-              </div>
+              </main>
+            ) : (
+              <main className="relative z-10 w-full max-w-4xl mx-auto px-6 sm:px-12 my-auto text-center space-y-8 animate-fade-in">
+                <div className="space-y-3">
+                  <div className="w-12 h-12 mx-auto mb-2 flex items-center justify-center text-rose-200/90">
+                    <WorldArtifactMark worldId={currentProfile.id} className="w-10 h-10" />
+                  </div>
+                  <h3 className="text-4xl sm:text-6xl md:text-7xl font-serif font-normal text-white tracking-tight drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
+                    {currentProfile.name}
+                  </h3>
+                  {currentProfile.jpName && (
+                    <p className="text-2xl text-emerald-300/80 font-serif font-light">
+                      {currentProfile.jpName}
+                    </p>
+                  )}
+                  <p className="text-base sm:text-xl font-serif italic text-rose-200/90 max-w-xl mx-auto">
+                    &ldquo;{currentProfile.tagline}&rdquo;
+                  </p>
+                </div>
 
-              {/* The Environmental Quote (Floating free in space, no interior box) */}
-              <div className="max-w-2xl mx-auto py-6 sm:py-8 border-y border-white/15">
-                <p className="text-lg sm:text-2xl md:text-3xl font-serif text-rose-100 font-light leading-relaxed drop-shadow-md">
-                  &ldquo;{currentProfile.previewQuote}&rdquo;
-                </p>
-                <p className="mt-4 text-xs sm:text-sm text-rose-300 font-mono tracking-wider uppercase">
-                  — {currentProfile.sampleSender}
-                </p>
-              </div>
+                {/* The Environmental Quote (Floating free in space, no interior box) */}
+                <div className="max-w-2xl mx-auto py-6 sm:py-8 border-y border-white/15">
+                  <p className="text-lg sm:text-2xl md:text-3xl font-serif text-rose-100 font-light leading-relaxed drop-shadow-md">
+                    &ldquo;{currentProfile.previewQuote}&rdquo;
+                  </p>
+                  <p className="mt-4 text-xs sm:text-sm text-rose-300 font-mono tracking-wider uppercase">
+                    — {currentProfile.sampleSender}
+                  </p>
+                </div>
 
-              <p className="text-xs font-mono uppercase tracking-[0.25em] text-rose-200/50">
-                {currentProfile.feeling}
-              </p>
-            </main>
+                <p className="text-xs font-mono uppercase tracking-[0.25em] text-rose-200/50">
+                  {currentProfile.feeling}
+                </p>
+              </main>
+            )}
 
             {/* Bottom Bar: Action Floating over Atmosphere */}
-            <footer className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
+            <footer className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-10 py-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/10">
               <div className="text-xs text-rose-200/60 font-mono">
                 Press <kbd className="px-2 py-0.5 rounded bg-white/10 text-white font-mono text-[10px]">ESC</kbd> to return
               </div>
 
-              <AtmosphericButton
-                href={`/create?template=${activeWorldId}`}
-                worldId={activeWorldId}
-                worldName={currentProfile.name}
-                label={`Start Creating in ${currentProfile.name} →`}
-              />
+              <div className="flex items-center gap-3">
+                <Link
+                  href={`/create/${activeWorldId}`}
+                  data-testid="select-template-btn"
+                  className="px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-wider text-white bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-400 hover:to-rose-500 shadow-lg hover:scale-105 transition-all"
+                >
+                  Use This Atmosphere →
+                </Link>
+
+                <AtmosphericButton
+                  href={`/create?template=${activeWorldId}`}
+                  worldId={activeWorldId}
+                  worldName={currentProfile.name}
+                  label={`Start Creating in ${currentProfile.name} →`}
+                />
+              </div>
             </footer>
           </div>
         )}

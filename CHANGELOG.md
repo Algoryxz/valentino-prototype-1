@@ -2,6 +2,15 @@
 
 All notable changes to this project are recorded here. Format: Keep a Changelog. Versioning: none yet (prototype).
 
+## [M4 - Gallery and Landing] - 2026-10-23
+### Added
+- **Template Discovery & Category Filtering**: Implemented accessible category filtering (`All`, `Cinematic`, `Dreamy`, `Immersive`, `Analog`, `Botanical`, `Oceanic`) in `/templates` wired to `listActiveTemplates()`.
+- **Live Preview System**: Embedded shared `<ExperienceRenderer mode="preview">` inside the live sanctuary preview modal, driven by realistic schema-valid sample data for all 6 active templates (`midnight-rose`, `cloud-nine`, `kage`, `apricot-film`, `wildflower-paper`, `ocean-letter`).
+- **Sample Preview Labeling**: Clear notification banner (`✦ Sample Preview — Fictional Data ✦`) distinguishing preview data from the recipient experience.
+- **Direct Template Selection Route**: Implemented `/create/[templateId]` with server-side validation against `getTemplateDefinition()`, HttpOnly edit cookie provisioning, and seamless redirect to `/edit/[publicId]`.
+- **Friendly Fallback UI**: Graceful error card (`data-testid="template-not-found-card"`) with "Browse Available Atmospheres" CTA when invalid or inactive templates are requested.
+- **Test Coverage**: Added comprehensive Playwright E2E suite (`tests/e2e/m4-gallery-selection.spec.ts`) and unit test suite (`tests/unit/template-sample-data.test.ts`), verifying category filtering, live preview, direct creation, and fallback behavior.
+
 ## [M1 - Walking Skeleton] - 2026-09-19
 ### Added
 - **Walking Skeleton End-to-End**: Next.js 15, React 19, TypeScript, Tailwind CSS, Prisma ORM, SQLite/Postgres.
