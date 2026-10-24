@@ -53,12 +53,18 @@ test.describe("Milestone 5 — Quality and Polish Suite", () => {
       const modal = page.locator('div[role="dialog"][aria-modal="true"]');
       await expect(modal).toBeVisible();
 
-      // Focus should be inside modal
-      const activeElementInModal = await page.evaluate(() => {
-        const dialog = document.querySelector('div[role="dialog"][aria-modal="true"]');
-        return dialog ? dialog.contains(document.activeElement) : false;
-      });
-      expect(activeElementInModal).toBe(true);
+      // Focus should be inside modal (using web-first retrying assertion)
+      await expect
+        .poll(
+          async () => {
+            return await page.evaluate(() => {
+              const dialog = document.querySelector('div[role="dialog"][aria-modal="true"]');
+              return dialog ? dialog.contains(document.activeElement) : false;
+            });
+          },
+          { message: "Expected focus to be trapped inside modal", timeout: 7000 }
+        )
+        .toBe(true);
 
       // Press Tab multiple times to verify focus wraps around within modal
       for (let i = 0; i < 5; i++) {
@@ -70,16 +76,30 @@ test.describe("Milestone 5 — Quality and Polish Suite", () => {
         expect(isStillInModal).toBe(true);
       }
 
+      // Press Shift+Tab to verify backward focus wrap
+      await page.keyboard.press("Shift+Tab");
+      const isStillInModalShift = await page.evaluate(() => {
+        const dialog = document.querySelector('div[role="dialog"][aria-modal="true"]');
+        return dialog ? dialog.contains(document.activeElement) : false;
+      });
+      expect(isStillInModalShift).toBe(true);
+
       // Press Escape to dismiss modal
       await page.keyboard.press("Escape");
       await expect(modal).not.toBeVisible();
 
-      // Focus must be restored to the opening trigger button
-      const isFocusRestored = await page.evaluate(() => {
-        const active = document.activeElement;
-        return active && active.textContent?.includes("Enter");
-      });
-      expect(isFocusRestored).toBe(true);
+      // Focus must be restored to the opening trigger button (using web-first retrying assertion)
+      await expect
+        .poll(
+          async () => {
+            return await page.evaluate(() => {
+              const active = document.activeElement;
+              return active && active.textContent?.includes("Enter");
+            });
+          },
+          { message: "Expected focus to be restored to trigger button", timeout: 7000 }
+        )
+        .toBe(true);
     });
   });
 

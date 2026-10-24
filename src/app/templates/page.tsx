@@ -514,10 +514,16 @@ export default function TemplatesPage() {
     const modalEl = modalRef.current;
     if (!modalEl) return;
 
-    // Selector for interactive/focusable elements
+    // Selector for interactive/focusable elements (filtering out hidden or display:none elements)
     const getFocusable = () =>
-      modalEl.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      Array.from(
+        modalEl.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(
+        (el) =>
+          (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0) &&
+          !el.closest("[aria-hidden='true']")
       );
 
     // Initial focus on opening modal
