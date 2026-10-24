@@ -1468,7 +1468,7 @@ export default function TemplatesPage() {
               <p className="text-xs text-rose-100/70 font-light leading-relaxed">
                 {world.atmosphere}
               </p>
-              <div className="pt-2 text-[10px] text-rose-200/50 font-mono flex items-center justify-between">
+              <div className="pt-2 text-[10px] text-rose-200/75 font-mono flex items-center justify-between">
                 <span>{world.signature}</span>
                 <span className="italic">In Atelier</span>
               </div>
@@ -1649,7 +1649,7 @@ export default function TemplatesPage() {
                   </p>
                 </div>
 
-                <p className="text-xs font-mono uppercase tracking-[0.25em] text-rose-200/50">
+                <p className="text-xs font-mono uppercase tracking-[0.25em] text-rose-200/75">
                   {currentProfile.feeling}
                 </p>
               </main>

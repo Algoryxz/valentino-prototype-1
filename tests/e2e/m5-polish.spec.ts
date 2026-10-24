@@ -25,6 +25,16 @@ test.describe("Milestone 5 — Quality and Polish Suite", () => {
       expect(twitterCard).toBe("summary_large_image");
       expect(twitterImage).toContain("/og-share-card.png");
     });
+
+    test("public experience route outputs generic title and zero personal metadata in static SSR head", async ({ request }) => {
+      const res = await request.get("/v/sample-test-experience-privacy-check");
+      const html = await res.text();
+
+      // Invariant: SSR head must never contain personalized name patterns or leaks
+      expect(html).not.toContain("<title>A Valentine for ");
+      expect(html).not.toContain("<title>A Celestial Valentine for ");
+      expect(html).not.toContain("<title>A Kyoto Sanctuary Valentine for ");
+    });
   });
 
   test.describe("2. Accessibility Focus Trap & Restoration in Template Gallery", () => {

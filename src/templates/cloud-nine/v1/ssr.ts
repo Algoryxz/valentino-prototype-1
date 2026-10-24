@@ -75,7 +75,7 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Celestial Valentine for ${partnerName} — Valentino</title>
+  <title>A Valentine Experience — Valentino</title>
   ${getPublicSharingMetaHtml(publicId, "A dreamy celestial Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <style>
@@ -615,6 +615,10 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
         var wishMsg = document.getElementById('celestial-wish-msg');
 
         if (!sealBox || !letterBox) return;
+
+        try {
+          document.title = "A Celestial Valentine for ${partnerName} — Valentino";
+        } catch (e) {}
 
         function unseal() {
           sealBox.classList.add('hidden');

@@ -67,4 +67,36 @@ describe("Social Sharing & Metadata Helper (Decision D4)", () => {
     expect(metaHtml).toContain("&quot;sanctuary&quot;");
     expect(metaHtml).toContain("&lt;script&gt;");
   });
+
+  it("ensures SSR templates emit generic <title> in <head> to prevent crawler partner name leakage", async () => {
+    const { renderCloudNineSsrHtml } = await import("@/templates/cloud-nine/v1/ssr");
+    const { renderKageSsrHtml } = await import("@/templates/kage/v1/ssr");
+
+    const sampleCloudConfig: any = {
+      partnerName: "SecretPartnerJane",
+      senderName: "DevotedPartnerJohn",
+      message: "Secret love message",
+    };
+
+    const cloudHtml = renderCloudNineSsrHtml(sampleCloudConfig, "cloud-test-id");
+    const headSectionCloud = cloudHtml.split("</head>")[0];
+
+    // Static SSR <title> must be generic so crawlers that ignore OG never see the partner name
+    expect(headSectionCloud).toContain("<title>A Valentine Experience — Valentino</title>");
+    expect(headSectionCloud).not.toContain("SecretPartnerJane");
+    expect(headSectionCloud).toContain('property="og:title" content="A Valentine Experience"');
+
+    const sampleKageConfig: any = {
+      partnerName: "SecretPartnerJane",
+      senderName: "DevotedPartnerJohn",
+      message: "Secret love message",
+    };
+
+    const kageHtml = renderKageSsrHtml(sampleKageConfig, "kage-test-id");
+    const headSectionKage = kageHtml.split("</head>")[0];
+
+    expect(headSectionKage).toContain("<title>A Valentine Experience — Valentino</title>");
+    expect(headSectionKage).not.toContain("SecretPartnerJane");
+    expect(headSectionKage).toContain('property="og:title" content="A Valentine Experience"');
+  });
 });

@@ -458,7 +458,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Valentine for ${partnerName} — Valentino</title>
+  <title>A Valentine Experience — Valentino</title>
   ${getPublicSharingMetaHtml(publicId)}
   <link rel="icon" href="/favicon.ico" />
   <style>
@@ -962,6 +962,10 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
         var resealBtn = document.getElementById('reseal-btn');
         var musicBtn = document.getElementById('soundtrack-toggle');
         if (!sealBox || !letterBox) return;
+
+        try {
+          document.title = "A Valentine for ${partnerName} — Valentino";
+        } catch (e) {}
 
         function unseal() {
           sealBox.classList.add('hidden');

@@ -25,7 +25,7 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Kyoto Sanctuary Valentine for ${partnerName} — Valentino</title>
+  <title>A Valentine Experience — Valentino</title>
   ${getPublicSharingMetaHtml(publicId, "A tranquil Kyoto mountain sanctuary Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <link rel="stylesheet" href="/landing-pages/secret-pathways-assets/fonts.css" />
@@ -251,6 +251,9 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
   <script>
     (function() {
       function setup() {
+        try {
+          document.title = "A Kyoto Sanctuary Valentine for ${partnerName} — Valentino";
+        } catch (e) {}
         var musicBtn = document.getElementById('soundtrack-toggle');
         if (musicBtn) {
           var url = musicBtn.getAttribute('data-soundtrack-url');
