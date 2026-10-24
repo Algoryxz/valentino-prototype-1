@@ -10,7 +10,8 @@ function CreateExperienceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
-  const [templateId, setTemplateId] = useState("midnight-rose");
+  const initialTemplate = searchParams.get("template") || searchParams.get("templateId") || "midnight-rose";
+  const [templateId, setTemplateId] = useState(initialTemplate);
   const creationPromiseRef = useRef<Promise<string> | null>(null);
 
   useEffect(() => {

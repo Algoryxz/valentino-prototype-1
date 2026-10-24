@@ -11,7 +11,6 @@ export function middleware(request: NextRequest) {
   const scriptDirectives = [
     "'self'",
     `'nonce-${nonce}'`,
-    "'strict-dynamic'",
     ...(isDev ? ["'unsafe-eval'"] : []),
   ].join(" ");
 

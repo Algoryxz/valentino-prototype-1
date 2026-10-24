@@ -19,7 +19,7 @@ Valentino handles deeply personal romantic messages, names, and memories. A crit
 | Threat Vector | Potential Impact | Implemented Mitigation |
 | :--- | :--- | :--- |
 | **Stored XSS & HTML Injection** | Malicious script execution in recipient's browser | Strict context-aware HTML entity escaping (`escapeHtml`, `escapeHtmlAttr`); safe script serialization (`safeJsonForScript`); URL protocol sanitization (`sanitizeUrl`); zero `dangerouslySetInnerHTML`. |
-| **Script Execution & Clickjacking** | Unauthorized script execution or framing attacks | Dynamic nonce-based Content Security Policy (`script-src 'self' 'nonce-...' 'strict-dynamic'`); `frame-ancestors 'none'`; `X-Frame-Options: DENY`. |
+| **Script Execution & Clickjacking** | Unauthorized script execution or framing attacks | Dynamic nonce-based Content Security Policy (`script-src 'self' 'nonce-...'`); `frame-ancestors 'none'`; `X-Frame-Options: DENY`. |
 | **Link Enumeration & Guessing** | Strangers discovering private love letters | High-entropy 128-bit unguessable identifiers (`nanoid` custom alphabet); no public listing, sitemap, or directory of created experiences. |
 | **Credential & Edit Theft** | Unauthorized tampering or deletion of letters | 256-bit random edit secrets; HMAC-SHA256 hashed with server-side pepper; constant-time comparison; scoped `__Host-` cookies; zero credential leakage in JSON/DOM/logs. |
 | **Search Engine Scraping** | Intimate letters appearing in Google search results | Strict `X-Robots-Tag: noindex, nofollow` headers; `<meta name="robots" content="noindex">`; `Cache-Control: no-store` on all sensitive views. |
@@ -71,7 +71,7 @@ Every request passes through Next.js middleware which injects security headers:
 * **Strict Directives:**
   ```text
   default-src 'self';
-  script-src 'self' 'nonce-<dynamic>' 'strict-dynamic';
+  script-src 'self' 'nonce-<dynamic>';
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://res.cloudinary.com;
   media-src 'self' blob: data: https://res.cloudinary.com;
