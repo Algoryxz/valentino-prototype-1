@@ -210,6 +210,7 @@ function EditExperienceContent() {
   const [publishModalOpen, setPublishModalOpen] = useState(false);
   const [publishErrors, setPublishErrors] = useState<string[]>([]);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [experienceStatus, setExperienceStatus] = useState<string>("DRAFT");
   const [publicUrl, setPublicUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [mobileTab, setMobileTab] = useState<"form" | "preview">("form");
@@ -435,6 +436,9 @@ function EditExperienceContent() {
           const initialRev = data.draftRevision ?? data.revision ?? 1;
           setRevision(initialRev);
           revisionRef.current = initialRev;
+          if (data.status) {
+            setExperienceStatus(data.status);
+          }
           setSaveStatus("saved");
           setIsLoading(false);
         }
@@ -687,6 +691,7 @@ function EditExperienceContent() {
 
       const data = await res.json();
       setPublicUrl(data.publicUrl || `${window.location.origin}/v/${publicId}`);
+      setExperienceStatus("PUBLISHED");
       setPublishModalOpen(true);
     } catch (err) {
       setPublishErrors(["A network error occurred while publishing. Please try again."]);
@@ -1759,6 +1764,7 @@ function EditExperienceContent() {
                 <PreviewAndSendSection
                   publicId={publicId}
                   partnerName={config.partnerName}
+                  status={experienceStatus}
                   soundtrackUrl={config.soundtrackUrl}
                   scheduledUnlockAt={config.scheduledUnlockAt}
                   onSoundtrackChange={(url) => handleConfigChange((prev) => ({ ...prev, soundtrackUrl: url }))}
