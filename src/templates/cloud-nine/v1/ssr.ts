@@ -8,6 +8,7 @@ import {
   PRINT_MEDIA_STYLES,
   getModulesClientScript,
 } from "@/modules/ssrModules";
+import { getPublicSharingMetaHtml } from "@/lib/metadata";
 
 const THEME_ACCENTS: Record<
   string,
@@ -74,11 +75,8 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Celestial Valentine for ${partnerName} — Valentino</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="A Valentine Experience" />
-  <meta property="og:description" content="A dreamy celestial Valentine experience." />
-  <meta property="og:type" content="website" />
+  <title>A Valentine Experience — Valentino</title>
+  ${getPublicSharingMetaHtml(publicId, "A dreamy celestial Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -617,6 +615,10 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
         var wishMsg = document.getElementById('celestial-wish-msg');
 
         if (!sealBox || !letterBox) return;
+
+        try {
+          document.title = "A Celestial Valentine for ${partnerName} — Valentino";
+        } catch (e) {}
 
         function unseal() {
           sealBox.classList.add('hidden');

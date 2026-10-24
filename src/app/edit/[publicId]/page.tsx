@@ -1175,7 +1175,7 @@ function EditExperienceContent() {
                       type="button"
                       data-testid="section-change-world-trigger"
                       onClick={() => setWorldModalOpen(true)}
-                      className="min-h-[36px] py-1 px-2.5 text-[11px] font-mono text-white/50 hover:text-white underline cursor-pointer flex items-center"
+                      className="min-h-[44px] py-1 px-2.5 text-[11px] font-mono text-white/50 hover:text-white underline cursor-pointer flex items-center"
                     >
                       All Worlds ⇄
                     </button>
@@ -1435,7 +1435,7 @@ function EditExperienceContent() {
                               decor: { ...normalizeValentineDecor(prev.decor), paper: paper.id },
                             }))
                           }
-                          className={`min-h-[38px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
+                          className={`min-h-[44px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
                             isSelected
                               ? `${accents.border} bg-white/[0.06] text-white font-medium shadow-sm`
                               : "border-transparent bg-transparent text-white/50 hover:text-white hover:bg-white/[0.02]"
@@ -1476,7 +1476,7 @@ function EditExperienceContent() {
                               decor: { ...normalizeValentineDecor(prev.decor), ribbon: ribbon.id },
                             }))
                           }
-                          className={`min-h-[38px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
+                          className={`min-h-[44px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
                             isSelected
                               ? `${accents.border} bg-white/[0.06] text-white font-medium shadow-sm`
                               : "border-transparent bg-transparent text-white/50 hover:text-white hover:bg-white/[0.02]"
@@ -1521,7 +1521,7 @@ function EditExperienceContent() {
                               },
                             }))
                           }
-                          className={`min-h-[38px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
+                          className={`min-h-[44px] px-3 py-1.5 rounded-lg border text-xs flex items-center gap-2 transition-all cursor-pointer font-serif ${
                             isSelected
                               ? `${accents.border} bg-white/[0.06] text-white font-medium shadow-sm`
                               : "border-transparent bg-transparent text-white/50 hover:text-white hover:bg-white/[0.02]"
@@ -1684,7 +1684,7 @@ function EditExperienceContent() {
                               accentTheme: theme as AccentTheme,
                             }))
                           }
-                          className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-serif border flex items-center gap-2 transition-all cursor-pointer ${
+                          className={`min-h-[44px] px-3 py-1.5 rounded-lg text-xs font-serif border flex items-center gap-2 transition-all cursor-pointer ${
                             isSelected
                               ? `${accents.border} bg-white/[0.06] text-white font-medium shadow-sm`
                               : "border-transparent bg-transparent text-white/50 hover:text-white hover:bg-white/[0.02]"

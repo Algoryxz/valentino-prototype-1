@@ -1,4 +1,5 @@
 import { sanitizeText } from "@/lib/sanitize";
+import { getPublicSharingMetaHtml } from "@/lib/metadata";
 import { KagePublishedConfig } from "./schema";
 import {
   renderModulesHtml,
@@ -24,11 +25,8 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>A Kyoto Sanctuary Valentine for ${partnerName} — Valentino</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="A Valentine Experience" />
-  <meta property="og:description" content="A tranquil Kyoto mountain sanctuary Valentine experience." />
-  <meta property="og:type" content="website" />
+  <title>A Valentine Experience — Valentino</title>
+  ${getPublicSharingMetaHtml(publicId, "A tranquil Kyoto mountain sanctuary Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <link rel="stylesheet" href="/landing-pages/secret-pathways-assets/fonts.css" />
   <style>
@@ -253,6 +251,9 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
   <script>
     (function() {
       function setup() {
+        try {
+          document.title = "A Kyoto Sanctuary Valentine for ${partnerName} — Valentino";
+        } catch (e) {}
         var musicBtn = document.getElementById('soundtrack-toggle');
         if (musicBtn) {
           var url = musicBtn.getAttribute('data-soundtrack-url');

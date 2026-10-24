@@ -2,6 +2,15 @@
 
 All notable changes to this project are recorded here. Format: Keep a Changelog. Versioning: none yet (prototype).
 
+## [M5 - Quality and Polish] - 2026-10-24
+### Added & Improved
+- **Decision D4 Social Sharing & Open Graph Metadata**: Created official high-resolution social share card (`public/og-share-card.png`, 1200x630) and implemented shared metadata utility (`src/lib/metadata.ts`). Enforced Decision D4 strict invariant: link previews on `/v/[publicId]` strictly present generic metadata (`og:title="A Valentine Experience"`), preventing chat crawlers (iMessage, WhatsApp, Telegram, Signal) from caching or leaking private partner names.
+- **Accessibility & Modal Focus Trapping**: Implemented keyboard focus trapping and Escape focus restoration for the sanctuary preview modal in `/templates`. Added ARIA dialog attributes (`role="dialog"`, `aria-modal="true"`, `aria-label`) and high-contrast visible focus rings (`focus-visible:ring-rose-400`).
+- **Mobile Touch Ergonomics**: Standardized interactive touch targets across studio editor chips, theme options, and world triggers to meet the 44px minimum touch recommendation (`min-h-[44px]`), and verified 0 horizontal scroll overflow on mobile viewports (360x640).
+- **Motion Ergonomics (`prefers-reduced-motion`)**: Verified `prefers-reduced-motion: reduce` suppresses CSS transitions/animations globally, disables pulse halos, and immediately unseals letters for recipients with motion sensitivities.
+- **Editorial Error Handling**: Verified 404 (`Lost in Starlight`) and error boundaries present calm, non-technical copy with zero stack trace or internal detail leakage.
+- **Test Coverage**: Added unit test suite `tests/unit/metadata.test.ts` (123/123 passing) and Playwright E2E suite `tests/e2e/m5-polish.spec.ts`.
+
 ## [M4 - Gallery and Landing] - 2026-10-23
 ### Added
 - **Template Discovery & Category Filtering**: Implemented accessible category filtering (`All`, `Cinematic`, `Dreamy`, `Immersive`, `Analog`, `Botanical`, `Oceanic`) in `/templates` wired to `listActiveTemplates()`.

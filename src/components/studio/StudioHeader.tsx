@@ -66,7 +66,7 @@ export const StudioHeader: React.FC<StudioHeaderProps> = ({
             type="button"
             data-testid="change-world-trigger"
             onClick={onChangeWorldClick}
-            className="relative z-10 flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 rounded-full text-[10px] sm:text-[11px] font-ui bg-white/[0.05] hover:bg-white/[0.1] text-white/85 hover:text-white border border-white/[0.1] transition-all cursor-pointer shrink-0"
+            className="relative z-10 flex items-center gap-1 sm:gap-1.5 px-2.5 py-1 min-h-[44px] rounded-full text-[10px] sm:text-[11px] font-ui bg-white/[0.05] hover:bg-white/[0.1] text-white/85 hover:text-white border border-white/[0.1] transition-all cursor-pointer shrink-0 focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none"
             title="Switch visual world template"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0" />
