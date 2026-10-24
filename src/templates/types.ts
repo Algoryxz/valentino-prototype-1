@@ -41,5 +41,5 @@ export interface TemplateDefinition<TDraft = any, TPublished = any> {
   previewAsset?: string;
   migrateConfig?: (fromVersion: string, toVersion: string, rawConfig: unknown) => unknown;
 
-  renderSsrHtml?: (config: TPublished, publicId?: string) => string;
+  renderSsrHtml?: (config: TPublished, publicId?: string, nonce?: string) => string;
 }
