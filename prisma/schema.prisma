@@ -40,6 +40,7 @@ model Experience {
   media                  ExperienceMedia[]
   reactions              ExperienceReaction[]
   replies                ExperienceReply[]
+  reports                ExperienceReport[]
 
   @@index([publicId])
   @@index([status])
@@ -104,4 +105,19 @@ model ExperienceReply {
   createdAt    DateTime   @default(now())
 
   @@index([experienceId])
+}
+
+model ExperienceReport {
+  id           String     @id @default(cuid())
+  experienceId String
+  experience   Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
+
+  reason       String
+  details      String?
+  reporterHash String
+  status       String     @default("PENDING")
+  createdAt    DateTime   @default(now())
+
+  @@index([experienceId])
+  @@index([status])
 }
