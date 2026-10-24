@@ -20,6 +20,7 @@ import {
   PRINT_MEDIA_STYLES,
   getModulesClientScript,
 } from "@/modules/ssrModules";
+import { getPublicSharingMetaHtml } from "@/lib/metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -458,10 +459,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A Valentine for ${partnerName} — Valentino</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="A Valentine Experience" />
-  <meta property="og:description" content="A personal, romantic Valentine experience." />
-  <meta property="og:type" content="website" />
+  ${getPublicSharingMetaHtml(publicId)}
   <link rel="icon" href="/favicon.ico" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

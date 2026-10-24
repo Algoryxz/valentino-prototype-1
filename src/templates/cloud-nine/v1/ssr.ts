@@ -8,6 +8,7 @@ import {
   PRINT_MEDIA_STYLES,
   getModulesClientScript,
 } from "@/modules/ssrModules";
+import { getPublicSharingMetaHtml } from "@/lib/metadata";
 
 const THEME_ACCENTS: Record<
   string,
@@ -75,10 +76,7 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A Celestial Valentine for ${partnerName} — Valentino</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="A Valentine Experience" />
-  <meta property="og:description" content="A dreamy celestial Valentine experience." />
-  <meta property="og:type" content="website" />
+  ${getPublicSharingMetaHtml(publicId, "A dreamy celestial Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

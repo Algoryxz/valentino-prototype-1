@@ -15,6 +15,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.APP_URL || "https://valentino-prototype-1.vercel.app"),
   title: "Valentino — Interactive Romantic Experience Studio",
   description: "Create private, unforgettable interactive romantic worlds — letters, memories, timelines, quizzes, and secret moments.",
   robots: {
@@ -24,7 +25,24 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Valentino — Interactive Romantic Experience Studio",
     description: "Create private, unforgettable interactive romantic worlds — letters, memories, timelines, quizzes, and secret moments.",
+    url: "/",
+    siteName: "Valentino",
+    images: [
+      {
+        url: "/og-share-card.png",
+        width: 1200,
+        height: 630,
+        alt: "Valentino — A Valentine Experience",
+      },
+    ],
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Valentino — Interactive Romantic Experience Studio",
+    description: "Create private, unforgettable interactive romantic worlds — letters, memories, timelines, quizzes, and secret moments.",
+    images: ["/og-share-card.png"],
   },
 };
 

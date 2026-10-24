@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
@@ -386,6 +386,8 @@ export default function TemplatesPage() {
   const [activeOceanRevealed, setActiveOceanRevealed] = useState(false);
   const [activeKagePreview, setActiveKagePreview] = useState(false);
   const [isFullPreviewOpen, setIsFullPreviewOpen] = useState(false);
+  const previewTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [previewView, setPreviewView] = useState<"live" | "essence">("live");
   const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
@@ -505,18 +507,66 @@ export default function TemplatesPage() {
     targetElement?.scrollIntoView({ behavior: "smooth" });
   };
 
-  // Keyboard navigation for modal
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setIsFullPreviewOpen(false);
-      setActiveKagePreview(false);
-    }
-  }, []);
-
+  // Keyboard focus trap & restoration for full sanctuary preview modal
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleKeyDown]);
+    if (!isFullPreviewOpen) return;
+
+    const modalEl = modalRef.current;
+    if (!modalEl) return;
+
+    // Selector for interactive/focusable elements
+    const getFocusable = () =>
+      modalEl.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+
+    // Initial focus on opening modal
+    const focusables = getFocusable();
+    if (focusables.length > 0) {
+      focusables[0].focus();
+    } else {
+      modalEl.focus();
+    }
+
+    const handleModalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsFullPreviewOpen(false);
+        setActiveKagePreview(false);
+        previewTriggerRef.current?.focus();
+        return;
+      }
+
+      if (e.key === "Tab") {
+        const elements = getFocusable();
+        if (elements.length === 0) {
+          e.preventDefault();
+          return;
+        }
+
+        const first = elements[0];
+        const last = elements[elements.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first || !modalEl.contains(document.activeElement)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else {
+          if (document.activeElement === last || !modalEl.contains(document.activeElement)) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleModalKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleModalKeyDown);
+      previewTriggerRef.current?.focus();
+    };
+  }, [isFullPreviewOpen]);
 
   return (
     <main
@@ -871,9 +921,13 @@ export default function TemplatesPage() {
 
                   {/* Secondary Immersion Button (Opens Full Preview Modal) */}
                   <button
+                    ref={previewTriggerRef}
                     type="button"
-                    onClick={() => setIsFullPreviewOpen(true)}
-                    className="px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-wider text-rose-100/90 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all cursor-pointer shadow-sm hover:-translate-y-0.5 active:translate-y-0"
+                    onClick={(e) => {
+                      previewTriggerRef.current = e.currentTarget;
+                      setIsFullPreviewOpen(true);
+                    }}
+                    className="px-5 py-2.5 rounded-full text-xs font-medium uppercase tracking-wider text-rose-100/90 hover:text-white bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all cursor-pointer shadow-sm hover:-translate-y-0.5 active:translate-y-0 focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:outline-none"
                   >
                     Enter {currentProfile.name}
                   </button>
@@ -1428,7 +1482,14 @@ export default function TemplatesPage() {
       {/* ========================================================================= */}
       <AnimatePresence>
         {isFullPreviewOpen && (
-          <div className="fixed inset-0 z-modal overflow-hidden bg-black/95 backdrop-blur-3xl animate-fade-in flex flex-col justify-between">
+          <div
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${currentProfile.name} Sanctuary Preview`}
+            tabIndex={-1}
+            className="fixed inset-0 z-modal overflow-hidden bg-black/95 backdrop-blur-3xl animate-fade-in flex flex-col justify-between focus:outline-none"
+          >
             {/* World Atmospheric Bloom filling the entire screen */}
             <div
               className="absolute inset-0 pointer-events-none opacity-40 transition-colors duration-1000 blur-3xl scale-125"

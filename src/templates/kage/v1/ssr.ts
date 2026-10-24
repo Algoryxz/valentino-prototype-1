@@ -1,4 +1,5 @@
 import { sanitizeText } from "@/lib/sanitize";
+import { getPublicSharingMetaHtml } from "@/lib/metadata";
 import { KagePublishedConfig } from "./schema";
 import {
   renderModulesHtml,
@@ -25,10 +26,7 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>A Kyoto Sanctuary Valentine for ${partnerName} — Valentino</title>
-  <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="A Valentine Experience" />
-  <meta property="og:description" content="A tranquil Kyoto mountain sanctuary Valentine experience." />
-  <meta property="og:type" content="website" />
+  ${getPublicSharingMetaHtml(publicId, "A tranquil Kyoto mountain sanctuary Valentine experience.")}
   <link rel="icon" href="/favicon.ico" />
   <link rel="stylesheet" href="/landing-pages/secret-pathways-assets/fonts.css" />
   <style>
