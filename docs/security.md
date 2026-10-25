@@ -100,8 +100,9 @@ Every request passes through Next.js middleware which injects security headers:
 
 1. **Disable Public Link**: `PATCH /api/experiences/[publicId]/status` with `{ "status": "DISABLED" }`. The public route immediately serves an honest deactivated notice (HTTP 410) without deleting data. The creator can re-enable at any time.
 2. **Permanent Deletion**: `DELETE /api/experiences/[publicId]`.
-   - **Reliable Physical Media Cleanup**: Queries all associated `ExperienceMedia` records and invokes `mediaStorage.delete(storageKey)` with retry logic before deleting database records.
-   - **Zero Orphaned Files**: If any storage file fails to delete, database deletion is aborted and HTTP 500 is returned, ensuring no unreferenced files linger in Cloudinary or local storage.
+   - **Pre-Deletion Deactivation**: Automatically transitions the experience status to `DISABLED` in the database before physical media cleanup begins. This ensures that the public route (`/v/[publicId]`) immediately ceases serving the experience (returning HTTP 410 Gone), preventing public visitors from ever encountering 404 broken images if storage cleanup or database deletion encounters a partial failure.
+   - **Reliable Physical Media Cleanup**: Queries all associated `ExperienceMedia` records and invokes `mediaStorage.delete(storageKey)` with retry logic and idempotent absence checks. If any file fails to delete, the experience remains safely disabled, and the creator is provided an honest error to retry deletion.
+   - **Cascading Database Deletion**: Removes the database record (cascading media, replies, reactions, and reports) only after physical storage cleanup succeeds.
    - **Cookie Erasure**: Clears the creator edit token cookie upon successful deletion.
 
 ---

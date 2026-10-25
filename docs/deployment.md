@@ -10,7 +10,7 @@ Valentino Prototype 1 is architected as a modular Next.js App Router monolith de
 ---
 
 ## 2. Environments & Database Isolation
-CRITICAL: Production, Preview, and Local environments must **never** share a database or media bucket.
+CRITICAL: Production, Preview, and Local environments must **never** share a database instance or media bucket.
 - **Production (`main` branch)**:
   - Deployed automatically when owner merges PR into `main`.
   - Connected to dedicated Production PostgreSQL database.
@@ -18,10 +18,14 @@ CRITICAL: Production, Preview, and Local environments must **never** share a dat
 - **Preview (Feature branches & Pull Requests)**:
   - Deployed automatically by Vercel on feature branch pushes.
   - Connected to dedicated Preview PostgreSQL database / isolated schema.
-  - Migrations in Preview environments cannot mutate or impact Production.
+  - The Preview `DATABASE_URL` must **never** point to the live production database.
+  - Preview deployments do **not** automatically run database migrations (see Section 5).
 - **Local Development / CI**:
   - Hermetic PostgreSQL in Docker / local environment.
   - Local filesystem or memory media storage (`STORAGE_PROVIDER=local` or `memory`).
+
+> [!IMPORTANT]
+> **Owner External Verification Requirement**: Source code controls alone cannot guarantee database isolation because environment variable bindings reside in external Vercel project settings. The repository owner must independently verify in the Vercel Dashboard that `DATABASE_URL` for the Preview environment scope is completely separate from the Production database connection string.
 
 ---
 
@@ -32,7 +36,7 @@ CRITICAL: Production, Preview, and Local environments must **never** share a dat
 
 | Variable Name | Environment Scope | Required Value / Description |
 |---|---|---|
-| `DATABASE_URL` | Production / Preview | Managed PostgreSQL connection string with SSL mode (`sslmode=require`) and connection pooling |
+| `DATABASE_URL` | Production / Preview | Managed PostgreSQL connection string with SSL mode (`sslmode=require`) and connection pooling. **Preview and Production MUST use separate connection strings/instances.** |
 | `APP_URL` | Production | Canonical public URL (e.g. `https://valentino.love` or `https://valentino-prototype-1.vercel.app`) |
 | `EDIT_SECRET_PEPPER` | Production / Preview | High-entropy cryptographic random string (min 32 bytes hex) used for keyed HMAC edit token hashing and reporter IP privacy hashing |
 | `STORAGE_PROVIDER` | Production | Set to `cloudinary` for production media storage |
@@ -65,12 +69,19 @@ Before applying any migration to the production database:
 ## 5. Non-Destructive Migration & Build Procedure
 Vercel executes the automated build script defined in `package.json`:
 ```json
-"vercel-build": "prisma generate && prisma migrate deploy && next build"
+"vercel-build": "node scripts/vercel-build.mjs"
 ```
 When Vercel builds the deployment:
-1. `prisma generate`: Generates the type-safe Prisma Client matching the current schema.
-2. `prisma migrate deploy`: Applies unapplied migrations from `prisma/migrations/` in transaction blocks against `DATABASE_URL`.
-3. `next build`: Generates the optimized production application bundle, prerendering static pages and validating TypeScript types.
+1. **Prisma Generation**: Always runs `npx prisma generate` to generate the type-safe client matching the schema.
+2. **Conditional Migration Execution**:
+   - **Production releases (`VERCEL_ENV === "production"`)**: Executes `npx prisma migrate deploy` to automatically apply unapplied forward migrations against the production database in transaction blocks.
+   - **Preview builds (`VERCEL_ENV === "preview"` or non-production)**: **Skips** automatic `prisma migrate deploy` with an explicit build notice. This prevents feature branch builds and PR previews from mutating or migrating any database automatically.
+3. **Applying Migrations to Preview Databases**:
+   - When preview testing requires schema updates, the release operator applies migrations to the isolated preview database manually or via a dedicated preview deploy step:
+     ```bash
+     DATABASE_URL="<preview_database_connection_string>" pnpm db:migrate
+     ```
+4. **Next.js Production Build**: Runs `npx next build` to optimize bundles, prerender pages, and validate TypeScript.
 
 ---
 

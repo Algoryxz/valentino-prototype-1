@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { ExperienceStatus } from "@prisma/client";
 import { verifyEditCredential } from "@/lib/security";
 import {
   getEditCredentialFromRequest,
@@ -113,8 +114,33 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     );
   }
 
-  // 6. Reliable physical media cleanup
-  // To avoid orphaned files, delete all physical media before removing the database records.
+  // 6. Persist transition to DISABLED before physical media cleanup begins.
+  // This guarantees that /v/[publicId] immediately ceases serving the experience
+  // (returning HTTP 410 Gone). If physical media cleanup or subsequent database
+  // deletion fails, the public link will never be left serving broken media.
+  if (experience.status !== ExperienceStatus.DISABLED) {
+    try {
+      await db.experience.update({
+        where: { id: experience.id },
+        data: { status: ExperienceStatus.DISABLED },
+      });
+      experience.status = ExperienceStatus.DISABLED;
+    } catch (err: unknown) {
+      serverLogger.error("Failed to disable experience prior to media deletion", {
+        publicId,
+        error: err instanceof Error ? err.message : "Unknown error",
+      });
+
+      return NextResponse.json(
+        { error: "A database error occurred while initiating deletion. Please retry." },
+        { status: 500, headers: { "Cache-Control": "no-store" } }
+      );
+    }
+  }
+
+  // 7. Reliable physical media cleanup
+  // Attempt physical storage cleanup through existing storage adapter.
+  // Retries are safe and idempotent because cleanupStorageAsset checks for existing absence.
   const failedCleanups: Array<{ key: string; error?: string }> = [];
 
   for (const media of experience.media) {
@@ -133,13 +159,14 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json(
       {
         error:
-          "Failed to cleanly remove one or more associated media files. Experience was not deleted to prevent orphaned files; please retry.",
+          "Failed to cleanly remove one or more associated media files. The experience has been disabled and public access removed; please retry deletion.",
       },
       { status: 500, headers: { "Cache-Control": "no-store" } }
     );
   }
 
-  // 7. Delete database record (cascading deletes media, replies, reactions, reports)
+  // 8. Delete database record (cascading deletes media, replies, reactions, reports)
+  // Only reached when all storage cleanup has succeeded.
   try {
     await db.experience.delete({
       where: { id: experience.id },
@@ -170,13 +197,36 @@ export async function DELETE(req: NextRequest, { params }: RouteParams) {
 
     return response;
   } catch (err: unknown) {
+    // Handle concurrent deletion where record was already removed
+    if ((err as { code?: string })?.code === "P2025") {
+      const response = NextResponse.json(
+        {
+          success: true,
+          message: "Experience and all associated media have been permanently deleted.",
+        },
+        { status: 200, headers: { "Cache-Control": "no-store" } }
+      );
+      const cookieName = getCookieName(publicId);
+      response.cookies.set(cookieName, "", {
+        maxAge: 0,
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax",
+        secure: isProduction(),
+      });
+      return response;
+    }
+
     serverLogger.error("Error deleting experience record from database", {
       publicId,
       error: err instanceof Error ? err.message : "Unknown error",
     });
 
     return NextResponse.json(
-      { error: "A database error occurred during deletion. Please retry." },
+      {
+        error:
+          "All media files were cleaned up, but a database error occurred while removing the experience record. The experience remains disabled; please retry.",
+      },
       { status: 500, headers: { "Cache-Control": "no-store" } }
     );
   }
