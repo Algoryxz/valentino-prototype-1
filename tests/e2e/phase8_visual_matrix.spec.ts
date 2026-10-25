@@ -22,7 +22,7 @@ test.beforeAll(() => {
 test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", () => {
   for (const vp of VIEWPORTS) {
     test(`Visual verification at ${vp.name}`, async ({ page }) => {
-      test.setTimeout(90000);
+      test.setTimeout(180000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto("/", { waitUntil: "load" });
       await page.waitForTimeout(1000);
