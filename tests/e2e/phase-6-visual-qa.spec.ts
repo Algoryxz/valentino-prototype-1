@@ -28,7 +28,7 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
   // 1. Homepage & Showroom across all required viewports
   for (const vp of viewports) {
     test(`Capture Homepage & Showroom at ${vp.name}`, async ({ page }) => {
-      test.setTimeout(120000);
+      test.setTimeout(60000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto(`${APP_URL}/`, { waitUntil: "load" });
       await page.waitForSelector("header, nav, #personalize", { state: "attached" });
@@ -116,7 +116,8 @@ test.describe("Phase 6 UI/UX Renaissance Comprehensive Visual QA", () => {
       // Switch to Kage world for contrasting material inspection
       const kageRadio = page.locator('button[aria-label="Select Kage atmosphere"]');
       if (await kageRadio.isVisible()) {
-        await kageRadio.click();
+        await kageRadio.scrollIntoViewIfNeeded();
+        await kageRadio.click({ timeout: 5000 });
         await page.waitForTimeout(800);
         await page.screenshot({
           path: path.join(QA_DIR, `03b_world_showroom_kage_${vp.name}.png`),
