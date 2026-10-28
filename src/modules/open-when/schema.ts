@@ -32,7 +32,7 @@ export const openWhenDraftSchema = z.object({
   enabled: z.boolean().default(false),
   title: graphemeMax(100).default("Open When..."),
   subtitle: graphemeMax(200).default("Envelopes for the days ahead"),
-  envelopes: z.array(openWhenEnvelopeDraftSchema).default([
+  envelopes: z.array(openWhenEnvelopeDraftSchema).max(30).default([
     {
       id: "env-1",
       title: "Open when you miss me",
@@ -73,7 +73,7 @@ export const openWhenPublishSchema = z.object({
   enabled: z.boolean().default(false),
   title: z.string().max(100).default("Open When..."),
   subtitle: z.string().max(200).default("Envelopes for the days ahead"),
-  envelopes: z.array(openWhenEnvelopePublishSchema).default([]),
+  envelopes: z.array(openWhenEnvelopePublishSchema).max(30).default([]),
 });
 
 export type OpenWhenPublishedConfig = z.infer<typeof openWhenPublishSchema>;

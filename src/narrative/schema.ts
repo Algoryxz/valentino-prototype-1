@@ -14,7 +14,7 @@ export const storyChapterSchema = z.object({
   id: z.string().min(1),
   title: graphemeMax(100).default("Chapter"),
   subtitle: graphemeMax(200).optional(),
-  moduleRefs: z.array(z.string()).default([]),
+  moduleRefs: z.array(z.string()).max(20).default([]),
   order: z.number().int().default(0),
 });
 
@@ -77,7 +77,7 @@ export type EmotionalRecapConfig = z.infer<typeof emotionalRecapDraftSchema>;
 
 // Narrative Draft Schema
 export const narrativeDraftSchema = z.object({
-  chapters: z.array(storyChapterSchema).optional(),
+  chapters: z.array(storyChapterSchema).max(20).optional(),
   pacing: z.enum(NARRATIVE_PACING_OPTIONS).optional().default("balanced"),
   welcome: personalWelcomeDraftSchema.optional(),
   closing: personalClosingDraftSchema.optional(),
@@ -87,7 +87,7 @@ export const narrativeDraftSchema = z.object({
 
 // Narrative Publish Schema
 export const narrativePublishSchema = z.object({
-  chapters: z.array(storyChapterSchema).default([]),
+  chapters: z.array(storyChapterSchema).max(20).default([]),
   pacing: z.enum(NARRATIVE_PACING_OPTIONS).default("balanced"),
   welcome: personalWelcomePublishSchema.optional(),
   closing: personalClosingPublishSchema.optional(),

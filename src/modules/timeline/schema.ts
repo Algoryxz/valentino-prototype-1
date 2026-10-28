@@ -36,7 +36,7 @@ export const timelineDraftSchema = z.object({
   enabled: z.boolean().default(false),
   title: graphemeMax(100).default("Timeline of Us"),
   subtitle: graphemeMax(200).default("The milestones that shaped our story"),
-  items: z.array(timelineItemDraftSchema).default([]),
+  items: z.array(timelineItemDraftSchema).max(50).default([]),
 });
 
 export type TimelineDraftConfig = z.infer<typeof timelineDraftSchema>;
@@ -61,7 +61,7 @@ export const timelinePublishSchema = z.object({
   enabled: z.boolean().default(false),
   title: z.string().max(100).default("Timeline of Us"),
   subtitle: z.string().max(200).default("The milestones that shaped our story"),
-  items: z.array(timelineItemPublishSchema).default([]),
+  items: z.array(timelineItemPublishSchema).max(50).default([]),
 });
 
 export type TimelinePublishedConfig = z.infer<typeof timelinePublishSchema>;
