@@ -1,4 +1,9 @@
-import { sanitizeText } from "@/lib/sanitize";
+import {
+  sanitizeText as baseSanitizeText,
+  escapeHtml,
+  escapeHtmlAttr,
+  sanitizeUrl,
+} from "@/lib/sanitize";
 import { CloudNinePublishedConfig } from "./schema";
 import { resolveTemplateDecor } from "../../shared/compatibility";
 import {
@@ -9,6 +14,13 @@ import {
   getModulesClientScript,
 } from "@/modules/ssrModules";
 import { getPublicSharingMetaHtml } from "@/lib/metadata";
+
+function sanitizeText(
+  input: string | null | undefined,
+  options?: { allowNewlines?: boolean }
+): string {
+  return escapeHtml(baseSanitizeText(input || "", options));
+}
 
 const THEME_ACCENTS: Record<
   string,
@@ -43,7 +55,7 @@ const THEME_ACCENTS: Record<
   },
 };
 
-export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicId: string = ""): string {
+export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicId: string = "", nonce?: string): string {
   const theme = THEME_ACCENTS[config.accentTheme || "blush-sky"] || THEME_ACCENTS["blush-sky"];
   const greeting = sanitizeText(config.greeting || "To My Sweetest Soul");
   const partnerName = sanitizeText(config.partnerName || "Dearest");
@@ -470,7 +482,7 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
 
     <div class="top-bar">
       <div class="top-label">Celestial Love Letter</div>
-      <button type="button" id="soundtrack-toggle" data-soundtrack-url="${sanitizeText((config as any).soundtrackUrl || '')}" aria-label="Play soundtrack" class="music-btn">
+      <button type="button" id="soundtrack-toggle" data-soundtrack-url="${escapeHtmlAttr(sanitizeUrl((config as any).soundtrackUrl || ''))}" aria-label="Play soundtrack" class="music-btn">
         <span style="font-size: 0.8rem;">♡</span>
         <span>${(config as any).soundtrackUrl ? 'Play Music' : 'Our Song'}</span>
       </button>
@@ -603,7 +615,7 @@ export function renderCloudNineSsrHtml(config: CloudNinePublishedConfig, publicI
     <div data-layer="5-foreground-wrap" class="foreground-wrap-layer" aria-hidden="true"></div>
   </div>
 
-  <script>
+  <script${nonce ? ` nonce="${nonce}"` : ""}>
     (function() {
       function setup() {
         var sealBox = document.querySelector('[data-testid="seal-container"]');

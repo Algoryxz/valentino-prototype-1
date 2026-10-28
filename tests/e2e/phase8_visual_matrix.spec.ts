@@ -22,9 +22,9 @@ test.beforeAll(() => {
 test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", () => {
   for (const vp of VIEWPORTS) {
     test(`Visual verification at ${vp.name}`, async ({ page }) => {
-      test.setTimeout(300000);
+      test.setTimeout(180000);
       await page.setViewportSize({ width: vp.width, height: vp.height });
-      await page.goto("/", { waitUntil: "networkidle" });
+      await page.goto("/", { waitUntil: "load" });
       await page.waitForTimeout(1000);
 
       // Helper function to scroll to exact progress inside any scroll-driven section
@@ -192,7 +192,7 @@ test.describe("Phase 8.5 Cinematic Worlds & Physical Stationery Visual Matrix", 
 
   test("Test interactive states on Discovered Objects (Desktop)", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/", { waitUntil: "networkidle" });
+    await page.goto("/", { waitUntil: "load" });
     await page.waitForTimeout(1000);
 
     const moments = page.locator("#moments");

@@ -2,6 +2,18 @@
 
 All notable changes to this project are recorded here. Format: Keep a Changelog. Versioning: none yet (prototype).
 
+## [M6 - Hardening & Release Preparation] - 2026-10-24
+### Security & Infrastructure Hardening
+- **Stored XSS Remediation**: Implemented central HTML entity escaping utilities (`escapeHtml`, `escapeHtmlAttr`, `safeJsonForScript`, `sanitizeUrl`) in `src/lib/sanitize.ts`. Hardened all SSR rendering routes (`/v/[publicId]`, `Cloud Nine`, `Kage`, modules) against script breakouts, SVG vectors, and event handler injection while preserving multilingual Unicode, Hindi, punctuation, and emoji.
+- **Dynamic Nonce Content Security Policy (CSP)**: Generated cryptographic 128-bit random nonces in middleware, applied `script-src 'self' 'nonce-...' 'strict-dynamic'`, `style-src 'self' 'unsafe-inline'`, `img-src 'self' blob: data: https://res.cloudinary.com`, `media-src 'self' blob: data: https://res.cloudinary.com`, `object-src 'none'`, `frame-ancestors 'none'`, and `X-Frame-Options: DENY`.
+- **Abuse Reporting Workflow**: Added `ExperienceReport` Prisma model and forward-only additive migration `20261024225500_add_experience_report`. Built `POST /api/experiences/[publicId]/report` with Zod validation, canonical Origin verification, 5/hr rate limits, and privacy-preserving pepper-keyed reporter IP hashing. Integrated accessible report dialog into recipient view.
+- **Creator Management & Deletion Safety**: Added `PATCH /api/experiences/[publicId]/status` (disable/re-enable public link) and `DELETE /api/experiences/[publicId]`. Built safe physical media cleanup with pre-deletion deactivation (`status = DISABLED`) to prevent serving broken media on failure, idempotent retry semantics, and Vercel Preview migration gating (`VERCEL_ENV=production` required for `prisma migrate deploy`).
+- **Studio Danger Zone UI**: Added accessible "Manage Experience & Access" section to the Studio editor with disable/re-enable triggers, permanent delete modal dialog with confirmation, and safe return to `/templates`.
+- **Infrastructure Resilience**: Added calm 500 error boundary on `/v/[publicId]` when the database is unreachable without leaking internal diagnostics; added database readiness check to `/api/health`.
+- **Unified Rate Limiting**: Migrated reactions and replies routes onto the central `rateLimiter` abstraction with standardized 429 responses and `Retry-After` headers.
+- **Next.js Security Upgrade**: Upgraded Next.js from `15.2.8` to patched release `15.5.28` (and PostCSS to `8.5.31`), dropping audit vulnerabilities from 43 to 0 critical.
+- **Architecture Decisions & Runbooks**: Settled D1 (retaining "Valentino" codename), recorded ADR-0008 (Vercel + Managed PostgreSQL + Cloudinary), settled D6 (proprietary licensing in ADR-0009), and updated `docs/deployment.md` with complete pre-migration backup and post-deployment smoke-test runbooks.
+
 ## [M5 - Quality and Polish] - 2026-10-24
 ### Added & Improved
 - **Decision D4 Social Sharing & Open Graph Metadata**: Created official high-resolution social share card (`public/og-share-card.png`, 1200x630) and implemented shared metadata utility (`src/lib/metadata.ts`). Enforced Decision D4 strict invariant: link previews on `/v/[publicId]` strictly present generic metadata (`og:title="A Valentine Experience"`), preventing chat crawlers (iMessage, WhatsApp, Telegram, Signal) from caching or leaking private partner names.

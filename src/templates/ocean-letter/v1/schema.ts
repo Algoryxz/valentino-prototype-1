@@ -38,7 +38,7 @@ export const oceanLetterDraftSchema = z.object({
   soundtrackUrl: z.string().max(500).optional().nullable(),
   decor: valentineDecorSchema,
   modules: modulesDraftSchema,
-  moduleOrder: z.array(z.string()).optional(),
+  moduleOrder: z.array(z.string()).max(20).optional(),
   narrative: narrativeDraftSchema.optional(),
 });
 
@@ -55,7 +55,7 @@ export const oceanLetterPublishSchema = z.object({
   soundtrackUrl: z.string().max(500).optional().nullable(),
   decor: valentineDecorSchema,
   modules: modulesPublishSchema,
-  moduleOrder: z.array(z.string()).optional(),
+  moduleOrder: z.array(z.string()).max(20).optional(),
   narrative: narrativePublishSchema.optional(),
 });
 

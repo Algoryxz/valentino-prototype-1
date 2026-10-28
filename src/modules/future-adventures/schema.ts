@@ -28,8 +28,8 @@ export const futureAdventuresDraftSchema = z
     enabled: z.boolean().default(false),
     title: graphemeMax(100).optional().default("Future Adventures"),
     subtitle: graphemeMax(200).optional().default("Places we'll go, memories we've made, and dreams yet to unfold"),
-    items: z.array(adventureItemDraftSchema).optional().default([]),
-    adventures: z.array(adventureItemDraftSchema).optional(),
+    items: z.array(adventureItemDraftSchema).max(50).optional().default([]),
+    adventures: z.array(adventureItemDraftSchema).max(50).optional(),
   })
   .passthrough();
 
@@ -38,8 +38,8 @@ export const futureAdventuresPublishSchema = z
     enabled: z.boolean(),
     title: graphemeMax(100).optional().default("Future Adventures"),
     subtitle: graphemeMax(200).optional(),
-    items: z.array(adventureItemPublishSchema).optional().default([]),
-    adventures: z.array(adventureItemPublishSchema).optional(),
+    items: z.array(adventureItemPublishSchema).max(50).optional().default([]),
+    adventures: z.array(adventureItemPublishSchema).max(50).optional(),
   })
   .passthrough();
 

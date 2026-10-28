@@ -25,8 +25,8 @@ export const promisesDraftSchema = z
     enabled: z.boolean().default(false),
     title: graphemeMax(100).optional().default("Our Promise Wall"),
     subtitle: graphemeMax(200).optional().default("Words etched into our shared future"),
-    items: z.array(promiseItemDraftSchema).optional().default([]),
-    promises: z.array(promiseItemDraftSchema).optional(),
+    items: z.array(promiseItemDraftSchema).max(50).optional().default([]),
+    promises: z.array(promiseItemDraftSchema).max(50).optional(),
   })
   .passthrough();
 
@@ -35,8 +35,8 @@ export const promisesPublishSchema = z
     enabled: z.boolean(),
     title: graphemeMax(100).optional().default("Our Promise Wall"),
     subtitle: graphemeMax(200).optional(),
-    items: z.array(promiseItemPublishSchema).optional().default([]),
-    promises: z.array(promiseItemPublishSchema).optional(),
+    items: z.array(promiseItemPublishSchema).max(50).optional().default([]),
+    promises: z.array(promiseItemPublishSchema).max(50).optional(),
   })
   .passthrough();
 

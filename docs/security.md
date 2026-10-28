@@ -18,12 +18,15 @@ Valentino handles deeply personal romantic messages, names, and memories. A crit
 
 | Threat Vector | Potential Impact | Implemented Mitigation |
 | :--- | :--- | :--- |
-| **Stored XSS & HTML Injection** | Malicious script execution in recipient's browser | Strict plain-text React escaping; no `dangerouslySetInnerHTML`; server-authoritative Zod validation; Unicode grapheme boundary length limits. |
+| **Stored XSS & HTML Injection** | Malicious script execution in recipient's browser | Strict context-aware HTML entity escaping (`escapeHtml`, `escapeHtmlAttr`); safe script serialization (`safeJsonForScript`); URL protocol sanitization (`sanitizeUrl`); zero `dangerouslySetInnerHTML`. |
+| **Script Execution & Clickjacking** | Unauthorized script execution or framing attacks | Dynamic nonce-based Content Security Policy (`script-src 'self' 'nonce-...'`); `frame-ancestors 'none'`; `X-Frame-Options: DENY`. |
 | **Link Enumeration & Guessing** | Strangers discovering private love letters | High-entropy 128-bit unguessable identifiers (`nanoid` custom alphabet); no public listing, sitemap, or directory of created experiences. |
 | **Credential & Edit Theft** | Unauthorized tampering or deletion of letters | 256-bit random edit secrets; HMAC-SHA256 hashed with server-side pepper; constant-time comparison; scoped `__Host-` cookies; zero credential leakage in JSON/DOM/logs. |
 | **Search Engine Scraping** | Intimate letters appearing in Google search results | Strict `X-Robots-Tag: noindex, nofollow` headers; `<meta name="robots" content="noindex">`; `Cache-Control: no-store` on all sensitive views. |
-| **Cross-Site Request Forgery (CSRF)** | Third-party sites modifying or publishing drafts | Origin verification on all state-changing endpoints (`POST`, `PUT`, `DELETE`); strict canonical host matching in production; rejection with `403 Forbidden`. |
+| **Cross-Site Request Forgery (CSRF)** | Third-party sites modifying or publishing drafts | Origin verification on all state-changing endpoints (`POST`, `PATCH`, `DELETE`); strict canonical host matching in production; rejection with `403 Forbidden`. |
 | **Concurrent Overwrite Races** | Lost edits when editing across tabs or devices | Integer revision tracking (`draftRevision`); optimistic concurrency checks reject out-of-order writes with `409 Conflict`. |
+| **Unchecked Media & Exploits** | Decompression bombs, SVG malware, EXIF leakage | Server-side MIME magic byte verification; re-encoding to strip EXIF GPS metadata; strict 10 MB caps; random UUID storage keys. |
+| **Content Abuse & Harassment** | Non-consensual content or abusive public links | Discreet in-experience reporting modal (`POST /api/experiences/[publicId]/report`); rate-limited; privacy-preserving pepper-keyed reporter hashing. |
 
 ---
 
@@ -54,33 +57,58 @@ The public recipient route operates under a zero-trust model:
 * **Ignores Edit Cookies:** The route handler completely ignores any edit cookie present in the request. A creator viewing their own published link sees exactly what a recipient sees, with zero creator privileges active.
 * **True HTTP Status Codes:**
   * `404 Not Found` — Experience does not exist or has never been published.
-  * `410 Gone` — Experience has been explicitly disabled or deleted by the author.
+  * `410 Gone` — Experience has been explicitly disabled by the author.
+  * `500 Internal Server Error` — Database or infrastructure outage (rendered via calm fallback screen; never misleads visitors that the experience was deleted).
   * `200 OK` — Experience is actively published.
 * **Strict Cache Controls:** Emits `Cache-Control: no-store` to prevent intermediary proxies, CDNs, or browser caches from retaining private correspondence after deletion or modification.
 
 ---
 
-## 5. Origin & CSRF Defense
+## 5. Content Security Policy (CSP) & Defense-in-Depth
 
-All mutating API endpoints (`/api/experiences/*`) validate incoming requests:
-* **Production:** The `Origin` header must strictly match the canonical `APP_URL`.
-* **Vercel Previews:** The `Origin` header is dynamically validated against the verified deployment host (`x-forwarded-host`).
-* **Untrusted Origins:** Requests from external domains or missing valid origins are rejected immediately with `403 Forbidden`.
+Every request passes through Next.js middleware which injects security headers:
+* **Dynamic Nonce:** Every request generates a cryptographically secure 128-bit nonce (`x-nonce`), attached to the CSP and forwarded to SSR scripts.
+* **Strict Directives:**
+  ```text
+  default-src 'self';
+  script-src 'self' 'nonce-<dynamic>';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' blob: data: https://res.cloudinary.com;
+  media-src 'self' blob: data: https://res.cloudinary.com;
+  font-src 'self' data:;
+  connect-src 'self';
+  object-src 'none';
+  base-uri 'self';
+  frame-ancestors 'none';
+  ```
+* **Framing Defense:** `X-Frame-Options: DENY` and `frame-ancestors 'none'` prevent embedding in malicious iframes.
+* **MIME Sniffing Defense:** `X-Content-Type-Options: nosniff`.
 
 ---
 
-## 6. Content Sanitization & Data Integrity
+## 6. Abuse Reporting & Content Moderation
 
-1. **Plain-Text Only:** All user fields (partner names, sender signatures, greetings, letters) are treated strictly as plain text. Rendering is handled through React's native string encoding.
-2. **Length & Grapheme Limits:** Validated using server-authoritative Zod schemas. Multi-byte Unicode characters, emojis, and combined grapheme clusters are measured accurately using `Intl.Segmenter` to prevent layout breaks or database buffer overflows.
-3. **Strict Publish Schema:** While drafts permit partial or empty fields for effortless auto-saving, publishing requires satisfying the strict `publishSchema` (mandatory partner name, sender name, message body, and valid theme tokens).
-4. **Normalized Snapshots:** Publishing takes an immutable snapshot of normalized configuration, detaching the public experience from subsequent in-progress draft revisions.
+1. **Endpoint**: `POST /api/experiences/[publicId]/report`
+2. **Rate Limiting**: Strictly capped at 5 reports per hour per client IP via the central rate limiter, returning HTTP 429 with `Retry-After`.
+3. **Privacy-Preserving Reporter ID**: Client IP addresses are never stored in raw form. They are hashed using HMAC-SHA-256 keyed with `EDIT_SECRET_PEPPER`:
+   $$\text{reporterHash} = \text{HMAC-SHA256}(\text{clientIp}, \text{EDIT\_SECRET\_PEPPER})$$
+4. **Data Privacy**: Report details are stored in the `ExperienceReport` table with default status `PENDING`. Reports are never disclosed in creator interfaces or public endpoints.
 
 ---
 
-## 7. Operational Security & Reporting
+## 7. Creator Management: Disable & Reliable Media Erasure
 
-* **Secrets in Code:** Checked against git commits with automated pre-commit scanning. Secret scanning and push protection are active on GitHub.
-* **Dependencies:** Automated security scans and Dependabot alerts are enabled. Next.js and core packages are pinned to patched, vulnerability-free releases.
-* **Security Contact:** For vulnerability disclosures or abuse reports regarding hosted experiences, please submit an issue on the canonical repository: [Lurkaee/valentino-prototype-1](https://github.com/Lurkaee/valentino-prototype-1).
+1. **Disable Public Link**: `PATCH /api/experiences/[publicId]/status` with `{ "status": "DISABLED" }`. The public route immediately serves an honest deactivated notice (HTTP 410) without deleting data. The creator can re-enable at any time.
+2. **Permanent Deletion**: `DELETE /api/experiences/[publicId]`.
+   - **Pre-Deletion Deactivation**: Automatically transitions the experience status to `DISABLED` in the database before physical media cleanup begins. This ensures that the public route (`/v/[publicId]`) immediately ceases serving the experience (returning HTTP 410 Gone), preventing public visitors from ever encountering 404 broken images if storage cleanup or database deletion encounters a partial failure.
+   - **Reliable Physical Media Cleanup**: Queries all associated `ExperienceMedia` records and invokes `mediaStorage.delete(storageKey)` with retry logic and idempotent absence checks. If any file fails to delete, the experience remains safely disabled, and the creator is provided an honest error to retry deletion.
+   - **Cascading Database Deletion**: Removes the database record (cascading media, replies, reactions, and reports) only after physical storage cleanup succeeds.
+   - **Cookie Erasure**: Clears the creator edit token cookie upon successful deletion.
 
+---
+
+## 8. Operational Security & Incident Reporting
+
+* **Secrets in Code:** Automated pre-commit scanning, Git secret prevention, and zero committed `.env` files.
+* **Dependencies:** Regularly audited via `pnpm audit --prod`. Next.js is pinned to patched versions (`>=15.5.28`).
+* **Security Contact:** For vulnerability disclosures or abuse reports regarding hosted experiences, please submit an issue on the canonical repository: [Algoryxz/valentino-prototype-1](https://github.com/Algoryxz/valentino-prototype-1).

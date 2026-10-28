@@ -25,8 +25,8 @@ export interface TemplateDefinition<TDraft = any, TPublished = any> {
   availability?: TemplateAvailability;
   category?: string;
   supportedModules?: string[];
-  draftSchema: z.ZodType<TDraft, z.ZodTypeDef, any>;
-  publishSchema: z.ZodType<TPublished, z.ZodTypeDef, any>;
+  draftSchema: z.ZodType<TDraft, any>;
+  publishSchema: z.ZodType<TPublished, any>;
   defaultConfig: TDraft;
   normalizeConfig: (raw: unknown, isPublic?: boolean) => TPublished;
   Component: React.ComponentType<TemplateRenderProps<TPublished>>;
@@ -41,5 +41,5 @@ export interface TemplateDefinition<TDraft = any, TPublished = any> {
   previewAsset?: string;
   migrateConfig?: (fromVersion: string, toVersion: string, rawConfig: unknown) => unknown;
 
-  renderSsrHtml?: (config: TPublished, publicId?: string) => string;
+  renderSsrHtml?: (config: TPublished, publicId?: string, nonce?: string) => string;
 }

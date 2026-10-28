@@ -5,7 +5,7 @@ export const fortuneCookieDraftSchema = z.object({
   enabled: z.boolean().default(false),
   title: graphemeMax(100).optional().default("A Fortune For Us"),
   subtitle: graphemeMax(200).optional().default("Crack open the cookie to reveal what destiny has in store"),
-  fortunes: z.array(graphemeMax(300)).default([]),
+  fortunes: z.array(graphemeMax(300)).max(50).default([]),
 });
 
 export const fortuneCookiePublishSchema = z.object({
@@ -13,7 +13,7 @@ export const fortuneCookiePublishSchema = z.object({
   title: graphemeMax(100).optional().default("A Fortune For Us"),
   subtitle: graphemeMax(200).optional(),
   fortunes: z.array(graphemeMax(300)).optional().default([]),
-  items: z.array(graphemeMax(300)).optional(),
+  items: z.array(graphemeMax(300)).max(50).optional(),
 });
 
 export type FortuneCookieDraftConfig = z.infer<typeof fortuneCookieDraftSchema>;

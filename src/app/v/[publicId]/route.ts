@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { ExperienceStatus } from "@prisma/client";
-import { sanitizeText } from "@/lib/sanitize";
+import {
+  sanitizeText,
+  escapeHtml,
+  escapeHtmlAttr,
+  safeJsonForScript,
+  sanitizeUrl,
+} from "@/lib/sanitize";
+import { logger } from "@/lib/logger";
 import { getTemplateDefinition, midnightRoseV1 } from "@/templates/registry";
 import {
   normalizeValentineDecor,
@@ -195,7 +202,93 @@ function render410Html(): string {
 </html>`;
 }
 
-function renderLockedCountdownHtml(unlockAt: Date, publicId: string): string {
+function render500Html(nonce?: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Momentarily Resting — Valentino</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0A090C;
+      background-image: radial-gradient(ellipse at 50% 20%, #17151D 0%, #0A090C 80%, #050507 100%);
+      color: #FAF8F5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 1.5rem;
+    }
+    .card {
+      max-width: 28rem;
+      width: 100%;
+      padding: 2.75rem 2rem;
+      background: rgba(22, 20, 28, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    h1 {
+      font-family: Georgia, Cambria, 'Times New Roman', serif;
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+      color: #FAF8F5;
+      letter-spacing: -0.02em;
+    }
+    p {
+      font-size: 0.875rem;
+      color: #9A94A7;
+      margin-bottom: 1.75rem;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+    button {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, #FAF8F5 0%, #E5DFC9 100%);
+      color: #0A090C;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.12);
+      transition: all 0.2s ease;
+    }
+    button:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div class="card" data-testid="service-interrupted-500-container">
+    <div class="icon">✨</div>
+    <h1>Momentarily Resting Under the Stars</h1>
+    <p>We encountered a brief interruption connecting to this romantic experience. Please refresh in a moment.</p>
+    <button type="button" id="refresh-page-btn">Refresh Page</button>
+  </div>
+  <script${nonce ? ` nonce="${nonce}"` : ""}>
+    document.getElementById('refresh-page-btn')?.addEventListener('click', function() {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>`;
+}
+
+function renderLockedCountdownHtml(unlockAt: Date, publicId: string, nonce?: string): string {
   const targetIso = unlockAt.toISOString();
   return `<!DOCTYPE html>
 <html lang="en">
@@ -325,7 +418,7 @@ function renderLockedCountdownHtml(unlockAt: Date, publicId: string): string {
     <div class="note">✦ Automatically unseals when the countdown completes ✦</div>
   </div>
 
-  <script>
+  <script${nonce ? ` nonce="${nonce}"` : ""}>
     (function() {
       var targetTime = new Date("${targetIso}").getTime();
       function update() {
@@ -417,13 +510,13 @@ const ACCENTS: Record<
   },
 };
 
-function renderPublicHtml(config: PublishedConfig, publicId: string = ""): string {
+function renderPublicHtml(config: PublishedConfig, publicId: string = "", nonce?: string): string {
   const theme = ACCENTS[config.accentTheme || "crimson-rose"] || ACCENTS["crimson-rose"];
-  const greeting = sanitizeText(config.greeting || "To My Favorite Person");
-  const partnerName = sanitizeText(config.partnerName || "Dearest");
-  const message = sanitizeText(config.message || "My heart is fuller every day because of you.");
-  const signOff = sanitizeText(config.signOff || "With all my love");
-  const senderName = sanitizeText(config.senderName || "Yours Always");
+  const greeting = escapeHtml(sanitizeText(config.greeting || "To My Favorite Person"));
+  const partnerName = escapeHtml(sanitizeText(config.partnerName || "Dearest"));
+  const message = escapeHtml(sanitizeText(config.message || "My heart is fuller every day because of you.", { allowNewlines: true }));
+  const signOff = escapeHtml(sanitizeText(config.signOff || "With all my love"));
+  const senderName = escapeHtml(sanitizeText(config.senderName || "Yours Always"));
 
   const modulesHtml = renderModulesHtml(config.modules, config.moduleOrder, publicId, (config as any).narrative);
   const interactionsHtml = renderReactionsAndReplyHtml(publicId);
@@ -838,7 +931,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
       <button
         type="button"
         id="soundtrack-toggle"
-        data-soundtrack-url="${sanitizeText(config.soundtrackUrl || "")}"
+        data-soundtrack-url="${escapeHtmlAttr(sanitizeUrl(config.soundtrackUrl || ""))}"
         aria-label="Play romantic soundtrack"
         style="display: flex; align-items: center; gap: 0.4rem; padding: 0.3rem 0.85rem; border-radius: 9999px; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; font-family: system-ui, sans-serif; border: 1px solid rgba(244,63,94,0.4); background: rgba(76,5,25,0.6); color: #FDA4AF; backdrop-filter: blur(8px); cursor: pointer; transition: all 0.3s;"
       >
@@ -913,7 +1006,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
           <div class="memory-card" style="margin-top: 1.25rem;">
             <div style="background: #FAF8F5; padding: 0.85rem; border-radius: 0.85rem; box-shadow: 0 16px 36px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.8); transform: rotate(-1deg); max-width: 22rem; margin: 0 auto;">
               <div style="width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 0.5rem; background: #eee;">
-                <img src="${sanitizeText(config.heroMediaId)}" alt="A Cherished Moment" style="width: 100%; height: 100%; object-fit: cover;" />
+                <img src="${escapeHtmlAttr(sanitizeUrl(config.heroMediaId))}" alt="A Cherished Moment" style="width: 100%; height: 100%; object-fit: cover;" />
               </div>
               <div style="text-align: center; padding-top: 0.65rem; font-family: Georgia, serif; font-style: italic; font-size: 0.8rem; color: #57534E;">
                 A memory kept forever close
@@ -946,14 +1039,65 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
             >
               Seal & Read Again
             </button>
+
+            <!-- Discreet Report Abuse Trigger -->
+            <div style="margin-top: 0.75rem;">
+              <button
+                type="button"
+                id="open-report-modal-btn"
+                data-testid="report-abuse-trigger"
+                style="background: none; border: none; font-size: 0.65rem; color: rgba(254, 205, 211, 0.4); text-decoration: underline; cursor: pointer; letter-spacing: 0.05em;"
+              >
+                Report an issue
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div data-layer="5-foreground-wrap" class="foreground-wrap-layer" aria-hidden="true"></div>
+
+    <!-- Report Abuse Modal Dialog -->
+    <div
+      id="report-modal"
+      class="hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="report-modal-title"
+      style="position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; align-items: center; justify-content: center; padding: 1.5rem;"
+    >
+      <div style="background: #180512; border: 1px solid rgba(244, 63, 94, 0.3); border-radius: 1.25rem; max-width: 26rem; width: 100%; padding: 2rem; color: #FAF8F5; text-align: left; box-shadow: 0 25px 50px rgba(0,0,0,0.9);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 id="report-modal-title" style="font-family: Georgia, serif; font-size: 1.2rem; color: #FAF8F5;">Report This Experience</h3>
+          <button type="button" id="close-report-modal-btn" data-testid="report-close-btn" aria-label="Close report dialog" style="background: none; border: none; color: #FDA4AF; font-size: 1.25rem; cursor: pointer;">✕</button>
+        </div>
+        <p style="font-size: 0.75rem; color: #D5CEBF; margin-bottom: 1.25rem; line-height: 1.5;">
+          We take abuse, harassment, and inappropriate content seriously. Reports are private and reviewed confidentially.
+        </p>
+        <form id="report-abuse-form" data-testid="report-abuse-form">
+          <label for="report-reason" style="display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #FDA4AF; margin-bottom: 0.35rem; font-weight: 600;">Reason for Report</label>
+          <select id="report-reason" name="reason" data-testid="report-reason-select" required style="width: 100%; padding: 0.6rem; border-radius: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(244, 63, 94, 0.4); color: #FAF8F5; font-size: 0.8rem; margin-bottom: 1rem;">
+            <option value="inappropriate_content">Inappropriate Content</option>
+            <option value="harassment">Harassment or Non-consensual</option>
+            <option value="copyright">Copyright Infringement</option>
+            <option value="other">Other Concern</option>
+          </select>
+
+          <label for="report-details" style="display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: #FDA4AF; margin-bottom: 0.35rem; font-weight: 600;">Additional Details (Optional)</label>
+          <textarea id="report-details" name="details" data-testid="report-details-input" rows="3" maxlength="1000" placeholder="Please describe your concern..." style="width: 100%; padding: 0.6rem; border-radius: 0.5rem; background: rgba(0,0,0,0.5); border: 1px solid rgba(244, 63, 94, 0.4); color: #FAF8F5; font-size: 0.8rem; margin-bottom: 1.25rem; resize: none;"></textarea>
+
+          <div id="report-status-msg" data-testid="report-status-msg" class="hidden" style="font-size: 0.75rem; margin-bottom: 1rem; padding: 0.5rem; border-radius: 0.35rem;"></div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" id="cancel-report-btn" style="padding: 0.5rem 1rem; border-radius: 9999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #FAF8F5; font-size: 0.75rem; cursor: pointer;">Cancel</button>
+            <button type="submit" id="submit-report-btn" data-testid="report-submit-btn" style="padding: 0.5rem 1.25rem; border-radius: 9999px; background: linear-gradient(135deg, #E11D48, #BE123C); border: 1px solid #FB7185; color: white; font-size: 0.75rem; font-weight: 600; cursor: pointer;">Submit Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 
-  <script>
+  <script${nonce ? ` nonce="${nonce}"` : ""}>
     (function() {
       function setup() {
         var sealBox = document.querySelector('[data-testid="seal-container"]');
@@ -964,7 +1108,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
         if (!sealBox || !letterBox) return;
 
         try {
-          document.title = "A Valentine for ${partnerName} — Valentino";
+          document.title = "A Valentine for " + ${safeJsonForScript(partnerName)} + " — Valentino";
         } catch (e) {}
 
         function unseal() {
@@ -1077,7 +1221,103 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
           });
         }
 
-        // Tap-to-Reveal Secret (non-question locked)
+        // Report Abuse Dialog Setup
+        var reportModal = document.getElementById('report-modal');
+        var openReportBtn = document.getElementById('open-report-modal-btn');
+        var closeReportBtn = document.getElementById('close-report-modal-btn');
+        var cancelReportBtn = document.getElementById('cancel-report-btn');
+        var reportForm = document.getElementById('report-abuse-form');
+        var reportStatus = document.getElementById('report-status-msg');
+        var submitReportBtn = document.getElementById('submit-report-btn');
+
+        function openReport() {
+          if (reportModal) {
+            reportModal.classList.remove('hidden');
+            if (reportStatus) {
+              reportStatus.classList.add('hidden');
+              reportStatus.textContent = '';
+            }
+          }
+        }
+
+        function closeReport() {
+          if (reportModal) reportModal.classList.add('hidden');
+        }
+
+        if (openReportBtn) openReportBtn.addEventListener('click', openReport);
+        if (closeReportBtn) closeReportBtn.addEventListener('click', closeReport);
+        if (cancelReportBtn) cancelReportBtn.addEventListener('click', closeReport);
+        if (reportModal) {
+          reportModal.addEventListener('click', function(e) {
+            if (e.target === reportModal) closeReport();
+          });
+        }
+
+        if (reportForm) {
+          reportForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var reasonEl = document.getElementById('report-reason');
+            var detailsEl = document.getElementById('report-details');
+            var reason = reasonEl ? reasonEl.value : 'other';
+            var details = detailsEl ? detailsEl.value : '';
+
+            if (submitReportBtn) {
+              submitReportBtn.disabled = true;
+              submitReportBtn.textContent = 'Submitting...';
+            }
+
+            fetch('/api/experiences/' + encodeURIComponent('${publicId}') + '/report', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ reason: reason, details: details })
+            })
+              .then(function(res) {
+                if (res.status === 201) {
+                  return { ok: true, msg: 'Thank you. Your report has been securely submitted and will be reviewed.' };
+                } else if (res.status === 429) {
+                  return { ok: false, msg: 'Too many reports submitted. Please wait a moment before trying again.' };
+                } else {
+                  return { ok: false, msg: 'Unable to submit report. Please check your connection and try again.' };
+                }
+              })
+              .then(function(result) {
+                if (reportStatus) {
+                  reportStatus.classList.remove('hidden');
+                  reportStatus.style.background = result.ok ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+                  reportStatus.style.color = result.ok ? '#6EE7B7' : '#FCA5A5';
+                  reportStatus.style.border = result.ok ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(239, 68, 68, 0.4)';
+                  reportStatus.textContent = result.msg;
+                }
+                if (result.ok) {
+                  if (reportForm) reportForm.reset();
+                  setTimeout(function() {
+                    closeReport();
+                    if (submitReportBtn) {
+                      submitReportBtn.disabled = false;
+                      submitReportBtn.textContent = 'Submit Report';
+                    }
+                  }, 2500);
+                } else {
+                  if (submitReportBtn) {
+                    submitReportBtn.disabled = false;
+                    submitReportBtn.textContent = 'Submit Report';
+                  }
+                }
+              })
+              .catch(function() {
+                if (reportStatus) {
+                  reportStatus.classList.remove('hidden');
+                  reportStatus.style.background = 'rgba(239, 68, 68, 0.2)';
+                  reportStatus.style.color = '#FCA5A5';
+                  reportStatus.textContent = 'Network error while submitting report. Please try again.';
+                }
+                if (submitReportBtn) {
+                  submitReportBtn.disabled = false;
+                  submitReportBtn.textContent = 'Submit Report';
+                }
+              });
+          });
+        }
         var revealSecretBtn = document.getElementById('reveal-secret-btn');
         var revealedSecretEl = document.getElementById('revealed-secret');
         if (revealSecretBtn && revealedSecretEl) {
@@ -1119,6 +1359,7 @@ function renderPublicHtml(config: PublishedConfig, publicId: string = ""): strin
 
 export async function GET(request: Request, { params }: RouteParams) {
   const { publicId } = await params;
+  const nonce = request.headers.get("x-nonce") || "";
 
   let experience;
   try {
@@ -1126,8 +1367,8 @@ export async function GET(request: Request, { params }: RouteParams) {
       where: { publicId },
     });
   } catch (err) {
-    console.error("Database lookup error in /v/[publicId]:", err);
-    return new NextResponse(render404Html(), { status: 404, headers: COMMON_HEADERS });
+    logger.error("Database lookup error in /v/[publicId]", { error: String(err) });
+    return new NextResponse(render500Html(nonce), { status: 500, headers: COMMON_HEADERS });
   }
 
   // 1. Unknown experiences return real HTTP 404
@@ -1149,7 +1390,7 @@ export async function GET(request: Request, { params }: RouteParams) {
   if (experience.scheduledUnlockAt) {
     const unlockTime = new Date(experience.scheduledUnlockAt).getTime();
     if (Date.now() < unlockTime) {
-      return new NextResponse(renderLockedCountdownHtml(experience.scheduledUnlockAt, publicId), {
+      return new NextResponse(renderLockedCountdownHtml(experience.scheduledUnlockAt, publicId, nonce), {
         status: 200,
         headers: COMMON_HEADERS,
       });
@@ -1169,10 +1410,10 @@ export async function GET(request: Request, { params }: RouteParams) {
     const config = template.normalizeConfig(rawConfig, true);
 
     if (template.renderSsrHtml) {
-      return new NextResponse(template.renderSsrHtml(config, publicId), { status: 200, headers: COMMON_HEADERS });
+      return new NextResponse(template.renderSsrHtml(config, publicId, nonce), { status: 200, headers: COMMON_HEADERS });
     }
 
-    return new NextResponse(renderPublicHtml(config as PublishedConfig, publicId), { status: 200, headers: COMMON_HEADERS });
+    return new NextResponse(renderPublicHtml(config as PublishedConfig, publicId, nonce), { status: 200, headers: COMMON_HEADERS });
   }
 
   return new NextResponse(render404Html(), { status: 404, headers: COMMON_HEADERS });
