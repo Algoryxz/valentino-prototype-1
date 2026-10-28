@@ -82,7 +82,7 @@ export const narrativeDraftSchema = z.object({
   welcome: personalWelcomeDraftSchema.optional(),
   closing: personalClosingDraftSchema.optional(),
   recap: emotionalRecapDraftSchema.optional(),
-  customSectionTitles: z.record(z.string()).optional().default({}),
+  customSectionTitles: z.record(z.string(), z.string()).optional().default({}),
 });
 
 // Narrative Publish Schema
@@ -92,7 +92,7 @@ export const narrativePublishSchema = z.object({
   welcome: personalWelcomePublishSchema.optional(),
   closing: personalClosingPublishSchema.optional(),
   recap: emotionalRecapPublishSchema.optional(),
-  customSectionTitles: z.record(z.string()).default({}),
+  customSectionTitles: z.record(z.string(), z.string()).default({}),
 });
 
 export type NarrativeDraftConfig = z.infer<typeof narrativeDraftSchema>;
