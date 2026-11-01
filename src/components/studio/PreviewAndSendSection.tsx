@@ -5,10 +5,12 @@ import { QrCard } from "@/components/keepsakes/QrCard";
 import { PrintKeepsakeButton } from "@/components/keepsakes/PrintKeepsake";
 import { PartnerInteractionsPanel } from "./PartnerInteractionsPanel";
 import { MediaUploader } from "./MediaUploader";
+import { ManageExperienceSection } from "./ManageExperienceSection";
 
 interface PreviewAndSendSectionProps {
   publicId: string;
   partnerName?: string;
+  status?: string;
   soundtrackUrl?: string | null;
   scheduledUnlockAt?: string | null;
   onSoundtrackChange: (url: string | null) => void;
@@ -19,6 +21,7 @@ interface PreviewAndSendSectionProps {
 export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
   publicId,
   partnerName = "My Love",
+  status,
   soundtrackUrl,
   scheduledUnlockAt,
   onSoundtrackChange,
@@ -204,6 +207,9 @@ export const PreviewAndSendSection: React.FC<PreviewAndSendSectionProps> = ({
 
       {/* 4. Partner Reactions & Replies */}
       <PartnerInteractionsPanel publicId={publicId} />
+
+      {/* 5. Danger Zone / Manage Experience */}
+      <ManageExperienceSection publicId={publicId} initialStatus={status} />
     </div>
   );
 };

@@ -1,4 +1,20 @@
-import { sanitizeText } from "@/lib/sanitize";
+import {
+  sanitizeText as baseSanitizeText,
+  escapeHtml,
+  escapeHtmlAttr,
+  safeJsonForScript,
+  sanitizeUrl,
+} from "@/lib/sanitize";
+
+/**
+ * In SSR HTML generation, user content must be both Unicode-sanitized AND HTML entity-escaped.
+ */
+function sanitizeText(
+  input: string | null | undefined,
+  options?: { allowNewlines?: boolean }
+): string {
+  return escapeHtml(baseSanitizeText(input || "", options));
+}
 
 export interface SsrRenderOptions {
   publicId?: string;
@@ -73,7 +89,7 @@ export function renderModulesHtml(
           <div style="font-size: 0.65rem; color: #FDA4AF; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.35rem; font-weight: 600;">🎙️ Voice Note Audio Seal</div>
           <h3 style="font-family: Georgia, serif; font-size: 1.15rem; color: #FAF8F5; margin-bottom: 0.35rem;">${sanitizeText(m.title || "Voice Note")}</h3>
           <p data-testid="voice-caption" style="font-size: 0.8rem; color: #D5CEBF; font-style: italic; margin-bottom: 0.85rem;">${sanitizeText(m.caption || "A personal message from my heart to yours")}</p>
-          <audio id="voice-audio-el" src="${sanitizeText(m.url)}" preload="metadata"></audio>
+          <audio id="voice-audio-el" src="${escapeHtmlAttr(sanitizeUrl(m.url))}" preload="metadata"></audio>
           <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem; max-width: 20rem; margin: 0 auto;">
             <button type="button" id="voice-play-btn" data-testid="voice-play-btn" aria-label="Play voice note" style="width: 2.25rem; height: 2.25rem; border-radius: 9999px; background: #E11D48; color: white; border: none; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; cursor: pointer;">▶</button>
             <input type="range" id="voice-scrub-bar" data-testid="voice-scrub-bar" min="0" max="100" value="0" style="flex: 1; accent-color: #FB7185; cursor: pointer;" />
@@ -90,7 +106,7 @@ export function renderModulesHtml(
           <div style="font-size: 0.65rem; color: #FDA4AF; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.35rem; font-weight: 600;">🎞️ Video Memory Capsule</div>
           <h3 style="font-family: Georgia, serif; font-size: 1.15rem; color: #FAF8F5; margin-bottom: 0.5rem;">${sanitizeText(m.title || "Video Memory")}</h3>
           <div style="position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 0.75rem; background: #000; border: 1px solid rgba(255,255,255,0.15);">
-            <video id="video-memory-el" data-testid="video-memory-player" src="${sanitizeText(m.url)}" poster="${sanitizeText(m.posterUrl || "")}" controls playsinline preload="metadata" style="width: 100%; height: 100%; object-fit: contain;"></video>
+            <video id="video-memory-el" data-testid="video-memory-player" src="${escapeHtmlAttr(sanitizeUrl(m.url))}" poster="${escapeHtmlAttr(sanitizeUrl(m.posterUrl || ""))}" controls playsinline preload="metadata" style="width: 100%; height: 100%; object-fit: contain;"></video>
           </div>
           ${m.caption ? `<p data-testid="video-memory-caption" style="text-align: center; font-size: 0.8rem; color: #D5CEBF; font-style: italic; margin-top: 0.65rem;">${sanitizeText(m.caption)}</p>` : ""}
         </div>
@@ -107,7 +123,7 @@ export function renderModulesHtml(
           <div class="memories-stage" style="position: relative; max-width: 24rem; margin: 0 auto;">
             <div style="background: #FAF8F5; padding: 0.85rem; border-radius: 0.85rem; box-shadow: 0 16px 36px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.9); text-align: center;">
               <div id="memory-photo-container" style="width: 100%; aspect-ratio: 4/3; overflow: hidden; border-radius: 0.5rem; background: #222; cursor: zoom-in;" title="Click to enlarge">
-                <img id="memory-active-photo" data-testid="memory-active-photo" src="${sanitizeText(m.items[0]?.url || "")}" alt="Memory photo" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" />
+                <img id="memory-active-photo" data-testid="memory-active-photo" src="${escapeHtmlAttr(sanitizeUrl(m.items[0]?.url || ""))}" alt="Memory photo" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" />
               </div>
               <div style="padding-top: 0.65rem;">
                 <div id="memory-item-date" data-testid="memory-item-date" style="font-size: 0.7rem; color: #BE123C; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">${sanitizeText(m.items[0]?.date || "")}</div>
@@ -125,7 +141,7 @@ export function renderModulesHtml(
             <div class="memory-thumbnails" style="display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.5rem 0; margin-top: 0.5rem;">
               ${m.items.map((item: any, idx: number) => `
                 <button type="button" class="memory-thumb-btn" data-testid="memory-thumbnail-${idx}" data-idx="${idx}" aria-label="View photo ${idx + 1}" style="flex-shrink: 0; width: 3rem; height: 2.25rem; border-radius: 0.35rem; overflow: hidden; border: 2px solid ${idx === 0 ? '#FB7185' : 'transparent'}; cursor: pointer; padding: 0; background: none;">
-                  <img src="${sanitizeText(item.url)}" alt="Thumb ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover;" />
+                  <img src="${escapeHtmlAttr(sanitizeUrl(item.url))}" alt="Thumb ${idx + 1}" style="width: 100%; height: 100%; object-fit: cover;" />
                 </button>
               `).join("")}
             </div>
@@ -138,7 +154,7 @@ export function renderModulesHtml(
             </div>
 
             <script id="memories-data" type="application/json">
-              ${JSON.stringify(m.items)}
+              ${safeJsonForScript(m.items)}
             </script>
           </div>
         </div>
@@ -260,7 +276,7 @@ export function renderModulesHtml(
             <button type="button" id="reasons-prev-btn" data-testid="reasons-prev-btn" aria-label="Previous reason" style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #FAF8F5; font-size: 0.75rem; cursor: pointer;">← Previous</button>
             <button type="button" id="reasons-next-btn" data-testid="reasons-next-btn" aria-label="Next reason" style="padding: 0.35rem 0.85rem; border-radius: 9999px; background: #E11D48; border: none; color: #fff; font-size: 0.75rem; font-weight: 500; cursor: pointer;">Next Reason →</button>
           </div>
-          <script id="reasons-data" type="application/json">${JSON.stringify(m.items)}</script>
+          <script id="reasons-data" type="application/json">${safeJsonForScript(m.items)}</script>
         </div>
       `);
     }
@@ -278,7 +294,7 @@ export function renderModulesHtml(
           <button type="button" id="compliment-trigger-btn" data-testid="compliment-trigger-btn" style="padding: 0.5rem 1.25rem; border-radius: 9999px; background: linear-gradient(135deg, #E11D48, #BE123C); color: white; border: 1px solid #FB7185; font-size: 0.75rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem;">
             <span>✨</span> <span>${sanitizeText(m.buttonLabel || "Tell Me Something Sweet")}</span>
           </button>
-          <script id="compliments-data" type="application/json">${JSON.stringify(compPool)}</script>
+          <script id="compliments-data" type="application/json">${safeJsonForScript(compPool)}</script>
         </div>
       `);
     }
@@ -299,7 +315,7 @@ export function renderModulesHtml(
             <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: #B45309; margin-bottom: 0.25rem;">Secret Fortune</div>
             <p id="fortune-slip-text" style="font-family: Georgia, serif; font-style: italic; font-size: 0.85rem; line-height: 1.4;">${sanitizeText(fortList[0] || "")}</p>
           </div>
-          <script id="fortunes-data" type="application/json">${JSON.stringify(fortList)}</script>
+          <script id="fortunes-data" type="application/json">${safeJsonForScript(fortList)}</script>
         </div>
       `);
     }
@@ -401,7 +417,7 @@ export function renderModulesHtml(
             <button type="button" id="spinner-spin-btn" data-testid="spinner-spin-btn" style="padding: 0.45rem 1.15rem; border-radius: 9999px; background: linear-gradient(135deg, #E11D48, #BE123C); color: white; border: 1px solid #FB7185; font-size: 0.75rem; font-weight: 500; cursor: pointer;">Spin Wheel</button>
             <button type="button" id="spinner-pick-btn" data-testid="spinner-fallback-btn" style="padding: 0.45rem 0.85rem; border-radius: 9999px; background: rgba(255,255,255,0.1); color: #FAF8F5; border: 1px solid rgba(255,255,255,0.2); font-size: 0.75rem; cursor: pointer;">Quick Pick</button>
           </div>
-          <script id="spinner-data" type="application/json">${JSON.stringify(spinOptions)}</script>
+          <script id="spinner-data" type="application/json">${safeJsonForScript(spinOptions)}</script>
         </div>
       `);
     }

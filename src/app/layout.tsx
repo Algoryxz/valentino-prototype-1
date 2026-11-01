@@ -52,16 +52,20 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
+import { headers } from "next/headers";
 import { PageCurtains } from "@/components/motion/PageCurtains";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
+  const nonce = headersList.get("x-nonce") ?? undefined;
+
   return (
-    <html lang="en" className={`${playfair.variable} ${plusJakarta.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${plusJakarta.variable}`} nonce={nonce}>
       <body className="antialiased min-h-[100dvh] flex flex-col font-sans bg-[#0A090C] text-[#FAF8F5]">
         <SmoothScrollProvider>
           {children}

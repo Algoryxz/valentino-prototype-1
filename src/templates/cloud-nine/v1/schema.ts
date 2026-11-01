@@ -21,9 +21,9 @@ const graphemeMinMax = (min: number, max: number, fieldName: string) =>
 
 export const valentineDecorSchema = z
   .object({
-    blooms: z.array(z.string().max(50)).default(["rose", "tulip"]),
-    flowers: z.array(z.string().max(50)).optional(),
-    charms: z.array(z.string().max(50)).default(["sparkles", "hearts"]),
+    blooms: z.array(z.string().max(50)).max(20).default(["rose", "tulip"]),
+    flowers: z.array(z.string().max(50)).max(20).optional(),
+    charms: z.array(z.string().max(50)).max(20).default(["sparkles", "hearts"]),
     paper: z.string().max(50).default("cream"),
     ribbon: z.string().max(50).default("crimson"),
     waxSeal: z.string().max(50).default("crimson"),
@@ -53,7 +53,7 @@ export const cloudNineDraftSchema = z.object({
   soundtrackUrl: z.string().max(500).optional().nullable(),
   decor: valentineDecorSchema,
   modules: modulesDraftSchema,
-  moduleOrder: z.array(z.string()).optional(),
+  moduleOrder: z.array(z.string()).max(20).optional(),
   narrative: narrativeDraftSchema.optional(),
 });
 
@@ -79,7 +79,7 @@ export const cloudNinePublishSchema = z.object({
   soundtrackUrl: z.string().max(500).optional().nullable(),
   decor: valentineDecorSchema,
   modules: modulesPublishSchema,
-  moduleOrder: z.array(z.string()).optional(),
+  moduleOrder: z.array(z.string()).max(20).optional(),
   narrative: narrativePublishSchema.optional(),
 });
 

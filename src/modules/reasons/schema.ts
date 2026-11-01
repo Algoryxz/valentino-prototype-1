@@ -29,7 +29,7 @@ export const reasonsDraftSchema = z
     title: graphemeMax(100).optional().default("Reasons I Love You"),
     subtitle: graphemeMax(200).optional().default("Countless little things that make you irreplaceable"),
     viewMode: z.enum(["step", "all"]).optional().default("step"),
-    items: z.array(reasonItemDraftSchema).default([]),
+    items: z.array(reasonItemDraftSchema).max(100).default([]),
   })
   .passthrough();
 
@@ -39,7 +39,7 @@ export const reasonsPublishSchema = z
     title: graphemeMax(100).optional().default("Reasons I Love You"),
     subtitle: graphemeMax(200).optional(),
     viewMode: z.enum(["step", "all"]).optional().default("step"),
-    items: z.array(reasonItemPublishSchema).optional().default([]),
+    items: z.array(reasonItemPublishSchema).max(100).optional().default([]),
   })
   .passthrough();
 

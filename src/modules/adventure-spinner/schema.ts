@@ -25,7 +25,7 @@ export const adventureSpinnerDraftSchema = z
     enabled: z.boolean().default(false),
     title: graphemeMax(100).optional().default("The Adventure Wheel"),
     subtitle: graphemeMax(200).optional().default("Can't decide on date night? Let destiny take the wheel"),
-    options: z.array(spinnableItemDraftSchema).default([]),
+    options: z.array(spinnableItemDraftSchema).max(30).default([]),
   })
   .passthrough();
 
@@ -34,7 +34,7 @@ export const adventureSpinnerPublishSchema = z
     enabled: z.boolean(),
     title: graphemeMax(100).optional().default("The Adventure Wheel"),
     subtitle: graphemeMax(200).optional(),
-    options: z.array(spinnableItemPublishSchema).min(2),
+    options: z.array(spinnableItemPublishSchema).min(2).max(30),
   })
   .passthrough();
 

@@ -32,22 +32,25 @@ export const openWhenDraftSchema = z.object({
   enabled: z.boolean().default(false),
   title: graphemeMax(100).default("Open When..."),
   subtitle: graphemeMax(200).default("Envelopes for the days ahead"),
-  envelopes: z.array(openWhenEnvelopeDraftSchema).default([
+  envelopes: z.array(openWhenEnvelopeDraftSchema).max(30).default([
     {
       id: "env-1",
       title: "Open when you miss me",
+      category: "miss-me",
       context: "For quiet evenings",
       message: "Close your eyes and remember how tightly I hold you. Distance can't touch what we have.",
     },
     {
       id: "env-2",
       title: "Open when you're having a hard day",
+      category: "hard-day",
       context: "When things feel heavy",
       message: "Take a deep breath. You are stronger than you know, and I believe in you with my whole heart.",
     },
     {
       id: "env-3",
       title: "Open when you can't sleep",
+      category: "miss-me",
       context: "Late night comfort",
       message: "Think of my favorite laugh of yours, and let peace find you. Tomorrow is waiting for us.",
     },
@@ -70,7 +73,7 @@ export const openWhenPublishSchema = z.object({
   enabled: z.boolean().default(false),
   title: z.string().max(100).default("Open When..."),
   subtitle: z.string().max(200).default("Envelopes for the days ahead"),
-  envelopes: z.array(openWhenEnvelopePublishSchema).default([]),
+  envelopes: z.array(openWhenEnvelopePublishSchema).max(30).default([]),
 });
 
 export type OpenWhenPublishedConfig = z.infer<typeof openWhenPublishSchema>;

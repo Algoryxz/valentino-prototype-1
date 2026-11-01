@@ -1,4 +1,10 @@
-import { sanitizeText } from "@/lib/sanitize";
+import {
+  sanitizeText as baseSanitizeText,
+  escapeHtml,
+  escapeHtmlAttr,
+  safeJsonForScript,
+  sanitizeUrl,
+} from "@/lib/sanitize";
 import { getPublicSharingMetaHtml } from "@/lib/metadata";
 import { KagePublishedConfig } from "./schema";
 import {
@@ -9,7 +15,14 @@ import {
   getModulesClientScript,
 } from "@/modules/ssrModules";
 
-export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string = ""): string {
+function sanitizeText(
+  input: string | null | undefined,
+  options?: { allowNewlines?: boolean }
+): string {
+  return escapeHtml(baseSanitizeText(input || "", options));
+}
+
+export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string = "", nonce?: string): string {
   const partnerName = sanitizeText(config.partnerName || "Dearest");
   const greeting = sanitizeText(config.greeting || "Where stillness reveals the unseen");
   const message = sanitizeText(config.message || "In the quiet of the night, every thought of you is a light through the shadows.");
@@ -248,11 +261,11 @@ export function renderKageSsrHtml(config: KagePublishedConfig, publicId: string 
     <div data-layer="5-foreground-wrap" class="foreground-wrap-layer" aria-hidden="true"></div>
   </div>
 
-  <script>
+  <script${nonce ? ` nonce="${nonce}"` : ""}>
     (function() {
       function setup() {
         try {
-          document.title = "A Kyoto Sanctuary Valentine for ${partnerName} — Valentino";
+          document.title = "A Kyoto Sanctuary Valentine for " + ${safeJsonForScript(partnerName)} + " — Valentino";
         } catch (e) {}
         var musicBtn = document.getElementById('soundtrack-toggle');
         if (musicBtn) {

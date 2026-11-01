@@ -5,3 +5,8 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+overrides:
+  postcss: ^8.5.31
+  source-map-js: ^1.2.2
+  deepmerge-ts: ^8.0.0

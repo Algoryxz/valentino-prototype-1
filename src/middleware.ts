@@ -3,9 +3,45 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  const response = NextResponse.next();
 
-  // Enforce security headers on response
+  // Generate cryptographically random 128-bit nonce for this request
+  const nonce = btoa(crypto.randomUUID()).replace(/[^a-zA-Z0-9]/g, "").slice(0, 24);
+
+  const isDev = process.env.NODE_ENV !== "production";
+  const scriptDirectives = [
+    "'self'",
+    `'nonce-${nonce}'`,
+    ...(isDev ? ["'unsafe-eval'"] : []),
+  ].join(" ");
+
+  const cspHeader = [
+    "default-src 'self'",
+    `script-src ${scriptDirectives}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' blob: data: https://res.cloudinary.com",
+    "media-src 'self' blob: data: https://res.cloudinary.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "connect-src 'self' https://res.cloudinary.com",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+
+  // Forward nonce and CSP in request headers so downstream route handlers and layouts can read them
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-nonce", nonce);
+  requestHeaders.set("Content-Security-Policy", cspHeader);
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+
+  // Security Headers
+  response.headers.set("Content-Security-Policy", cspHeader);
+  response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
 
   if (pathname.startsWith("/v/") || pathname.startsWith("/edit/") || pathname.startsWith("/api/")) {
@@ -18,11 +54,19 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/edit/")) {
     response.headers.set("Referrer-Policy", "no-referrer");
+  } else {
+    response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/v/:path*", "/edit/:path*", "/api/:path*"],
+  matcher: [
+    "/v/:path*",
+    "/edit/:path*",
+    "/api/:path*",
+    "/templates/:path*",
+    "/create/:path*",
+  ],
 };

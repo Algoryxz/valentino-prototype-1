@@ -72,3 +72,8 @@ export function decryptSecretPayload(payload: EncryptedPayload): string {
   plaintext += decipher.final("utf8");
   return plaintext;
 }
+
+export function hashReporterId(identifier: string): string {
+  const pepper = getPepper();
+  return crypto.createHmac("sha256", pepper).update(identifier).digest("hex");
+}

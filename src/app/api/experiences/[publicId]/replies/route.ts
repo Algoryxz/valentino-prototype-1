@@ -2,22 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verifySessionCookie } from "@/lib/session";
 import { validateOrigin } from "@/lib/csrf";
+import { rateLimiter, getAnonymizedKey } from "@/lib/rate-limiter";
 import { serverLogger } from "@/lib/logger";
 
 interface RouteParams {
   params: Promise<{ publicId: string }>;
-}
-
-const replyRateMap = new Map<string, { count: number; resetAt: number }>();
-function isReplyRateLimited(key: string): boolean {
-  const now = Date.now();
-  const entry = replyRateMap.get(key);
-  if (!entry || now > entry.resetAt) {
-    replyRateMap.set(key, { count: 1, resetAt: now + 5 * 60000 }); // 5 minutes
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > 3; // Max 3 replies per 5 min
 }
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
@@ -29,12 +18,21 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Request origin not allowed" }, { status: 403 });
   }
 
-  // 2. Rate limit
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (isReplyRateLimited(`${publicId}:${clientIp}`)) {
+  // 2. Rate limit (max 3 replies per 5 min)
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+  const rateLimitKey = getAnonymizedKey("replies", `${publicId}:${clientIp}`);
+  const limitResult = await rateLimiter.check(rateLimitKey, 3, 5 * 60 * 1000);
+
+  if (!limitResult.allowed) {
     return NextResponse.json(
       { error: "Too many replies submitted. Please wait a few minutes." },
-      { status: 429 }
+      {
+        status: 429,
+        headers: {
+          "Retry-After": limitResult.resetSeconds.toString(),
+          "Cache-Control": "no-store",
+        },
+      }
     );
   }
 

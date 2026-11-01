@@ -49,16 +49,28 @@
   - **Resilient Fallbacks**: Renderers receive explicit dimensions, and missing or deleted media must fall back gracefully with zero broken-image icons reaching recipients.
 - **Reason**: Cloudinary provides reliable, managed media delivery and optimization for production without managing raw object-storage buckets, while the local-disk adapter guarantees hermetic, dependency-free local development and automated testing.
 
-## Open (owner decides; agent asks, never guesses)
+### ADR-0008 — Production Hosting & Infrastructure Architecture (Decision D3 Reconciliation)
+- **Decision**:
+  - **Application Hosting**: Vercel Serverless Platform running Next.js App Router with Node.js runtime.
+  - **Production Database**: Managed PostgreSQL accessed via Prisma Client with pooling (`DATABASE_URL` via connection pooling with SSL mode `require`).
+  - **Production Media Storage**: Cloudinary (as established in ADR-0007), accessed via `CloudinaryStorageAdapter`.
+  - **Dev & Test Infrastructure**: Hermetic local filesystem / in-memory storage adapters, local PostgreSQL in Docker/CI.
+- **Context**: Milestone 6 establishes the final production release preparation, deployment runbook, and infrastructure architecture.
+- **Reason**: Vercel provides native zero-configuration deployments for Next.js 15, edge routing, automatic SSL certificate provisioning, and environment segregation. Cloudinary provides high-performance media delivery without object storage operational overhead. Managed PostgreSQL provides transactional integrity, cascade deletions, and index-backed query execution.
 
-| ID | Decision | Recommended default | Needed by |
-|----|----------|---------------------|-----------|
-| D1 | Public product name. "Valentino" is also a well-known fashion brand, so consider a different public name later. Repo codename is fine. | Keep codename for the prototype | Before any public launch |
-| D2 | Creator identity: accounts vs. no accounts | **Settled in ADR-0004** (No accounts; cookie-based session per experience) | Settled M1 |
-| D3 | Hosting, database host, media storage provider | **Partially settled in ADR-0007** (Production media: Cloudinary; Dev/test media: local-disk adapter. Application and database hosting remain deferred.) | Media: Settled M3; Hosting: M6 |
-| D4 | Personalized link previews (name in Open Graph) | Generic previews only (privacy: crawlers and chat apps cache them) | M5 |
-| D5 | Link lifetime | Live until the creator deletes; optional expiry later | M1/M6 |
-| D6 | License | None currently (repo is public; open source license to be selected) | Before M6 / release |
-| D7 | Audio/music support | Out of scope for the prototype | Later |
+### ADR-0009 — Licensing and Code Ownership (Decision D6)
+- **Decision**: Proprietary / All Rights Reserved (`"private": true` in `package.json`).
+- **Context**: The repository is proprietary software created by the owner. Public visibility on GitHub allows code collaboration and inspection, but does not grant open-source re-distribution, sub-licensing, or commercialization rights.
+- **Reason**: The owner retains all copyright and intellectual property. No open-source license (such as MIT, Apache, or AGPL) is applied.
 
-Record each answer here with date and reason when decided.
+## Settled Decisions Log
+
+| ID | Decision | Resolution | Settlement Milestone |
+|----|----------|------------|----------------------|
+| D1 | Public product name | Retain "Valentino" as internal prototype codename throughout M6 | Settled M6 |
+| D2 | Creator identity | No accounts; cookie-based edit session per experience | Settled M1 (ADR-0004) |
+| D3 | Hosting, database, media | Vercel application hosting + Managed PostgreSQL + Cloudinary media storage | Settled M6 (ADR-0008) |
+| D4 | Personalized link previews | Generic previews only; no personal names or letters in Open Graph | Settled M5 |
+| D5 | Link lifetime | Active until creator disables or deletes; 180-day creator edit session cutoff | Settled M1 / M6 |
+| D6 | Licensing | Proprietary / All Rights Reserved (`"private": true`) | Settled M6 (ADR-0009) |
+| D7 | Audio/music support | Creator-uploaded background audio with server-side validation & size caps | Settled M4 / M5 |

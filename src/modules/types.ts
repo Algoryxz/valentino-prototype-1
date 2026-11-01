@@ -30,8 +30,8 @@ export interface ModuleDefinition<TDraft = any, TPublished = any> {
   name: string;
   description: string;
   icon: string;
-  draftSchema: z.ZodType<TDraft, z.ZodTypeDef, any>;
-  publishSchema: z.ZodType<TPublished, z.ZodTypeDef, any>;
+  draftSchema: z.ZodType<TDraft, any>;
+  publishSchema: z.ZodType<TPublished, any>;
   defaultConfig: TDraft;
   normalizeConfig: (raw: unknown, isPublic?: boolean) => TPublished;
   Component: React.ComponentType<ModuleRenderProps<TPublished>>;

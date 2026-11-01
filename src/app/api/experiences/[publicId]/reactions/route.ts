@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verifySessionCookie } from "@/lib/session";
 import { validateOrigin } from "@/lib/csrf";
+import { rateLimiter, getAnonymizedKey } from "@/lib/rate-limiter";
 import { serverLogger } from "@/lib/logger";
 
 interface RouteParams {
@@ -9,19 +10,6 @@ interface RouteParams {
 }
 
 const ALLOWED_REACTIONS = ["heart", "sparkles", "tears_of_joy", "warm_smile", "rose"];
-
-// Simple in-memory rate limiter for reactions
-const reactionRateMap = new Map<string, { count: number; resetAt: number }>();
-function isReactionRateLimited(key: string): boolean {
-  const now = Date.now();
-  const entry = reactionRateMap.get(key);
-  if (!entry || now > entry.resetAt) {
-    reactionRateMap.set(key, { count: 1, resetAt: now + 60000 });
-    return false;
-  }
-  entry.count += 1;
-  return entry.count > 10; // Max 10 reactions/minute
-}
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
   const { publicId } = await params;
@@ -32,12 +20,21 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ error: "Request origin not allowed" }, { status: 403 });
   }
 
-  // 2. Rate limit
-  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
-  if (isReactionRateLimited(`${publicId}:${clientIp}`)) {
+  // 2. Rate limit (max 10 reactions/min)
+  const clientIp = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "127.0.0.1";
+  const rateLimitKey = getAnonymizedKey("reactions", `${publicId}:${clientIp}`);
+  const limitResult = await rateLimiter.check(rateLimitKey, 10, 60 * 1000);
+
+  if (!limitResult.allowed) {
     return NextResponse.json(
       { error: "Too many reactions. Please wait a moment." },
-      { status: 429 }
+      {
+        status: 429,
+        headers: {
+          "Retry-After": limitResult.resetSeconds.toString(),
+          "Cache-Control": "no-store",
+        },
+      }
     );
   }
 

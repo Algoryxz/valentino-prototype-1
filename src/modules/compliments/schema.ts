@@ -6,8 +6,8 @@ export const complimentsDraftSchema = z
     enabled: z.boolean().default(false),
     title: graphemeMax(100).optional().default("Compliment Machine"),
     subtitle: graphemeMax(200).optional().default("Press the button whenever you need a reminder of how wonderful you are"),
-    items: z.array(graphemeMax(300)).optional().default([]),
-    pool: z.array(graphemeMax(300)).optional(),
+    items: z.array(graphemeMax(300)).max(50).optional().default([]),
+    pool: z.array(graphemeMax(300)).max(50).optional(),
     buttonLabel: graphemeMax(50).optional().default("Tell Me Something Sweet"),
   })
   .passthrough();

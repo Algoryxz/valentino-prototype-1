@@ -3,9 +3,9 @@
 > An intimate, reusable Valentine's web experience platform. Pick a template, personalize your message, preview it in real time, and share a private, beautifully sealed digital experience with someone you love.
 
 [![Production Deployment](https://img.shields.io/badge/Production-Live-10b981?style=flat-square)](https://valentino-prototype-1.vercel.app)
-[![Next.js 15](https://img.shields.io/badge/Next.js-15.2.8-black?style=flat-square)](https://nextjs.org)
+[![Next.js 15](https://img.shields.io/badge/Next.js-15.5.28-black?style=flat-square)](https://nextjs.org)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL%20%2B%20Prisma-4169e1?style=flat-square)](https://www.prisma.io)
-[![License](https://img.shields.io/badge/License-MIT-gray?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-Proprietary-red?style=flat-square)](#license)
 
 **Live Production:** [valentino-prototype-1.vercel.app](https://valentino-prototype-1.vercel.app)  
 **Status:** Milestone 1 (Walking Skeleton) & Milestone 7 (Vercel Production & PostgreSQL) active and verified.
@@ -158,4 +158,6 @@ Comprehensive engineering notes, product vision, and operational guides are orga
 
 ## License
 
-This project is open-source under the [MIT License](LICENSE).
+Proprietary / All Rights Reserved. Copyright (c) the repository owner.
+
+This software is marked `"private": true` in `package.json`. While public visibility on GitHub permits source code inspection and collaborative review, no license (open-source or otherwise) is granted to copy, redistribute, sub-license, modify for redistribution, or commercialize this code without express written authorization from the copyright holder.
