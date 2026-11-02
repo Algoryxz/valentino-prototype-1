@@ -166,6 +166,15 @@ export function SpatialDiscoveredObjects() {
           "radial-gradient(ellipse at 50% 38%, #2A091A 0%, #170410 50%, #0E020A 100%)",
       }}
     >
+      {/* Subtle boundary gradient transition: seamless blend from near-black (#0A0207) into deep burgundy/plum (#15030E) */}
+      <div
+        className="absolute top-0 inset-x-0 h-32 sm:h-44 pointer-events-none z-0"
+        style={{
+          background: "linear-gradient(to bottom, #0A0207 0%, rgba(10, 2, 7, 0) 100%)",
+        }}
+        aria-hidden="true"
+      />
+
       {/* Peripheral Botanical Edge Atmosphere */}
       <AmbientBotanicalFrame variant="dusk" density="sparse" intensity={0.25} />
 
